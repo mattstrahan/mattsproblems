@@ -1,0 +1,196 @@
+import { Button, IconButton, List, ListItem, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
+import { Stage, TextStage } from "../Classes/Exercise";
+import { Problem } from "../Classes/Problem";
+import { useAppDispatch, useAppSelector } from "../Hooks/hooks";
+import { ProblemComponent } from './Problems'
+import { createNewExercise, nextProblem } from '../Reducers/RepositoryReducer'
+import { useNavigate, useParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import React from "react";
+import { exportDOCX } from "./Export";
+import { AnswerKey, AnswerKeyFull } from "./Answers";
+
+interface TextStageProps {
+    stage: TextStage;
+    answerKey: AnswerKey;
+}
+
+export function TextStageComponent({stage, answerKey}: TextStageProps) {
+    const ak = answerKey as AnswerKeyFull;
+    const dispatch = useAppDispatch();
+    return (<div>
+        {stage.heading && <h1>stage</h1>}
+        <ReactMarkdown>{stage.text}</ReactMarkdown>
+        <Button onClick={() => dispatch(nextProblem(ak))} >Go to the next problem</Button>
+    </div>);
+}
+
+export function FinishComponent({ stage, answerKey }: TextStageProps) {
+    const dispatch = useAppDispatch();
+    let navigate = useNavigate();
+    const ak = answerKey as AnswerKeyFull;
+    return (<div>
+        {stage.heading && <h1>stage</h1>}
+        <p>{stage.text}</p>
+        <Button onClick={() => { console.log(ak.exerciseSpecId); dispatch(createNewExercise({exerciseid: ak.exerciseSpecId}));
+                    navigate("/exercises/run/");
+                        }} >Do this exercise again</Button>
+    </div>);
+}
+
+
+interface StageProps {
+    stage: Stage;
+    key: number;
+    answerKey: AnswerKey;
+}
+
+export function StageComponent({stage, answerKey}: StageProps) {
+    if(!stage)
+        return (<div></div>);
+    
+    if (stage.type === 'text') {
+        return <TextStageComponent stage={stage as TextStage} answerKey={answerKey} />
+    } else if (stage.type === 'problem') {
+        return <ProblemComponent problem={stage as Problem} answerKey={answerKey} />
+    } else if (stage.type === 'finish') {
+        return <FinishComponent stage={stage as TextStage} answerKey={answerKey} />
+    }
+
+    return (<div></div>);
+}
+
+
+interface ExerciseMenuProps {
+    exerciseId: string;
+}
+
+export function ExerciseMenu({ exerciseId }: ExerciseMenuProps) {
+    const exercise = useAppSelector(state => state.repository.exercises[exerciseId]); // The current list of exercises
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    let navigate = useNavigate();
+    
+    return (
+        <div>
+            <IconButton
+                aria-label="more"
+                id="exercise-title-menu-button"
+                aria-controls={open ? 'exercise-title-menu' : undefined}
+                aria-expanded={open ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={handleClick}
+            >
+                <MoreVertIcon />
+            </IconButton>
+            <Menu
+                id="exercise-title-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'exercise-title-menu-button',
+                }}
+            >
+                <MenuItem onClick={() => {navigate("/exercises/export/worksheet/" + exerciseId); handleClose()}}>Export Worksheet</MenuItem>
+                <MenuItem onClick={() => {exportDOCX({exercise});handleClose()}}>Export DOCX file</MenuItem>
+            </Menu>
+        </div>
+    )
+}
+
+interface ExerciseTitleProps {
+    title?: string;
+    exerciseId: string;
+}
+
+export function ExerciseTitleComponent({ title, exerciseId}: ExerciseTitleProps) {
+    return (
+        <div>
+            <Typography variant="h1">{title}</Typography>
+            <ExerciseMenu exerciseId={exerciseId} />
+        </div>
+    )
+}
+
+
+interface ExerciseInfoProps {
+    exerciseId?: string
+}
+
+export function ExerciseComponent({ exerciseId }: ExerciseInfoProps) {
+    const exercises = useAppSelector(state => state.repository.exercises); // The current list of exercises
+    const currentExercise = useAppSelector(state => state.repository.currentExercise); // The current list of exercises
+
+    let params = useParams();
+
+    if(!exerciseId) //It's not in props
+        exerciseId = params.exerciseId;
+
+    if (!exerciseId) //It's not in params, so let's use the outlet
+        exerciseId = currentExercise;
+
+    if (!(exercises && exercises[exerciseId])) {
+        return (<ExerciseList />);
+    }
+
+    const exercise = exercises[exerciseId];
+    if(exercise.showAllProblems) {
+        const listItems = exercise.stages.map((stage, index) => {
+            return (
+                <StageComponent stage={stage} key={index} answerKey={{ exerciseSpecId: exercise.exerciseSpecId, exercise: exerciseId, stage: index }} />
+            );
+        });
+        return <div>
+            <ExerciseTitleComponent title={exercise.title} exerciseId={exerciseId} />
+            {listItems}
+            </div>
+    }
+
+    const currentProblem = exercise.currentProblem;
+
+    return (
+        <div>
+            <ExerciseTitleComponent title={exercise.title} exerciseId={exerciseId} />
+            <StageComponent stage={exercise.stages[currentProblem]} key={currentProblem} answerKey={{ exerciseSpecId: exercise.exerciseSpecId, exercise: exerciseId, stage: currentProblem }} />
+        </div>
+    );
+}
+
+export function ExerciseList() {
+    const dispatch = useAppDispatch();
+    let navigate = useNavigate();
+    const ExerciseRepository = useAppSelector(state => state.repository.repository.exercises); // The current list of exercises
+    if (!ExerciseRepository)
+
+        return (<div></div>);
+    
+    return (
+        <div>
+            <Typography variant="h1">Exercise List</Typography>
+            <List>
+                {Object.keys(ExerciseRepository).map((key) => (
+                    <ListItem
+                        button
+                        key={key}
+                        onClick={() => {
+                            dispatch(createNewExercise({ exerciseid: key }));
+                            navigate("/exercises/run/");
+                        }}
+                    >
+                        <ListItemText primary={ExerciseRepository[key].description} />
+                    </ListItem>
+                ))}
+            </List>
+        </div>
+    )
+}

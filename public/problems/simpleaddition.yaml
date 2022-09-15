@@ -1,0 +1,174 @@
+problems:
+  twonumber:
+    title: Simple 2 number addition
+    description: Adding together two numbers that are less than ten
+    parameters:
+      max:
+        type: number
+        default: 10
+      min:
+        type: number
+        default: 1
+    variables:
+      a:
+        type: number
+        min: "{{min}}"
+        max: "{{max}}"
+        step: 1
+      b:
+        type: number
+        min: "{{min}}"
+        max: "{{max}}"
+        step: 1
+      c:
+        type: letter
+        exclude: "{{min}}"
+    question: ""
+    answer:
+      type: number
+      label: "{{a}} + {{b}} = "
+      value: "{{a + b}}"
+  multiplytwonumbers:
+    title: Multiply two single digit numbers
+    Description: Multiplying together two numbers that are less than ten
+    variables:
+      a:
+        type: number
+        min: 1
+        max: 10
+        step: 1
+      b:
+        type: number
+        min: 1
+        max: 10
+        step: 1
+    question: "{{a}} x {{b}} ="
+    answer:
+      type: number
+      value: "{{a * b}}"
+  threenumber:
+    title: Simple 3 number addition
+    Description: Adding together three numbers that are less than ten
+    variables:
+      a:
+        type: number
+        min: 1
+        max: 10
+        step: 1
+      b:
+        type: number
+        min: 1
+        max: 10
+        step: 1
+      c:
+        type: number
+        min: 1
+        max: 10
+        step: 1
+    question: ""
+    answer:
+      type: number
+      label: "{{a}} + {{b}} + {{c}} = "
+      value: "{{ a + b + c }}"
+  matrixmultiply:
+    title: Simple 3 number addition
+    Description: Adding together three numbers that are less than ten
+    variables:
+      a:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      b:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      c:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      d:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      e:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      f:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      g:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      h:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+    question: "Multiply the following matrices"
+    answer:
+      type: fillins
+      label: " "
+      value: >
+        $
+        \begin{bmatrix}
+        {{a}} & {{c}} \\
+        {{b}} & {{d}}
+        \end{bmatrix}\times\begin{bmatrix} {{e}} & {{g}} \\
+        {{f}} & {{h}}
+        \end{bmatrix}=\begin{bmatrix}
+        {{fillin(a*e+c*f)}} & {{fillin(a*c+c*d)}} \\
+        {{fillin(b*e+d*f)}} & {{fillin(b*e+d*f)}}
+        \end{bmatrix}
+        $
+exercises:
+  simpleaddition:
+    title: Simple Addition
+    description: Adding two or three numbers that are 1-10
+    parameters:
+      newmax:
+        type: number
+        default: 35
+    stages:
+      - type: text
+        text: "Welcome to the exercise"
+      - type: problem
+        probid: twonumber
+        parameters:
+          max: newmax
+      - type: problem
+        probid: twonumber
+    finish:
+      text: "You've finished! Well done!"
+  matrixmultiply:
+    title: Multiplying matrices
+    description: Multiplying 2x2 matrices
+    stages:
+      - type: text
+        text: "Welcome to the exercise"
+      - type: problem
+        probid: matrixmultiply
+      - type: problem
+        probid: matrixmultiply
+      - type: problem
+        probid: matrixmultiply
+      - type: problem
+        probid: matrixmultiply
+    finish:
+      text: "You've finished! Well done!"
+courses:
+  grade2:
+    title: NSW Grade 2
+    description: Exercises for topics covered in Grade 2 of the NSW syllabus.
+    exercises:
+      - exerciseid: simpleaddition
+      - exerciseid: matrixmultiply
