@@ -1,6 +1,4 @@
-import React from 'react';
 import { Provider } from 'react-redux';
-import Home from './Home';
 import Router from './Router';
 
 type Props = {

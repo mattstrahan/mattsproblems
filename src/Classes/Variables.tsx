@@ -1,4 +1,4 @@
-import { envtype, getStrValue } from "../helpers/env";
+import { getStrValue } from "../helpers/env";
 
 
 export interface VariableNumberSpec {
