@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExerciseList } from '../Components/Exercises';
+import { ExerciseList } from '../components/Exercises';
 
 export default function ExercisesPage() {
     return (

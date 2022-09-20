@@ -1,4 +1,4 @@
-import { envtype, getStrValue } from "../Helpers/env";
+import { envtype, getStrValue } from "../helpers/env";
 
 // Parameters can be strings or numbers. They have a mandatory default which is used when the parameter isn't explicitly supplied.
 export interface ParameterSpec {

@@ -8,6 +8,7 @@ import { PluggableList } from 'react-markdown/lib/react-markdown';
 import hast from 'hast';
 import mdast from 'mdast';
 import { visit } from 'unist-util-visit'
+import Input from '@mui/material/Input';
 
 export interface reHypeFillinsOptions {
 }
@@ -44,9 +45,9 @@ export function MarkdownFillins(props: MarkdownFillinsProps) {
             input: ({ node, ...inputprops }) => 
                 {
                     // Only change the fillins
-                    if(inputprops.id && inputprops.id.startsWith("fillin_"))
-                        return <input size={1} onChange={value => { props.onFillinChange(inputprops.id, value) }} style={{ color: 'blue' }} {...inputprops} />
-                    else
+                    if(inputprops.id && inputprops.id.startsWith("fillin_")) {
+                        return <Input id={inputprops.id} size="small" onChange={value => { props.onFillinChange(inputprops.id, value) }} style={{ height: "1em", padding: "2px 2px" }} />
+                    } else
                         return <input {...inputprops} />
                 }
         }

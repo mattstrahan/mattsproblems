@@ -5,8 +5,8 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import CssBaseline from '@mui/material/CssBaseline';
-import Root from './Containers/Root';
-import { store } from './Store/configureStore';
+import Root from './containers/Root';
+import { store } from './store/configureStore';
 
 function App() {
   return (

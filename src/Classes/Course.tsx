@@ -1,4 +1,4 @@
-import { envtype } from "../Helpers/env";
+import { envtype } from "../helpers/env";
 
 export interface CourseExerciseSpec {
     exerciseid: string;
@@ -8,7 +8,7 @@ export interface CourseExerciseSpec {
 export interface Course {
     title?: string;
     description?: string;
-    exercises: { [key: string]: CourseExerciseSpec };
+    exercises: CourseExerciseSpec[];
 }
 
 export interface CourseRepository {

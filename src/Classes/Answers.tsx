@@ -1,5 +1,5 @@
 import * as nunjucks from 'nunjucks';
-import { envtype } from '../Helpers/env';
+import { envtype } from '../helpers/env';
 
 
 export interface NumberAnswer {

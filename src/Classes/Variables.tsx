@@ -1,28 +1,19 @@
-import { envtype, getStrValue } from "../Helpers/env";
+import { envtype, getStrValue } from "../helpers/env";
 
-export interface VariableSpec {
-    type: string;
-}
 
-export class VariableSpec implements VariableSpec {
-    constructor(spec = {}) {
-        Object.assign(this, spec);
-    }
-
-    getValue(env: envtype = {}): number | string {
-        return 0;
-    }
-}
-
-export interface VariableNumberSpec extends VariableSpec {
+export interface VariableNumberSpec {
     type: "number";
     min: number | string;
     max: number | string;
     step: number | string;
 }
 
-export class VariableNumberSpec extends VariableSpec implements VariableNumberSpec {
-    getValue(env = {}):number {
+export class VariableNumberSpec {
+    constructor(spec = {}) {
+        Object.assign(this, spec);
+    }
+
+    getValue?(env = {}):number {
         // Get a number variable.
         // spec should be {min: number, max: number, step: number}
         // min default is 0, max default is 1000, step default is 1
@@ -75,13 +66,17 @@ export class VariableNumberSpec extends VariableSpec implements VariableNumberSp
     }
 }
 
-export interface VariableLetterSpec extends VariableSpec {
+export interface VariableLetterSpec {
     type: "letter";
     exclude: string;
 }
 
-export class VariableLetterSpec extends VariableSpec implements VariableLetterSpec {
-    getValue(env = {}):string {
+export class VariableLetterSpec {
+    constructor(spec = {}) {
+        Object.assign(this, spec);
+    }
+
+    getValue?(env = {}):string {
         // This returns a random letter, excluding what is in exclude.
         // It is useful for random algebra parameters, with exclude being used for previous parameters.
 
@@ -104,3 +99,5 @@ export class VariableLetterSpec extends VariableSpec implements VariableLetterSp
         return candidates[Math.floor(Math.random() * candidates.length)];
     }
 }
+
+export type VariableSpec = VariableLetterSpec | VariableNumberSpec

@@ -1,0 +1,6 @@
+courses:
+  grade2:
+    title: NSW Grade 2
+    description: Exercises for topics covered in Grade 2 of the NSW syllabus.
+    exercises:
+      - exerciseid: simpleaddition

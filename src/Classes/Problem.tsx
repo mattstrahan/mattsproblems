@@ -1,5 +1,5 @@
 import * as nunjucks from 'nunjucks';
-import { envtype } from '../Helpers/env';
+import { envtype } from '../helpers/env';
 import { Answer, AnswerSpec, buildFillinsAnswer, buildNumberAnswer, buildTextAnswer, FillinsAnswerSpec, NumberAnswerSpec, TextAnswerSpec } from './Answers';
 import { getParameters, ParameterSpec } from './Parameters';
 import { VariableLetterSpec, VariableNumberSpec, VariableSpec } from './Variables';
@@ -18,8 +18,6 @@ export interface ProblemSpec {
     answer?: AnswerSpec;
     parameters?: { [key: string]: ParameterSpec };
     variables?: { [key: string]: VariableSpec };
-    getVariable(variableid: string, env: envtype): number;
-    getProblem(): Problem;
 }
 
 export interface Part { question?: string; answer: Answer; };
@@ -52,15 +50,15 @@ export class ProblemSpec implements ProblemSpec {
         }
     }
 
-    getVariable(variableid: string, env: envtype = {}) {
+    getVariable?(variableid: string, env: envtype = {}) {
         // Get a valid variable given the environment.
         // Valid other variables that can be referred to should be stored in env. Eg. {"x":3}
         if (this.variables && variableid in this.variables) {
-            return this.variables[variableid].getValue(env);
+            return this.variables[variableid].getValue?.(env);
         }
     }
 
-    getProblem(parameters: { [key: string]: string | number } = {}, questionnumber: number = 0) : Problem {
+    getProblem?(parameters: { [key: string]: string | number } = {}, questionnumber: number = 0) : Problem {
 
         let env: envtype = {};
         if(this.parameters)
@@ -72,7 +70,8 @@ export class ProblemSpec implements ProblemSpec {
         // Get the variables
         if (this.variables)
             for (let variableid in this.variables)
-                env[variableid] = this.getVariable(variableid, env);
+                if (this.getVariable)
+                    env[variableid] = this.getVariable(variableid, env);
 
         if (this.parts) {
             for(let part of this.parts) {
@@ -127,14 +126,19 @@ export class ProblemRepository implements ProblemRepository {
     getProblem(probid: string, parameters: { [key: string]: string | number } = {}, questionnumber: number = 0) {
         if (probid in this.problems) {
             let problem = new ProblemSpec(this.problems[probid]);
-            return problem.getProblem(parameters, questionnumber);
+            if(problem.getProblem)
+                return problem.getProblem(parameters, questionnumber);
+            return undefined;
         }
     }
 
     toString() {
         let a = "";
-        for (let probid in this.problems)
-            a += JSON.stringify(this.problems[probid].getProblem());
+        for (let probid in this.problems) {
+            const gp = this.problems[probid].getProblem;
+            if(gp)
+                a += JSON.stringify(gp());
+        }
 
         return a;
     }

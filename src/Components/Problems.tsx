@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown";
-import { FillinsAnswer, NumberAnswer, TextAnswer } from "../Classes/Answers";
-import { Problem } from "../Classes/Problem";
+import { FillinsAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
+import { Problem } from "../classes/Problem";
 import { AnswerKey, FillinsAnswerComponent, NumberAnswerComponent, TextAnswerComponent } from "./Answers";
 
 export interface ProblemComponentProps {

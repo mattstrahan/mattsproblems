@@ -1,0 +1,6 @@
+courses:
+  3blue1brown_linearalgebra:
+    title: 3Blue1Brown - Linear Algebra
+    description: Exercises to support the 3Blue1Brown Linear Algebra playlist.
+    exercises:
+      - exerciseid: matrixmultiply

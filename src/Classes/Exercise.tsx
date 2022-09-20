@@ -1,4 +1,4 @@
-import { envtype, getStrValue } from '../Helpers/env';
+import { envtype, getStrValue } from '../helpers/env';
 import { getParameters, ParameterSpec, processParameters } from './Parameters';
 import { Problem, ProblemRepository } from './Problem'
 
@@ -20,14 +20,14 @@ interface TextStageSpec {
     text: string;
 }
 
-class TextStageSpec implements TextStageSpec {
+class TextStageSpec {
     constructor(spec: TextStageSpec) {
         this.type = spec["type"];
         this.heading = spec["heading"];
         this.text = spec["text"];
     }
 
-    getStage(problemrepository: ProblemRepository, parameters?: envtype, questionnumber: number = 0): Stage | undefined {
+    getStage?(problemrepository: ProblemRepository, parameters?: envtype, questionnumber: number = 0): Stage | undefined {
         return {
             type: this.type,
             heading: getStrValue(this.heading, parameters),
@@ -48,7 +48,7 @@ class ProblemStageSpec {
         this.parameters = ("parameters" in spec ? spec["parameters"] : {});
     }
 
-    getStage(problemrepository: ProblemRepository, parameters?: envtype, questionnumber:number = 0): Stage | undefined {
+    getStage?(problemrepository: ProblemRepository, parameters?: envtype, questionnumber:number = 0): Stage | undefined {
 
         console.log(this.probid);
         var np = processParameters(this.parameters, parameters)
@@ -65,7 +65,8 @@ export interface ExerciseSpec {
     description?: string;
     parameters?: { [key: string]: ParameterSpec };
     stages: Array<StageSpec>;
-    finish: TextStageSpec;
+    finish: {text:string};
+    topic?: string;
 }
 
 export interface Exercise {
@@ -105,17 +106,19 @@ export class ExerciseSpec implements ExerciseSpec {
         }
     }
 
-    getExercise(problemrepository: ProblemRepository, exerciseSpecId: string = "", parameters: envtype = {}): Exercise {
+    getExercise?(problemrepository: ProblemRepository, exerciseSpecId: string = "", parameters: envtype = {}): Exercise {
         if (this.parameters)
             parameters = getParameters(this.parameters, parameters);
         let stages = [];
         let questionnumber = 1;
         for (let stage of this.stages) {
-            const newstage = stage.getStage(problemrepository, parameters, questionnumber);
-            if (newstage && newstage.type === "problem")
-                questionnumber += 1;
-            if(newstage)
-                stages.push(newstage);
+            if (stage.getStage) {
+                const newstage = stage.getStage(problemrepository, parameters, questionnumber);
+                if (newstage && newstage.type === "problem")
+                    questionnumber += 1;
+                if(newstage)
+                    stages.push(newstage);
+            }
         }
         return {
             "exerciseSpecId": exerciseSpecId,
@@ -149,7 +152,10 @@ export class ExerciseRepository {
     getExercise(exerciseSpecId: string, problemrepository: ProblemRepository, parameters: { [key: string]: string | number } = {}): Exercise | undefined {
         if (exerciseSpecId in this.exercises) {
             console.log("Getting exercise %s", exerciseSpecId);
-            return this.exercises[exerciseSpecId].getExercise(problemrepository, exerciseSpecId, parameters);
+            const ge = this.exercises[exerciseSpecId].getExercise;
+            if(ge)
+                return ge(problemrepository, exerciseSpecId, parameters);
+            return undefined;
         }
         else return undefined
     }

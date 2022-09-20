@@ -1,11 +1,11 @@
-import { useAppSelector } from "../Hooks/hooks";
+import { useAppSelector } from "../hooks/hooks";
 import * as nunjucks from 'nunjucks';
 import { useParams } from "react-router-dom";
 import { unified } from "unified";
 import markdown from "remark-parse";
 import docx from "remark-docx";
 import { saveAs } from "file-saver";
-import { Exercise } from "../Classes/Exercise";
+import { Exercise } from "../classes/Exercise";
 import Markdown from "./Markdown";
 
 const worksheetTemplate = `

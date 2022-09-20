@@ -1,0 +1,146 @@
+problems:
+  2x2matrixvectormultiply:
+    title: Multiply a 2x2 matrix and a 1x2 vector
+    description: ""
+    variables:
+      a:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      b:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      c:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      d:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      e:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      f:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+    question: "What does is the resulting vector?"
+    answer:
+      type: fillins
+      label: " "
+      value: >
+        $
+        \begin{bmatrix}
+        {{a}} & {{c}} \\
+        {{b}} & {{d}}
+        \end{bmatrix}\begin{bmatrix} {{e}} \\
+        {{f}}
+        \end{bmatrix}=\begin{bmatrix}
+        {{fillin(a*e+c*f)}} \\
+        {{fillin(b*e+d*f)}}
+        \end{bmatrix}
+        $
+  2x2matrixmultiply:
+    title: Multiply a 2x2 matrix
+    description: Multiplying two 2x2 matrices
+    variables:
+      a:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      b:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      c:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      d:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      e:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      f:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      g:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+      h:
+        type: number
+        min: -5
+        max: 5
+        step: 1
+    question: "Multiply the following matrices"
+    answer:
+      type: fillins
+      label: " "
+      value: >
+        $
+        \begin{bmatrix}
+        {{a}} & {{c}} \\
+        {{b}} & {{d}}
+        \end{bmatrix}\begin{bmatrix} {{e}} & {{g}} \\
+        {{f}} & {{h}}
+        \end{bmatrix}=\begin{bmatrix}
+        {{fillin(a*e+c*f)}} & {{fillin(a*c+c*d)}} \\
+        {{fillin(b*e+d*f)}} & {{fillin(b*e+d*f)}}
+        \end{bmatrix}
+        $
+exercises:
+  matrixvector:
+    title: Applying a matrix to a vector
+    description: Applying a linear transformation matrix to a vector
+    topic: Linear Algebra
+    stages:
+      - type: text
+        text: "Welcome to the exercise"
+      - type: problem
+        probid: 2x2matrixvectormultiply
+      - type: problem
+        probid: 2x2matrixvectormultiply
+      - type: problem
+        probid: 2x2matrixvectormultiply
+      - type: problem
+        probid: 2x2matrixvectormultiply
+    finish:
+      text: "You've finished! Well done!"
+  matrixmultiply:
+    title: Multiplying matrices
+    description: Multiplying matrices
+    topic: Linear Algebra
+    stages:
+      - type: text
+        text: "Welcome to the exercise"
+      - type: problem
+        probid: 2x2matrixmultiply
+      - type: problem
+        probid: 2x2matrixmultiply
+      - type: problem
+        probid: 2x2matrixmultiply
+      - type: problem
+        probid: 2x2matrixmultiply
+    finish:
+      text: "You've finished! Well done!"

@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { CourseList } from "../Components/Courses";
-import { ExerciseComponent, ExerciseList } from "../Components/Exercises";
-import { WorksheetComponent } from "../Components/Export";
+import { CourseList } from "../components/Courses";
+import { ExerciseComponent, ExerciseList } from "../components/Exercises";
+import { WorksheetComponent } from "../components/Export";
+import { TopicList } from "../components/Topics";
+import About from "../pages/About";
+import Welcome from "../pages/Welcome";
 import Home from "./Home";
 
 export default function Router() {
@@ -9,7 +12,10 @@ export default function Router() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />}>
+                    <Route index element={<Welcome />} />
                     <Route path="courses" element={<CourseList />} />
+                    <Route path="topics" element={<TopicList />} />
+                    <Route path="about" element={<About />} />
                     <Route path="exercises">
                         <Route path="list" element={<ExerciseList />} />
                         <Route path="run" element={<ExerciseComponent />} />
@@ -18,15 +24,13 @@ export default function Router() {
                             <Route path="worksheet/:exerciseId" element={<WorksheetComponent />} />
                         </Route>
                     </Route>
+                    <Route
+                        path="*"
+                        element={
+                            <Welcome />
+                        }
+                    />
                 </Route>
-                <Route
-                    path="*"
-                    element={
-                        <main style={{ padding: "1rem" }}>
-                            <p>There's nothing here!</p>
-                        </main>
-                    }
-                />
             </Routes>
         </BrowserRouter>
     );

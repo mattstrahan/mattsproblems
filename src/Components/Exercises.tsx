@@ -1,15 +1,16 @@
-import { Button, IconButton, List, ListItem, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
-import { Stage, TextStage } from "../Classes/Exercise";
-import { Problem } from "../Classes/Problem";
-import { useAppDispatch, useAppSelector } from "../Hooks/hooks";
+import { Box, Button, IconButton, List, ListItem,  ListItemText, Menu, MenuItem, Paper, Typography } from "@mui/material";
+import { Stage, TextStage } from "../classes/Exercise";
+import { Problem } from "../classes/Problem";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { ProblemComponent } from './Problems'
-import { createNewExercise, nextProblem } from '../Reducers/RepositoryReducer'
+import { createNewExercise, nextProblem } from '../reducers/RepositoryReducer'
 import { useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from "react";
 import { exportDOCX } from "./Export";
 import { AnswerKey, AnswerKeyFull } from "./Answers";
+import Grid from "@mui/material/Unstable_Grid2";
 
 interface TextStageProps {
     stage: TextStage;
@@ -50,15 +51,25 @@ export function StageComponent({stage, answerKey}: StageProps) {
     if(!stage)
         return (<div></div>);
     
+    let component;
+
     if (stage.type === 'text') {
-        return <TextStageComponent stage={stage as TextStage} answerKey={answerKey} />
+        component = <TextStageComponent stage={stage as TextStage} answerKey={answerKey} />
     } else if (stage.type === 'problem') {
-        return <ProblemComponent problem={stage as Problem} answerKey={answerKey} />
+        component = <ProblemComponent problem={stage as Problem} answerKey={answerKey} />
     } else if (stage.type === 'finish') {
-        return <FinishComponent stage={stage as TextStage} answerKey={answerKey} />
+        component = <FinishComponent stage={stage as TextStage} answerKey={answerKey} />
     }
 
-    return (<div></div>);
+    return (
+        <Grid xs={12}>
+        <Paper>
+            <Box padding={2}>
+                {component}
+            </Box>
+        </Paper>
+        </Grid>
+    );
 }
 
 
@@ -116,7 +127,7 @@ interface ExerciseTitleProps {
 export function ExerciseTitleComponent({ title, exerciseId}: ExerciseTitleProps) {
     return (
         <div>
-            <Typography variant="h1">{title}</Typography>
+            <Typography variant="h2">{title}</Typography>
             <ExerciseMenu exerciseId={exerciseId} />
         </div>
     )
@@ -152,7 +163,9 @@ export function ExerciseComponent({ exerciseId }: ExerciseInfoProps) {
         });
         return <div>
             <ExerciseTitleComponent title={exercise.title} exerciseId={exerciseId} />
-            {listItems}
+            <Grid container spacing={4}>
+                {listItems}
+            </Grid>
             </div>
     }
 
@@ -161,7 +174,10 @@ export function ExerciseComponent({ exerciseId }: ExerciseInfoProps) {
     return (
         <div>
             <ExerciseTitleComponent title={exercise.title} exerciseId={exerciseId} />
-            <StageComponent stage={exercise.stages[currentProblem]} key={currentProblem} answerKey={{ exerciseSpecId: exercise.exerciseSpecId, exercise: exerciseId, stage: currentProblem }} />
+            <StageComponent
+                stage={exercise.stages[currentProblem]}
+                key={currentProblem}
+                answerKey={{ exerciseSpecId: exercise.exerciseSpecId, exercise: exerciseId, stage: currentProblem }} />
         </div>
     );
 }
@@ -176,7 +192,7 @@ export function ExerciseList() {
     
     return (
         <div>
-            <Typography variant="h1">Exercise List</Typography>
+            <Typography variant="h2">Exercise List</Typography>
             <List>
                 {Object.keys(ExerciseRepository).map((key) => (
                     <ListItem

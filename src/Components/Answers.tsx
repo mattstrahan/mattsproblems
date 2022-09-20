@@ -1,8 +1,8 @@
 import { Alert, Button, Snackbar, TextField } from "@mui/material";
 import React from "react";
-import { FillinsAnswer, NumberAnswer, TextAnswer } from "../Classes/Answers";
-import { useAppDispatch } from "../Hooks/hooks";
-import { answerIsCorrect, nextProblem } from "../Reducers/RepositoryReducer";
+import { FillinsAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
+import { useAppDispatch } from "../hooks/hooks";
+import { answerIsCorrect, nextProblem } from "../reducers/RepositoryReducer";
 import Markdown, { MarkdownFillins } from "./Markdown";
 
 export interface AnswerKey {

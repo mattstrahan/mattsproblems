@@ -1,23 +1,17 @@
-import { useEffect } from 'react';
-import { fetchInitial } from '../Reducers/RepositoryReducer';
-import { useAppSelector, useAppDispatch } from '../Hooks/hooks';
-import NavBar from '../Components/NavBar';
+import NavBar from '../components/NavBar';
 import { Outlet } from 'react-router-dom';
+import { Box, Container } from '@mui/material';
 
 function Home() {
-  const dispatch = useAppDispatch();
-  const initialrequeststatus = useAppSelector (state => state.repository.initialrequeststatus);
-
-  useEffect(() => {
-    if (initialrequeststatus === 'idle') {
-      dispatch(fetchInitial());
-    }
-  }, [initialrequeststatus, dispatch]);
 
   return (
   <div>
     <NavBar />
-    <Outlet />
+    <Container maxWidth="lg">
+        <Box padding={3}>
+          <Outlet />
+        </Box>
+    </Container>
   </div>);
 }
 
