@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CourseList } from "../components/Courses";
+import { CreateComponent } from "../components/create/Create";
 import { ExerciseComponent, ExerciseList } from "../components/Exercises";
 import { WorksheetComponent } from "../components/Export";
 import { TopicList } from "../components/Topics";
@@ -15,6 +16,7 @@ export default function Router() {
                     <Route index element={<Welcome />} />
                     <Route path="courses" element={<CourseList />} />
                     <Route path="topics" element={<TopicList />} />
+                    <Route path="create" element={<CreateComponent />} />
                     <Route path="about" element={<About />} />
                     <Route path="exercises">
                         <Route path="list" element={<ExerciseList />} />

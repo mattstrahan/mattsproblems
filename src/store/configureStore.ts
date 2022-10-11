@@ -1,9 +1,12 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import repositorySliceReducer from '../reducers/RepositoryReducer'
+import exerciseCreatorSliceReducer from '../reducers/CreateReducer'
 import { useSelector, TypedUseSelectorHook } from 'react-redux'
 
 export const rootReducer = combineReducers({
-  repository: repositorySliceReducer}
+    repository: repositorySliceReducer,
+    create: exerciseCreatorSliceReducer
+  }
 )
 
 

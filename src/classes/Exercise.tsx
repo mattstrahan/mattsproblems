@@ -16,15 +16,16 @@ type StageSpec = TextStageSpec | ProblemStageSpec;
 
 interface TextStageSpec {
     type: "text" | "finish";
-    heading?: string;
+    heading: string;
     text: string;
+    parameters: { [key: string]: string | number };
 }
 
 class TextStageSpec {
-    constructor(spec: TextStageSpec) {
-        this.type = spec["type"];
-        this.heading = spec["heading"];
-        this.text = spec["text"];
+    constructor(spec: Partial<TextStageSpec>) {
+        this.type = spec.type === "finish" ? "finish" : "text";
+        this.heading = spec.heading ? spec.heading : "";
+        this.text = spec.text ? spec.text : "";
     }
 
     getStage?(problemrepository: ProblemRepository, parameters?: envtype, questionnumber: number = 0): Stage | undefined {
@@ -39,13 +40,13 @@ class TextStageSpec {
 interface ProblemStageSpec {
     type: "problem";
     probid: string;
-    parameters?: { [key: string]: string | number };
+    parameters: { [key: string]: string | number };
 }
 
 class ProblemStageSpec {
-    constructor(spec: ProblemStageSpec) {
-        this.probid = ("probid" in spec ? spec["probid"] : "");
-        this.parameters = ("parameters" in spec ? spec["parameters"] : {});
+    constructor(spec: Partial<ProblemStageSpec>) {
+        this.probid = spec.probid ? spec.probid : "";
+        this.parameters = spec.parameters ? spec.parameters : {};
     }
 
     getStage?(problemrepository: ProblemRepository, parameters?: envtype, questionnumber:number = 0): Stage | undefined {
@@ -61,39 +62,39 @@ class ProblemStageSpec {
 }
 
 export interface ExerciseSpec {
-    title?: string;
+    title: string;
     description?: string;
-    parameters?: { [key: string]: ParameterSpec };
-    stages: Array<StageSpec>;
+    parameters: { [key: string]: ParameterSpec };
+    stages: Partial<StageSpec>[];
     finish: {text:string};
     topic?: string;
 }
 
 export interface Exercise {
     exerciseSpecId: string;
-    title?: string;
-    description?: string;
-    stages: Array<Stage>;
+    title: string;
+    description: string;
+    stages: Stage[];
     currentProblem: number;
-    showAllProblems?: boolean;
+    showAllProblems: boolean;
 }
 
 export class ExerciseSpec implements ExerciseSpec {
-    constructor(spec: ExerciseSpec) {
-        this.title = ("title" in spec ? spec["title"] : "");
-        this.description = ("description" in spec ? spec["description"] : "");
+    constructor(spec: Partial<ExerciseSpec>) {
+        this.title = spec.title ? spec.title : "";
+        this.description = spec.description ? spec.description : "";
         this.stages = [];
-        this.parameters = ("parameters" in spec ? spec["parameters"] : {});
-        if ("stages" in spec) {
+        this.parameters = spec.parameters ? spec.parameters : {};
+        if (spec.stages) {
             // Sort the stages into text and problem stages
-            for (let stage of spec["stages"]) {
+            for (let stage of spec.stages) {
                 if (!("type" in stage)) {
                     console.log("No type in stage %s", JSON.stringify(stage))
                     continue;
                 } else if (stage["type"] === "text")
-                    this.stages.push(new TextStageSpec(stage as TextStageSpec));
+                    this.stages.push(new TextStageSpec(stage as Partial<TextStageSpec>));
                 else if (stage["type"] === "problem")
-                    this.stages.push(new ProblemStageSpec(stage as ProblemStageSpec));
+                    this.stages.push(new ProblemStageSpec(stage as Partial<ProblemStageSpec>));
                 else
                     console.log("Unrecognised type %s", stage["type"]);
             }
@@ -106,7 +107,7 @@ export class ExerciseSpec implements ExerciseSpec {
         }
     }
 
-    getExercise?(problemrepository: ProblemRepository, exerciseSpecId: string = "", parameters: envtype = {}): Exercise {
+    getExercise(problemrepository: ProblemRepository, exerciseSpecId: string = "", parameters: envtype = {}): Exercise {
         if (this.parameters)
             parameters = getParameters(this.parameters, parameters);
         let stages = [];
@@ -121,11 +122,12 @@ export class ExerciseSpec implements ExerciseSpec {
             }
         }
         return {
-            "exerciseSpecId": exerciseSpecId,
-            "title": getStrValue(this.title, parameters),
-            "description": getStrValue(this.description, parameters),
-            "stages": stages,
-            "currentProblem": 0
+            exerciseSpecId: exerciseSpecId,
+            title: getStrValue(this.title, parameters),
+            description: getStrValue(this.description, parameters),
+            stages: stages,
+            currentProblem: 0,
+            showAllProblems: false
         };
     }
 }

@@ -2,7 +2,7 @@ import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ParameterSpec } from "../classes/Parameters";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { createNewExercise } from "../reducers/RepositoryReducer";
+import { newExercise } from "../reducers/RepositoryReducer";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 
@@ -23,7 +23,7 @@ export function ExerciseListItem({ exerciseid, parameters }: ExerciseListItemPro
             button
             key={exerciseid}
             onClick={() => {
-                dispatch(createNewExercise({ exerciseid: exerciseid, parameters }));
+                dispatch(newExercise({ exerciseid: exerciseid, parameters }));
                 navigate("/exercises/run/");
             }}
         >

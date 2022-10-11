@@ -3,12 +3,17 @@ import json
 import os
 import traceback
 
+# This script builds the repository from supplied YAML files. It is intended to make it easier to manage
+# the repository while making sure it's all extremely speedy and packaged with the app.
+
 
 class Repository:
     def __init__(self):
         self.repository = {}
 
     def addfile(self, file):
+        # Combine all the courses, exercises, problems, and topics into one big repository
+        # Called for each YAML file found in the application store
         try:
             with open(file, 'r') as vf:
                 print("Processing file {}".format(file))
@@ -25,19 +30,14 @@ class Repository:
             traceback.print_exc()
 
     def output(self, file):
+        # Output the final repository to a TSX file to be read by MMP typescript
+
         # Sort out topics
-        if "other" not in self.repository["topics"]:
-            self.repository["topics"]["other"] = {
-                "title": "Other exercises",
-                "description": "These exercises do not have a topic set yet",
-                "level": 100,
-                "exerciseids": []
-            }
         for exerciseid in self.repository["exercises"]:
             if "topic" in self.repository["exercises"][exerciseid]:
                 topic = self.repository["exercises"][exerciseid]["topic"]
             else:
-                topic = "other"
+                continue
 
             if topic not in self.repository["topics"]:
                 self.repository["topics"][topic] = {
@@ -48,8 +48,13 @@ class Repository:
 
             if "exerciseids" not in self.repository["topics"][topic]:
                 self.repository["topics"][topic]["exerciseids"] = []
+
             print("Appending {} to topic {}".format(exerciseid, topic))
             self.repository["topics"][topic]["exerciseids"].append(exerciseid)
+
+        # Sort all the topics based on level
+        self.repository["topics"] = {k: v for k, v in sorted(
+            self.repository["topics"].items(), key=lambda x: x[1]["level"])}
 
         with open(file, 'w') as vf:
             vf.write(

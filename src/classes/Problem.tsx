@@ -7,20 +7,20 @@ import { VariableLetterSpec, VariableNumberSpec, VariableSpec } from './Variable
 
 export interface PartSpec {
      question: string;
-     answer: AnswerSpec;
+     answer: Partial<AnswerSpec>;
 }
 
 export interface ProblemSpec {
-    title?: string;
-    description?: string;
-    parts?: PartSpec[];
-    question?: string;
-    answer?: AnswerSpec;
-    parameters?: { [key: string]: ParameterSpec };
-    variables?: { [key: string]: VariableSpec };
+    title: string;
+    description: string;
+    parts: Partial<PartSpec>[];
+    question: string;
+    answer: Partial<AnswerSpec>;
+    parameters: { [key: string]: ParameterSpec };
+    variables: { [key: string]: Partial<VariableSpec> };
 }
 
-export interface Part { question?: string; answer: Answer; };
+export interface Part { question: string; answer: Answer; };
 
 export interface Problem {
     type: "problem";
@@ -32,33 +32,38 @@ export interface Problem {
 }
 
 export class ProblemSpec implements ProblemSpec {
-    constructor(spec: ProblemSpec) {
-        this.title = "title" in spec ? spec["title"] : "";
-        this.description = "description" in spec ? spec["description"] : "";
-        this.question = "question" in spec ? spec["question"] : "";
-        this.answer = "answer" in spec ? spec["answer"] : { type: "text", text: "" };
-        this.parts = spec["parts"];
+    constructor(spec: Partial<ProblemSpec>) {
+        this.title = spec.title ? spec.title : "";
+        this.description = spec.description ? spec.description : "";
+        this.question = spec.question ? spec.question : "";
+        this.answer = spec.answer ? spec.answer : { type: "text", text: "" };
+        this.parts = spec.parts ? spec.parts : [];
         this.variables = {};
-        this.parameters = "parameters" in spec ? spec["parameters"] : {};
+        this.parameters = spec.parameters ? spec.parameters : {};
         for (let variable in spec["variables"]) {
             if (spec["variables"][variable]["type"] === "number") {
-                this.variables[variable] = new VariableNumberSpec(spec["variables"][variable]);
+                this.variables[variable] = new VariableNumberSpec(spec["variables"][variable] as Partial<VariableNumberSpec>);
             }
             if (spec["variables"][variable]["type"] === "letter") {
-                this.variables[variable] = new VariableLetterSpec(spec["variables"][variable]);
+                this.variables[variable] = new VariableLetterSpec(spec["variables"][variable] as Partial<VariableLetterSpec>);
             }
         }
     }
 
-    getVariable?(variableid: string, env: envtype = {}) {
+    getVariable(variableid: string, env: envtype = {}) {
         // Get a valid variable given the environment.
         // Valid other variables that can be referred to should be stored in env. Eg. {"x":3}
-        if (this.variables && variableid in this.variables) {
-            return this.variables[variableid].getValue?.(env);
+        let variable;
+        if (this.variables[variableid]["type"] === "number") {
+            variable = new VariableNumberSpec(this.variables[variableid] as Partial<VariableNumberSpec>);
         }
+        else {
+            variable = new VariableLetterSpec(this.variables[variableid] as Partial<VariableLetterSpec>);
+        }
+        return variable.getValue(env);
     }
 
-    getProblem?(parameters: { [key: string]: string | number } = {}, questionnumber: number = 0) : Problem {
+    getProblem(parameters: { [key: string]: string | number } = {}, questionnumber: number = 0) : Problem {
 
         let env: envtype = {};
         if(this.parameters)
@@ -105,30 +110,18 @@ export class ProblemSpec implements ProblemSpec {
 }
 
 export interface ProblemRepository {
-    problems: { [key: string]: ProblemSpec };
+    problems: { [key: string]: Partial<ProblemSpec> };
 }
 
 export class ProblemRepository implements ProblemRepository {
-    constructor(problemrepository: { [key: string]: ProblemSpec }) {
+    constructor(problemrepository: { [key: string]: Partial<ProblemSpec> }) {
         this.problems = problemrepository;
-    }
-
-    addProblem(probid: string, problem: ProblemSpec) {
-        this.problems[probid] = new ProblemSpec(problem);
-    }
-
-    addProblems(problems: { [key: string]: ProblemSpec }) {
-        for (let probid in problems) {
-            this.problems[probid] = new ProblemSpec(problems[probid]);
-        }
     }
 
     getProblem(probid: string, parameters: { [key: string]: string | number } = {}, questionnumber: number = 0) {
         if (probid in this.problems) {
             let problem = new ProblemSpec(this.problems[probid]);
-            if(problem.getProblem)
-                return problem.getProblem(parameters, questionnumber);
-            return undefined;
+            return problem.getProblem(parameters, questionnumber);
         }
     }
 
