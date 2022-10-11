@@ -1,13 +1,20 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 
 export default function About() {
     return (
         <Box>
+            <Grid container spacing={4}>
+                <Grid xs={12}>
             <Typography paragraph variant="h2">About Matt's Maths Problems</Typography>
             <Typography paragraph variant="body1">
                 Matt's Maths Problems will generate endless questions for you,
                 with a new problem every time.
-            </Typography>
+                    </Typography>
+                </Grid>
+                <Grid>
+                    <Paper>
+                        <Box padding={3}>
             <Typography paragraph variant="h3">Frequently Asked Questions</Typography>
             <Typography paragraph variant="h4">Are you collecting all my data?</Typography>
             <Typography paragraph variant="body1">
@@ -16,12 +23,18 @@ export default function About() {
             <Typography paragraph variant="body1">
                 If that's wrong please let us know right away because something has gone very very bad.
             </Typography>
-            <Typography paragraph variant="h4">Do you know if I get a question wrong?</Typography>
+                            <Typography paragraph variant="h4">Do you know if I get a question wrong?</Typography>
             <Typography paragraph variant="body1">
                 I can't tell if you got a question wrong, but if I could I would tell you
                 that I'm proud of you for trying! The more you practice and the more you try
                 the more you learn.
-            </Typography>
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Grid>
+                <Grid>
+                    <Paper>
+                        <Box padding={3}>
             <Typography paragraph variant="h3">Stuff that we use</Typography>
             <Typography paragraph variant="body1">
                 If I'm going to be honest, Matt's Maths Problems uses far more stuff that
@@ -44,7 +57,11 @@ export default function About() {
                 <li>Unified, React Markdown, Rehype, Remark, and a whole bunch of React plugins allow us to make questions with 
                     headings and bold and all that formatting.
                 </li>
-            </ol>
+                            </ol>
+                        </Box>
+                    </Paper>
+            </Grid>
+            </Grid>
 
 
         </Box>

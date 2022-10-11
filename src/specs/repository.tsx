@@ -323,14 +323,6 @@ const repository : RepositorySpec = {
                 "matrixvector",
                 "matrixmultiply"
             ]
-        },
-        "other": {
-            "title": "Other exercises",
-            "description": "These exercises do not have a topic set yet",
-            "level": 100,
-            "exerciseids": [
-                "simpleaddition"
-            ]
         }
     }
 }

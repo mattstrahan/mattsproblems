@@ -3,7 +3,7 @@ import { Stage, TextStage } from "../classes/Exercise";
 import { Problem } from "../classes/Problem";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { ProblemComponent } from './Problems'
-import { createNewExercise, nextProblem } from '../reducers/RepositoryReducer'
+import { newExercise, nextProblem } from '../reducers/RepositoryReducer'
 import { useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -34,7 +34,7 @@ export function FinishComponent({ stage, answerKey }: TextStageProps) {
     return (<div>
         {stage.heading && <h1>stage</h1>}
         <p>{stage.text}</p>
-        <Button onClick={() => { console.log(ak.exerciseSpecId); dispatch(createNewExercise({exerciseid: ak.exerciseSpecId}));
+        <Button onClick={() => { console.log(ak.exerciseSpecId); dispatch(newExercise({exerciseid: ak.exerciseSpecId}));
                     navigate("/exercises/run/");
                         }} >Do this exercise again</Button>
     </div>);
@@ -199,7 +199,7 @@ export function ExerciseList() {
                         button
                         key={key}
                         onClick={() => {
-                            dispatch(createNewExercise({ exerciseid: key }));
+                            dispatch(newExercise({ exerciseid: key }));
                             navigate("/exercises/run/");
                         }}
                     >

@@ -54,10 +54,20 @@ export interface FillinsAnswerSpec {
     value: string;
 }
 
+export function combinePartialAnswerValues(answera:Partial<AnswerSpec>, answerb:Partial<AnswerSpec>) {
+    if (answera["type"] === "number" && answerb["type"] === "number")
+        return {...answera as Partial<NumberAnswerSpec>, ...answerb as Partial<NumberAnswerSpec>};
+    if (answera["type"] === "text" && answerb["type"] === "text")
+        return {...answera as Partial<TextAnswerSpec>, ...answerb as Partial<TextAnswerSpec>};
+    if (answera["type"] === "fillins" && answerb["type"] === "fillins")
+        return {...answera as Partial<FillinsAnswerSpec>, ...answerb as Partial<FillinsAnswerSpec>};
+    return answera;
+}
+
+
 export type AnswerSpec = NumberAnswerSpec | TextAnswerSpec | FillinsAnswerSpec;
 
 export function buildTextAnswer(textAnswerSpec : TextAnswerSpec, env : envtype) : TextAnswer {
-    console.log("Building text answer %s with env %s", JSON.stringify(textAnswerSpec), JSON.stringify(env));
     const text = nunjucks.renderString(textAnswerSpec.text, env);
     const label = typeof textAnswerSpec.label === "string"
         ? nunjucks.renderString(textAnswerSpec.label, env)
@@ -75,7 +85,6 @@ export function buildNumberAnswer(numberAnswerSpec: NumberAnswerSpec, env: envty
     const label = typeof numberAnswerSpec.label === "string"
         ? nunjucks.renderString(numberAnswerSpec.label, env)
         : undefined;
-    console.log("Building number answer %s with env %s got ", JSON.stringify(numberAnswerSpec), JSON.stringify(env), value);
     return { type: "number", label: label, value: value, precision: precision, isCorrect: false };
 }
 
@@ -100,10 +109,8 @@ class GetFillins {
 }
 
 export function buildFillinsAnswer(fillinAnswerSpec: FillinsAnswerSpec, env: envtype): FillinsAnswer {
-    console.log("Building fillin answer %s with env %s", JSON.stringify(fillinAnswerSpec), JSON.stringify(env));
     let getfillins = new GetFillins();
     const answerfillins = nunjucks.renderString(fillinAnswerSpec.value, { ...env, fillin: (value: number, precision?: number) => { return getfillins.getfillin(value, precision)}});
-    console.log("ANSWER FILLINS: " + answerfillins)
     const answertext = nunjucks.renderString(fillinAnswerSpec.value, { ...env, fillin: (value: number, precision?: number) => { return value.toString() } });
     const answerworksheet = nunjucks.renderString(fillinAnswerSpec.value, { ...env, fillin: (value: number, precision?: number) => { return "\\_\\_\\_" } });
     const label = typeof fillinAnswerSpec.label === "string"

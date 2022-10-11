@@ -40,12 +40,14 @@ export const fetchInitial = createAsyncThunk('repository/fetchRepository', async
     return files;
 })*/
 
+type ProblemsList = {[key: string]: Partial<ProblemSpec>};
+
 
 const repositorySlice = createSlice({
     name: 'repository',
     initialState: initialRepositoryState,
     reducers: {
-        createNewExercise: (state, action: PayloadAction<{exerciseid: string, parameters?: envtype}>) => {
+        newExercise: (state, action: PayloadAction<{exerciseid: string, parameters?: envtype}>) => {
             const exerciseid = action.payload.exerciseid;
             const parameters = action.payload.parameters;
             const exercisespec = new ExerciseSpec(state.repository.exercises[exerciseid]);
@@ -59,6 +61,22 @@ const repositorySlice = createSlice({
                 state.currentExercise = "0";
             }
             console.log("Creating new exercise " + state.currentExercise + " with parameters " + JSON.stringify(parameters));
+            state.exercises[state.currentExercise] = exercise;
+        },
+        addExercise: (state, action: PayloadAction<{exercise: Partial<ExerciseSpec>, problems:ProblemsList}>) => {
+            const exercisespec = new ExerciseSpec(action.payload.exercise);
+            const problems = action.payload.problems;
+            const problemrepository = new ProblemRepository(problems)
+            if (!exercisespec.getExercise)
+                return;
+            const exercise = exercisespec.getExercise(problemrepository);
+            
+            console.log(`Adding exercise ${JSON.stringify(exercise)}`)
+
+            state.currentExercise = (parseInt(Object.keys(state.exercises)[Object.keys(state.exercises).length - 1]) + 1).toString();
+            if(!state.currentExercise || state.currentExercise === "NaN") {
+                state.currentExercise = "0";
+            }
             state.exercises[state.currentExercise] = exercise;
         },
         setCurrentExercise: (state, action: PayloadAction<string>) => {
@@ -103,9 +121,10 @@ const repositorySlice = createSlice({
 })
 
 export const {
-    createNewExercise,
+    newExercise,
     setCurrentExercise,
     answerIsCorrect,
-    nextProblem
+    nextProblem,
+    addExercise
 } = repositorySlice.actions;
 export default repositorySlice.reducer;

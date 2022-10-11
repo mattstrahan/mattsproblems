@@ -22,6 +22,9 @@ function Navbar() {
                     <Button component={RouterLink} to="/courses" variant="contained">
                         Courses
                     </Button>
+                    <Button component={RouterLink} to="/create" variant="contained">
+                        Create
+                    </Button>
                     <Button component={RouterLink} to="/about" variant="contained">
                         About
                     </Button>
