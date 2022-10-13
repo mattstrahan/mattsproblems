@@ -50,6 +50,7 @@ interface CreateProblemRepeatComponentProps {
 
 export function CreateProblemRepeatComponent({ probid, stageindex }: CreateProblemRepeatComponentProps) {    
     const problemtitle = useAppSelector(state => state.create.problems[probid].title); // Get the main exercise simply to see if it's there
+
     return (
         <Box paddingY={3} >
         <MPPaper>
@@ -88,14 +89,12 @@ export function CreateProblemComponent({ probid, stageindex }: CreateProblemComp
             <CreateParametersComponent stageindex={stageindex} showDefault showSet probid={probid} />
             <CreateVariablesComponent probid={probid} />
             <Grid container spacing={4}>
-                <Grid xs={6}>
-                    <MPPaper>
-                        <Typography paragraph variant="h6">Problem statement</Typography>
-                        <CreateTextField nunjucks multiline label="" initial={problem.question} handleChange={(e:string) => dispatch(setProblemQuestion({probid:probid, text:e}))} env={env} />
-                    </MPPaper>
+                <Grid xs={12} sm={6}>
+                    <Typography paragraph variant="h6">Problem statement</Typography>
+                    <CreateTextField nunjucks multiline label="" initial={problem.question} handleChange={(e:string) => dispatch(setProblemQuestion({probid:probid, text:e}))} env={env} />
                     <CreateAnswerComponent env={env} probid={probid} />
                 </Grid>
-                <Grid xs={6}>
+                <Grid xs={12} sm={6}>
                     <Paper>
                         <Box padding={3}>
                         <Typography paragraph variant="h6">Example</Typography>
@@ -139,19 +138,6 @@ export function CreateTextStageComponent({ id }: CreateTextStageComponentProps) 
     )
 }
 
-interface CreateProblemSelectProps {
-
-}
-
-export function CreateProblemSelect({ }: CreateProblemSelectProps) {
-
-    return (
-        <div>
-            TextStage!
-        </div>
-    )
-}
-
 interface CreateTextMarkdownFieldProps {
     label: string;
     value: string;
@@ -162,10 +148,10 @@ interface CreateTextMarkdownFieldProps {
 export function CreateTextMarkdownField({ label, value, onChange, buttons }: CreateTextMarkdownFieldProps) {
     return (
         <Grid container spacing={4} xs={12}>
-            <Grid xs={6}>
+            <Grid xs={12} sm={6}>
                 <TextField multiline label={label} value={value} onChange={(e) => {onChange(e.target.value)}} sx={{width: "100%"}} />
             </Grid>
-            <Grid xs={6}>
+            <Grid xs={12} sm={6}>
                 <Paper>
                     <Box padding={3}>
                     <Markdown>{value}</Markdown>
@@ -217,7 +203,8 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
     let seenproblems:string[] = [];
 
     return (
-        <MPPaper>
+        <Box>
+            <Button onClick={() => onCreateExercise(false)}>Back to create exercise</Button>
             <CreateExerciseInformationComponent />
 
             {stages ? 
@@ -226,13 +213,9 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
                         return <CreateTextStageComponent key={index} id={index} />
                     else if("probid" in stage) { // This is redundent but it stops typescript from complaining.
                         if(stage?.["probid"] && seenproblems.includes(stage?.["probid"])) {
-                            console.log(`seenproblems=${seenproblems}`);
-                            console.log(`current probid found in seenproblems=${stage?.["probid"]}`);
                             return <CreateProblemRepeatComponent key={index} probid={stage?.probid ? stage.probid : ""} stageindex={index} />
                         }
                         else if(stage?.["probid"] && stage?.["probid"]) {
-                            console.log(`seenproblems=${seenproblems}`);
-                            console.log(`current probid=${stage?.["probid"]}`);
                             seenproblems.push(stage["probid"])
                             return <CreateProblemComponent stageindex={index} key={index} probid={stage?.probid ? stage.probid : ""} />
                         }
@@ -263,7 +246,7 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
                 </MPPaper>
                 </Box>
                 <CreateExerciseButtons />
-        </MPPaper>
+            </Box>
     )
 }
 

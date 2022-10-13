@@ -124,10 +124,11 @@ const exerciseCreatorSlice = createSlice({
             const parname = action.payload.parname;
             const type = action.payload.type;
             const newpar:ParameterSpec = {type:type, default:""};
+            console.log(`Adding parameter for problem ${probid}`);
             if(probid in state?.problems) {
-                const prob = state.problems[probid];
-                if(prob.parameters)
-                    prob.parameters[parname] = newpar;
+                state.problems[probid] = {...state.problems[probid], parameters:{...state.problems[probid].parameters, [parname]:newpar}}
+            } else {
+                console.error(`Adding parameter: ${probid} not found!`)
             }
         },
         removeParameter: (state, action:PayloadAction<{probid: string, parname: string}>) => {

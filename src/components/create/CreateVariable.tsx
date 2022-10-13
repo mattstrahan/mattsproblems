@@ -87,17 +87,17 @@ function CreateVariableLetterComponent({ probid, varname }: CreateVariableLetter
 
     return (
         <Grid container xs={12} spacing={1}>
-                <Grid xs={3}>
+                <Grid xs={12} sm={3}>
                 <Box padding={1}>
                 <Typography><IconButton onClick={() => dispatch(removeVariable({probid: probid, varname: varname}))} >
                         <DeleteIcon />
                     </IconButton>Name: {varname}</Typography>
                     </Box>
                 </Grid>
-                <Grid xs={6}>
+                <Grid xs={12} sm={6}>
                 <TextField label="Exclude these letters" value={textvariable.exclude} onChange={(e) => onExcludeChange(e.target.value)} sx={{width: "100%"}} />
                 </Grid>
-                <Grid xs={3}>
+                <Grid xs={12} sm={3}>
                 <Box padding={1}>
                     <VariableExampleComponent probid={probid} varname={varname} />
                 </Box>
@@ -138,14 +138,14 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
 
     return (
         <Grid container xs={12} spacing={1}>
-                <Grid xs={3}>
+                <Grid xs={12} sm={3}>
                 <Box padding={1}>
                     
                     <Typography><IconButton onClick={() => dispatch(removeVariable({probid: probid, varname: varname}))} >
                         <DeleteIcon />
                     </IconButton> Name: {varname}</Typography></Box>
                 </Grid>
-                <Grid xs={2}>
+                <Grid xs={12} sm={2}>
                 <CreateTextField
                     label="Minimum value"
                     initial={numbervariable.min.toString()}
@@ -153,7 +153,7 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                     env={env}
                     errorcheck={checkNumber} />
                 </Grid>
-                <Grid xs={2}>
+                <Grid xs={12} sm={2}>
                 <CreateTextField
                     label="Maximum value"
                     initial={numbervariable.max.toString()}
@@ -161,7 +161,7 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                     env={env}
                     errorcheck={checkNumber} />
                 </Grid>
-                <Grid xs={2}>
+                <Grid xs={12} sm={2}>
                 <CreateTextField
                     label="Steps between values"
                     initial={numbervariable.step.toString()}
@@ -169,7 +169,7 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                     env={env}
                     errorcheck={checkNumber} />
                 </Grid>
-                <Grid xs={3}>
+                <Grid xs={12} sm={3}>
                 <Box padding={1}>
                     <VariableExampleComponent probid={probid} varname={varname} />
                     </Box>
@@ -205,10 +205,10 @@ export function CreateVariablesExpandedComponent({ probid }: CreateVariablesExpa
             }
 
             <Grid container spacing={4}>
-            <Grid xs={4} >
+            <Grid xs={9} sm={4} >
             <TextField label="Add new variable" value={newvarname} onChange={(e) => setNewVarName(e.target.value)} sx={{width:"100%"}} />
             </Grid>
-            <Grid xs={2} >
+            <Grid xs >
             <Box padding={1}>
 
             <IconButton onClick={() => {dispatch(addNewNumberVariable({probid: probid, varname: newvarname}));setNewVarName("")}}><Filter1Icon /></IconButton>

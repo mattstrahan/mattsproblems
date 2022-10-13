@@ -56,14 +56,14 @@ function CreateParameterComponent({ probid, parname, showDefault, showSet, stage
 
     return (
         <Grid container xs={12}>
-                <Grid xs>
+                <Grid xs={12} sm>
                 <Box padding={2}>
                     <Typography><IconButton onClick={() => dispatch(removeParameter({probid: probid, parname: parname}))} >
                         <DeleteIcon />
                     </IconButton> Name: {parname}</Typography></Box>
                 </Grid>
                 {showDefault ? 
-                <Grid xs>
+                <Grid xs={12} sm>
                 <Box padding={1}>
                 <CreateTextField
                     label="Default"
@@ -75,7 +75,7 @@ function CreateParameterComponent({ probid, parname, showDefault, showSet, stage
                 </Grid>
                 : (null) }
                 {showSet ? 
-                <Grid xs>
+                <Grid xs={12} sm>
                 <Box padding={1}>
                 <CreateTextField
                     label="Set value"
@@ -107,12 +107,12 @@ interface CreateParametersCompactComponentProps {
 }
 
 export function CreateParametersCompactComponent({ probid, stageindex }: CreateParametersCompactComponentProps) {
-    const problem = useAppSelector(state => state.create.problems[probid]);
+    const parameters = useAppSelector(state => state.create.problems[probid].parameters);
 
     return (
         <List>
-            {problem.parameters ? 
-                Object.entries(problem.parameters).map((entry, index) => {
+            {parameters ? 
+                Object.entries(parameters).map((entry, index) => {
                     const parname = entry[0];
                     const parameter = entry[1];
                     const icon = parameter.type === "number" ? <Filter1Icon /> : <AbcIcon />;
@@ -138,14 +138,14 @@ interface CreateParametersExpandedComponentProps {
 }
 
 export function CreateParametersExpandedComponent({ probid, showDefault, showSet, stageindex }: CreateParametersExpandedComponentProps) {
-    const problem = useAppSelector(state => state.create.problems[probid]);
+    const parameters = useAppSelector(state => state.create.problems[probid].parameters);
     const [newparname, setNewParName] = React.useState<string>("");
     const dispatch = useAppDispatch();
 
     return (
         <Box>
-        {problem.parameters ? 
-            Object.entries(problem.parameters).map((entry, index) => {
+        {parameters ? 
+            Object.entries(parameters).map((entry, index) => {
                 const id = entry[0];
                 return <CreateParameterComponent stageindex={stageindex} showDefault={showDefault} showSet={showSet} key={index} probid={probid} parname={id} />
             }
@@ -155,10 +155,10 @@ export function CreateParametersExpandedComponent({ probid, showDefault, showSet
         {showDefault ? 
         
         <Grid container spacing={1} >
-        <Grid xs={4} >
+        <Grid xs={8} sm={4} >
         <TextField label="Add new Parameter" value={newparname} onChange={(e) => setNewParName(e.target.value)} sx={{width:"100%"}} />
         </Grid>
-        <Grid xs={2} >
+        <Grid xs={4} sm={2} >
         <Box padding={1}>
         <IconButton onClick={() => {dispatch(addNewParameter({probid: probid, parname: newparname, type:"number"}));setNewParName("")}}><Filter1Icon /></IconButton>
         <IconButton onClick={() => {dispatch(addNewParameter({probid: probid, parname: newparname, type:"string"}));setNewParName("")}}><AbcIcon /></IconButton>

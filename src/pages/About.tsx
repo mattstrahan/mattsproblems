@@ -1,7 +1,26 @@
 import { Box, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
+import aboutMMP from './AboutMMP.md';
+import aboutFAQ from './AboutFAQ.md';
+import aboutStuffWeUse from './AboutStuffWeUse.md';
+import { FetchMarkdown } from "../components/Markdown";
+import MPPaper from "../components/MPPaper";
 
 export default function About() {
+    return (
+        <Box>
+        <MPPaper paddingY={3}>
+        <FetchMarkdown children={aboutMMP} />
+        </MPPaper>
+        <MPPaper paddingY={3}>
+        <FetchMarkdown children={aboutFAQ} />
+        </MPPaper>
+        <MPPaper paddingY={3}>
+        <FetchMarkdown children={aboutStuffWeUse} />
+        </MPPaper>
+        </Box>
+    )
+    /*
     return (
         <Box>
             <Grid container spacing={4}>
@@ -67,4 +86,5 @@ export default function About() {
         </Box>
         
     )
+    */
 }

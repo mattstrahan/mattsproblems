@@ -16,9 +16,9 @@ type StageSpec = TextStageSpec | ProblemStageSpec;
 
 interface TextStageSpec {
     type: "text" | "finish";
-    heading: string;
+    heading?: string;
     text: string;
-    parameters: { [key: string]: string | number };
+    parameters?: { [key: string]: string | number };
 }
 
 class TextStageSpec {
@@ -40,7 +40,7 @@ class TextStageSpec {
 interface ProblemStageSpec {
     type: "problem";
     probid: string;
-    parameters: { [key: string]: string | number };
+    parameters?: { [key: string]: string | number };
 }
 
 class ProblemStageSpec {
@@ -65,7 +65,7 @@ export interface ExerciseSpec {
     title: string;
     description?: string;
     parameters: { [key: string]: ParameterSpec };
-    stages: Partial<StageSpec>[];
+    stages: StageSpec[];
     finish: {text:string};
     topic?: string;
 }

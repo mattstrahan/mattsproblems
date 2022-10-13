@@ -1,6 +1,5 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
-import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -13,6 +12,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Button from "@mui/material/Button";
 import Icon from "@mui/material/Icon";
 import Grid from "@mui/material/Unstable_Grid2";
+import { CreateUploadExerciseComponent } from "./CreateFileUpload";
 
 
 interface CreateBaseOffExistingExerciseComponentProps {
@@ -20,8 +20,8 @@ interface CreateBaseOffExistingExerciseComponentProps {
 }
 
 function CreateBaseOffExistingExerciseComponent({ onCreateExercise }: CreateBaseOffExistingExerciseComponentProps) {
-    const problems = useAppSelector(state => state.repository.repository.problems); // Get the main exercise simply to see if it's there
-    const exercises = useAppSelector(state => state.repository.repository.exercises); // Get the main exercise simply to see if it's there
+    const problems = useAppSelector(state => state.repository.repository.problems);
+    const exercises = useAppSelector(state => state.repository.repository.exercises);
     const dispatch = useAppDispatch();
 
     const handleClick = () => {
@@ -36,7 +36,7 @@ function CreateBaseOffExistingExerciseComponent({ onCreateExercise }: CreateBase
 
     return (
         <Box paddingY={3}>
-            <Typography paragraph variant="h3">Base off an existing exercise</Typography>
+            <Typography paragraph variant="h3">Base off existing exercise</Typography>
             <Grid container spacing={3}>
                 <Grid xs="auto">
             <Autocomplete
@@ -70,18 +70,26 @@ interface CreateNewExerciseComponentProps {
 }
 
 export function CreateNewExerciseComponent({ onCreateExercise }: CreateNewExerciseComponentProps) {
+    const exercises = useAppSelector(state => state.create.exercise); // Get the main exercise simply to see if it's there
     const dispatch = useAppDispatch();
 
     return (
         <MPPaper>
+            {exercises !== undefined ? 
+                <div>
+                <Typography paragraph variant="h3">Resume creating exercise</Typography>
+                <Button onClick={() => {onCreateExercise(true)}} endIcon={<ChevronRightIcon />}>
+                    Resume exercise
+                </Button>
+                </div>
+                : <div></div>
+            }
                 <Typography paragraph variant="h3">Create new exercise</Typography>
-                <Button onClick={() => {dispatch(createNewExercise("")); onCreateExercise(true)}}>
+                <Button onClick={() => {dispatch(createNewExercise("")); onCreateExercise(true)}} endIcon={<ChevronRightIcon />}>
                     Create new exercise
-                <Icon color="primary" sx={{ p: '10px' }} aria-label="directions">
-                    <ChevronRightIcon />
-                </Icon>
                 </Button>
                 <CreateBaseOffExistingExerciseComponent onCreateExercise={onCreateExercise} />
+                <CreateUploadExerciseComponent onCreateExercise={onCreateExercise} />
         </MPPaper>
     )
 }

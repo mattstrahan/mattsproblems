@@ -8,9 +8,7 @@ function Home() {
   <div>
     <NavBar />
     <Container maxWidth="lg">
-        <Box padding={3}>
           <Outlet />
-        </Box>
     </Container>
   </div>);
 }

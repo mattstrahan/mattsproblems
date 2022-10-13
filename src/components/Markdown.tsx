@@ -9,7 +9,9 @@ import hast from 'hast';
 import mdast from 'mdast';
 import { visit } from 'unist-util-visit'
 import Input, { InputProps } from '@mui/material/Input';
-import { TextFieldProps } from '@mui/material';
+import { TextFieldProps, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import React from 'react';
 
 export interface reHypeFillinsOptions {
 }
@@ -32,10 +34,8 @@ export interface MarkdownFillinsAdditionalProps {
     additionalInputProps?: InputProps;
 }
 
-export type MarkdownFillinsProps = ReactMarkdownOptions & MarkdownFillinsAdditionalProps;
-
 // Process the supplied fillins
-export function MarkdownFillins(props: MarkdownFillinsProps) {
+export function MarkdownFillins(props: ReactMarkdownOptions & MarkdownFillinsAdditionalProps) {
     const katexoptions: KatexOptions = { trust: (context) => context.command === '\\htmlId' }; // This is our secret fillin replacer
     const rehypeplugins: PluggableList = [[rehypeKatex, katexoptions], rehypeFillins];
     const remarkplugins: PluggableList = [remarkGfm, remarkMath];
@@ -44,6 +44,15 @@ export function MarkdownFillins(props: MarkdownFillinsProps) {
         remarkPlugins: remarkplugins,
         rehypePlugins: rehypeplugins,
         components: {
+            // MUI components
+            h1: ({ node, ...props }) => <Typography variant='h1' paragraph {...props} />,
+            h2: ({ node, ...props }) => <Typography variant='h2' paragraph {...props} />,
+            h3: ({ node, ...props }) => <Typography variant='h3' paragraph {...props} />,
+            h4: ({ node, ...props }) => <Typography variant='h4' paragraph {...props} />,
+            h5: ({ node, ...props }) => <Typography variant='h5' paragraph {...props} />,
+            h6: ({ node, ...props }) => <Typography variant='h6' paragraph {...props} />,
+            p: ({ node, ...props }) => <Typography variant='body1' paragraph {...props} />,
+            // Fillins
             input: ({ node, ...inputprops }) => 
                 {
                     // Only change the fillins
@@ -57,6 +66,35 @@ export function MarkdownFillins(props: MarkdownFillinsProps) {
     return <ReactMarkdown {...newProps} />;
 }
 
+// Process the supplied fillins
+export function FetchMarkdown(props: ReactMarkdownOptions) {
+    const [markdownText, setMarkdownText] = React.useState<string>("");
+    useEffect( () => {
+        fetch(props.children).then((response) => response.text()).then((text) => {
+            setMarkdownText(text)
+          })
+     });
+    const katexoptions: KatexOptions = { trust: (context) => context.command === '\\htmlId' }; // This is our secret fillin replacer
+    const rehypeplugins: PluggableList = [[rehypeKatex, katexoptions], rehypeFillins];
+    const remarkplugins: PluggableList = [remarkGfm, remarkMath];
+    const newProps:ReactMarkdownOptions = {
+        ...props,
+        remarkPlugins: remarkplugins,
+        rehypePlugins: rehypeplugins,
+        components: {
+            // MUI components
+            h1: ({ node, ...props }) => <Typography variant='h1' paragraph {...props} />,
+            h2: ({ node, ...props }) => <Typography variant='h2' paragraph {...props} />,
+            h3: ({ node, ...props }) => <Typography variant='h3' paragraph {...props} />,
+            h4: ({ node, ...props }) => <Typography variant='h4' paragraph {...props} />,
+            h5: ({ node, ...props }) => <Typography variant='h5' paragraph {...props} />,
+            h6: ({ node, ...props }) => <Typography variant='h6' paragraph {...props} />,
+            p: ({ node, ...props }) => <Typography variant='body1' paragraph {...props} />
+        }
+    };
+    return <ReactMarkdown {...newProps} children={markdownText} />;
+}
+
 // Our regular Markdown generator without Fillins. Here we turn on Katex and Github extensions.
 export default function Markdown(props: ReactMarkdownOptions) {
     const rehypeplugins: PluggableList = [rehypeKatex];
@@ -64,7 +102,17 @@ export default function Markdown(props: ReactMarkdownOptions) {
     const newProps: ReactMarkdownOptions = {
         ...props,
         remarkPlugins: remarkplugins,
-        rehypePlugins: rehypeplugins
+        rehypePlugins: rehypeplugins,
+        components: {
+            // MUI components
+            h1: ({ node, ...props }) => <Typography variant='h1' paragraph {...props} />,
+            h2: ({ node, ...props }) => <Typography variant='h2' paragraph {...props} />,
+            h3: ({ node, ...props }) => <Typography variant='h3' paragraph {...props} />,
+            h4: ({ node, ...props }) => <Typography variant='h4' paragraph {...props} />,
+            h5: ({ node, ...props }) => <Typography variant='h5' paragraph {...props} />,
+            h6: ({ node, ...props }) => <Typography variant='h6' paragraph {...props} />,
+            p: ({ node, ...props }) => <Typography variant='body1' paragraph {...props} />
+        }
     };
     return <ReactMarkdown {...newProps} />;
 }
