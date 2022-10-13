@@ -9,15 +9,9 @@ import MPPaper from "../components/MPPaper";
 export default function About() {
     return (
         <Box>
-        <MPPaper paddingY={3}>
         <FetchMarkdown children={aboutMMP} />
-        </MPPaper>
-        <MPPaper paddingY={3}>
         <FetchMarkdown children={aboutFAQ} />
-        </MPPaper>
-        <MPPaper paddingY={3}>
         <FetchMarkdown children={aboutStuffWeUse} />
-        </MPPaper>
         </Box>
     )
     /*
