@@ -161,7 +161,7 @@ export function AddRepositoryProblemButton() {
             <Grid container spacing={3}>
                 <Grid xs="auto">
             <Autocomplete
-                id="repeat-problem"
+                id="add-problem-from-repository"
                 sx={{ width: 300 }}
                 options={Object.entries(problems)}
                 getOptionLabel={(option) => option[1].title ? option[1].title : option[0]}
@@ -170,7 +170,7 @@ export function AddRepositoryProblemButton() {
                     {option[1].title ? option[1].title : option[0]}
                     </Box>
                 }
-                renderInput={(params) => <TextField {...params} label="Repeat problem" />}
+                renderInput={(params) => <TextField {...params} label="Add problem" />}
                 value={existingproblem}
                 onChange={(event: any, newValue: [string, Partial<ProblemSpec>] | null) => {
                     setExistingProblem(newValue);
