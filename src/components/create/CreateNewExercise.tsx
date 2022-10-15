@@ -10,7 +10,6 @@ import { createNewExercise, createNewExerciseFromExisting } from "../../reducers
 import MPPaper from "../MPPaper";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Button from "@mui/material/Button";
-import Icon from "@mui/material/Icon";
 import Grid from "@mui/material/Unstable_Grid2";
 import { CreateUploadExerciseComponent } from "./CreateFileUpload";
 
@@ -74,6 +73,8 @@ export function CreateNewExerciseComponent({ onCreateExercise }: CreateNewExerci
     const dispatch = useAppDispatch();
 
     return (
+        <Box>
+        <Typography paragraph variant="h2">Exercise creator</Typography>
         <MPPaper>
             {exercises !== undefined ? 
                 <div>
@@ -85,11 +86,12 @@ export function CreateNewExerciseComponent({ onCreateExercise }: CreateNewExerci
                 : <div></div>
             }
                 <Typography paragraph variant="h3">Create new exercise</Typography>
-                <Button onClick={() => {dispatch(createNewExercise("")); onCreateExercise(true)}} endIcon={<ChevronRightIcon />}>
+                <Button onClick={() => {dispatch(createNewExercise("My Exercise")); onCreateExercise(true)}} endIcon={<ChevronRightIcon />}>
                     Create new exercise
                 </Button>
                 <CreateBaseOffExistingExerciseComponent onCreateExercise={onCreateExercise} />
                 <CreateUploadExerciseComponent onCreateExercise={onCreateExercise} />
         </MPPaper>
+        </Box>
     )
 }

@@ -1,114 +1,21 @@
-import { Box, Button, FormControl, Paper, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, IconButton, Paper, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import React from "react";
-import { VariableSpec } from "../../classes/Variables";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { addNewProblem, addTextStage, setExerciseDescription, setExerciseFinish, setExerciseTitle,  setProblemQuestion, setTextStageLabel, setProblemTitle } from "../../reducers/CreateReducer";
+import { addNewProblem, addProblem, addRepeatProblem, addTextStage, setExerciseFinish, setExerciseTitle,  setTextStageLabel } from "../../reducers/CreateReducer";
 import Markdown from "../Markdown";
-import { defaultenv, envtype, getStrValue } from "../../helpers/env";
-import { ParameterSpec } from "../../classes/Parameters";
-import {  CreateVariablesComponent } from "./CreateVariable";
 import { addExercise } from "../../reducers/RepositoryReducer";
 import { useNavigate } from "react-router-dom";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MPPaper from "../MPPaper";
 import { ExportYAML } from "../export/ExportYAML";
-import { CreateParametersComponent } from "./CreateParameters";
-import { CreateAnswerComponent, CreateShowAnswerComponent } from "./CreateAnswer";
-import { CreateTextField } from "./CreateTextField";
 import { CreateNewExerciseComponent } from "./CreateNewExercise";
-
-export function getCreateEnv(parameters?: { [key: string]: ParameterSpec }, variables?: { [key: string]: Partial<VariableSpec> }, stopParametersAt:string="", stopVariablesAt:string="") {
-    // Go through and get the env from the variables. We only need to loop until we see our own varname.
-    let env:envtype = {};
-    Object.assign(env, defaultenv);
-    if(parameters)
-        for(let parameter in parameters) {
-            // Have we hit our own variable? Then we don't need to continue building the env.
-            if(parameter === stopParametersAt)
-                break;
-            if(parameters[parameter]?.default !== undefined)
-                env[parameter] = parameters[parameter].default;
-        }
-    if(variables)
-        for(let variable in variables) {
-            // Have we hit our own variable? Then we don't need to continue building the env.
-            if(variable === stopVariablesAt)
-                break;
-            
-            if(variables[variable]?.example !== undefined)
-                env[variable] = variables[variable].example;
-        }
-    
-    return env;
-}
-
-interface CreateProblemRepeatComponentProps {
-    probid: string;
-    stageindex: number;
-}
-
-export function CreateProblemRepeatComponent({ probid, stageindex }: CreateProblemRepeatComponentProps) {    
-    const problemtitle = useAppSelector(state => state.create.problems[probid].title); // Get the main exercise simply to see if it's there
-
-    return (
-        <Box paddingY={3} >
-        <MPPaper>
-            <Typography paragraph variant="h4">Problem{problemtitle ? " - " + problemtitle : ""}</Typography>
-            <CreateParametersComponent stageindex={stageindex} probid={probid} showSet />
-        </MPPaper>
-        </Box>
-    )
-}
+import EditIcon from '@mui/icons-material/Edit';
+import DoneIcon from '@mui/icons-material/Done';
+import { CreateProblemComponent, CreateProblemRepeatComponent } from "./CreateProblem";
+import { ProblemSpec } from "../../classes/Problem";
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 
-interface CreateProblemComponentProps {
-    probid: string;
-    stageindex: number;
-}
-
-export function CreateProblemComponent({ probid, stageindex }: CreateProblemComponentProps) {
-    const problem = useAppSelector(state => state.create.problems[probid]); // Get the main exercise simply to see if it's there
-    const dispatch = useAppDispatch();
-
-    if(!problem)
-        return <div>Problem not {probid} found.</div>
-    
-    const env = getCreateEnv(problem.parameters, problem.variables);
-
-    return (
-        <Box paddingY={3} >
-        <MPPaper>
-            <Grid container spacing={4}>
-                <Grid xs><Typography paragraph variant="h4">Problem</Typography></Grid>
-                <Grid xs="auto"><MoreVertIcon /></Grid>
-            </Grid>
-            <Box paddingY={2}>
-                <FormControl> <TextField label="Name" value={problem?.title ? problem?.title : ""} onChange={(e) => dispatch(setProblemTitle({probid:probid, title:e.target.value}))} /></FormControl>
-            </Box>
-            <CreateParametersComponent stageindex={stageindex} showDefault showSet probid={probid} />
-            <CreateVariablesComponent probid={probid} />
-            <Grid container spacing={4}>
-                <Grid xs={12} sm={6}>
-                    <Typography paragraph variant="h6">Problem statement</Typography>
-                    <CreateTextField nunjucks multiline label="" initial={problem.question} handleChange={(e:string) => dispatch(setProblemQuestion({probid:probid, text:e}))} env={env} />
-                    <CreateAnswerComponent env={env} probid={probid} />
-                </Grid>
-                <Grid xs={12} sm={6}>
-                    <Paper>
-                        <Box padding={3}>
-                        <Typography paragraph variant="h6">Example</Typography>
-                        <Markdown>{problem.question ? getStrValue(problem.question, env) : ""}</Markdown>
-                        <CreateShowAnswerComponent answer={problem.answer} env={env} />
-                        <Button disabled>Submit answer</Button> <Button disabled>Skip</Button>
-                        </Box>
-                    </Paper>
-                </Grid>
-            </Grid>
-        </MPPaper>
-        </Box>
-    )
-}
 
 interface CreateTextStageComponentProps {
     id: number;
@@ -178,7 +85,6 @@ export function CreateExerciseButtons({ }: CreateExerciseButtonsProps) {
 
     return (
         <Box paddingY={3}>
-            <MPPaper>
             <Button onClick={() => {
                         dispatch(addExercise({ exercise: exercise, problems: problems }));
                         navigate("/exercises/run/");
@@ -186,7 +92,96 @@ export function CreateExerciseButtons({ }: CreateExerciseButtonsProps) {
             <Button onClick={() => {
                         ExportYAML(problems, exercise);
                 }} >Download Exercise Spec</Button>
-        </MPPaper>
+        </Box>
+    )
+}
+
+export function RepeatProblemButton() {
+    const problems = useAppSelector(state => state.create.problems);
+    const dispatch = useAppDispatch();
+
+    // Used for keeping track of the existing exercise select box
+    const [existingproblem, setExistingProblem] = React.useState<[string, Partial<ProblemSpec>] | null | undefined>(null);
+
+    const handleClick = () => {
+        if(existingproblem !== undefined && existingproblem !== null) {
+            dispatch(addRepeatProblem(existingproblem[0]))
+        }
+    }
+
+
+    return (
+        <Box paddingY={3}>
+            <Typography paragraph variant="h4">Repeat problem</Typography>
+            <Grid container spacing={3}>
+                <Grid xs="auto">
+            <Autocomplete
+                id="repeat-problem"
+                sx={{ width: 300 }}
+                options={Object.entries(problems)}
+                getOptionLabel={(option) => option[1].title ? option[1].title : option[0]}
+                renderOption={(props, option) => 
+                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                    {option[1].title ? option[1].title : option[0]}
+                    </Box>
+                }
+                renderInput={(params) => <TextField {...params} label="Repeat problem" />}
+                value={existingproblem}
+                onChange={(event: any, newValue: [string, Partial<ProblemSpec>] | null) => {
+                    setExistingProblem(newValue);
+                }}
+            /></Grid>
+            <Grid xs="auto">
+            <IconButton onClick={() => handleClick()}>
+                <ChevronRightIcon />
+            </IconButton>
+            </Grid>
+            </Grid>
+        </Box>
+    )
+}
+
+export function AddRepositoryProblemButton() {
+    const problems = useAppSelector(state => state.repository.repository.problems);
+    const dispatch = useAppDispatch();
+
+    // Used for keeping track of the existing exercise select box
+    const [existingproblem, setExistingProblem] = React.useState<[string, Partial<ProblemSpec>] | null | undefined>(null);
+
+    const handleClick = () => {
+        if(existingproblem !== undefined && existingproblem !== null) {
+            dispatch(addProblem(existingproblem[1]));
+        }
+    }
+
+
+    return (
+        <Box paddingY={3}>
+            <Typography paragraph variant="h4">Add problem from repository</Typography>
+            <Grid container spacing={3}>
+                <Grid xs="auto">
+            <Autocomplete
+                id="repeat-problem"
+                sx={{ width: 300 }}
+                options={Object.entries(problems)}
+                getOptionLabel={(option) => option[1].title ? option[1].title : option[0]}
+                renderOption={(props, option) => 
+                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                    {option[1].title ? option[1].title : option[0]}
+                    </Box>
+                }
+                renderInput={(params) => <TextField {...params} label="Repeat problem" />}
+                value={existingproblem}
+                onChange={(event: any, newValue: [string, Partial<ProblemSpec>] | null) => {
+                    setExistingProblem(newValue);
+                }}
+            /></Grid>
+            <Grid xs="auto">
+            <IconButton onClick={() => handleClick()}>
+                <ChevronRightIcon />
+            </IconButton>
+            </Grid>
+            </Grid>
         </Box>
     )
 }
@@ -231,6 +226,8 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
             <Typography paragraph variant="h4">Add a new section</Typography>
             <Button onClick={() => dispatch(addTextStage(""))}>Add information screen</Button>
             <Button onClick={() => dispatch(addNewProblem(""))}>Add problem</Button>
+            <RepeatProblemButton />
+            <AddRepositoryProblemButton />
             </MPPaper>
             </Box>
 
@@ -253,14 +250,17 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
 
 export function CreateExerciseInformationComponent() {
     const exercisetitle = useAppSelector(state => state.create?.exercise?.title); // Get the main exercise simply to see if it's there
+    const [editTitle, setEditTitle] = React.useState<boolean>(false);
     const dispatch = useAppDispatch();
 
     return (
-            <div>
-                <Box paddingY={2}>
-                    <TextField label="Title" value={exercisetitle ? exercisetitle : ""} onChange={(e) => dispatch(setExerciseTitle(e.target.value))} />
-                </Box>
-            </div>
+            <Box paddingY={2}>
+                {editTitle
+                ? <div><TextField label="Title" value={exercisetitle ? exercisetitle : ""} onChange={(e) => dispatch(setExerciseTitle(e.target.value))} /> <IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></div>
+                : <Typography variant="h3">{exercisetitle} <IconButton onClick={() => setEditTitle(true)}><EditIcon /></IconButton></Typography> 
+                }
+                
+            </Box>
         )
 }
 
@@ -270,7 +270,6 @@ export function CreateComponent() {
 
     return (
         <div>
-            <Typography paragraph variant="h2">Exercise creator</Typography>
             {creatingExercise ? <CreateExerciseComponent onCreateExercise={setCreatingExercise} /> : <CreateNewExerciseComponent onCreateExercise={setCreatingExercise} />}
         </div>
     )

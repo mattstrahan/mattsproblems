@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { addNewLetterVariable, addNewNumberVariable, removeVariable, setVariable, setVariableExample } from "../../reducers/CreateReducer";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getCreateEnv } from "./Create";
 import React from "react";
 import Filter1Icon from '@mui/icons-material/Filter1';
 import AbcIcon from '@mui/icons-material/Abc';
@@ -14,6 +13,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { CreateTextField } from "./CreateTextField";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { getCreateEnv } from "./CreateProblem";
 
 export function checkNumber(value:string) {
     const valuenumber = parseInt(value);
@@ -49,9 +49,9 @@ function VariableExampleComponent({ probid, varname }: CreateVariableLetterCompo
     if(example === undefined) {
         dispatch(setVariableExample({probid: probid, varname: varname, example:variable.getValue(env)}));
     }
-    else if(!(variable.includes(example, env))) {
+    /*else if(!(variable.includes(example, env))) {
         dispatch(setVariableExample({probid: probid, varname: varname, example:variable.getValue(env)}));
-    }
+    }*/
 
 
     return <Box padding={1}>

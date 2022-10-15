@@ -63,13 +63,28 @@ const exerciseCreatorSlice = createSlice({
             if(state.exercise)
                 state?.exercise?.stages?.push({type: "text", text: ""});
         },
+        addProblem: (state, action:PayloadAction<Partial<ProblemSpec>>) => {
+            const keys = Object.keys(state.problems);
+            var newProblemID = keys.length.toString();
+            if(newProblemID === "0"){ // Noone likes a Problem 0, sorry computer people
+                newProblemID = "1";
+            }
+            while(keys.includes(newProblemID))
+                newProblemID = (parseInt(newProblemID) + 1).toString(); // This is necessary in the rare case that someone's uploaded a problem with custom IDs.
+            state.problems[newProblemID] = action.payload;
+            if(state.exercise)
+                state?.exercise?.stages?.push({type: "problem", probid:newProblemID});
+        },
         addNewProblem: (state, action:PayloadAction<string>) => {
             const keys = Object.keys(state.problems);
             var newProblemID = keys.length.toString();
+            if(newProblemID === "0"){ // Noone likes a Problem 0, sorry computer people
+                newProblemID = "1";
+            }
             while(keys.includes(newProblemID))
                 newProblemID = (parseInt(newProblemID) + 1).toString(); // This is necessary in the rare case that someone's uploaded a problem with custom IDs.
             state.problems[newProblemID] = {
-                title: "",
+                title: `Problem ${newProblemID}`,
                 description: "",
                 parts: [],
                 question: "",
@@ -79,6 +94,19 @@ const exerciseCreatorSlice = createSlice({
             }
             if(state.exercise)
                 state?.exercise?.stages?.push({type: "problem", probid:newProblemID});
+        },
+        addRepeatProblem: (state, action:PayloadAction<string>) => {
+            const keys = Object.keys(state.problems);
+            const problemID = action.payload;
+            if(!keys.includes(problemID)){ // Noone likes a Problem 0, sorry computer people
+                console.error(`Existing problem ${problemID} not found.`)
+                return;
+            }
+            if(state.exercise)
+                state?.exercise?.stages?.push({type: "problem", probid:problemID});
+            else {
+                console.error("Pushing repeat problem in create without an exercise being created.")
+            }
         },
         setTextStageLabel: (state, action:PayloadAction<{id: number, text: string}>) => {
             const id = action.payload.id;
@@ -202,7 +230,9 @@ export const {
     setExerciseDescription,
     setExerciseFinish,
     addTextStage,
+    addProblem,
     addNewProblem,
+    addRepeatProblem,
     setTextStageLabel,
     setProblemTitle,
     setProblemQuestion,
