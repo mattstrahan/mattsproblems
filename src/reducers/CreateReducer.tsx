@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ObjectFlags } from 'typescript';
 import { AnswerSpec } from '../classes/Answers';
 import { ExerciseSpec } from '../classes/Exercise'
 import { ParameterSpec } from '../classes/Parameters';

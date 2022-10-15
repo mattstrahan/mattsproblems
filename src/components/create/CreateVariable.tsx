@@ -250,6 +250,7 @@ export function CreateVariablesCompactComponent({ probid }: CreateVariablesCompa
                         </ListItem>
                         );
                     }
+                    return (<div></div>);
                 }
 
                 )

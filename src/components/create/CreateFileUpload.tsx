@@ -4,9 +4,8 @@ import Typography from "@mui/material/Typography";
 import React from "react";
 import { useAppDispatch } from "../../hooks/hooks";
 import yaml from 'js-yaml';
-import { RepositorySpec } from "../../classes/Repository";
 import { ProblemSpec } from "../../classes/Problem";
-import { assert, object, number, string, array } from 'superstruct'
+import { assert, object } from 'superstruct'
 import { ExerciseSpec } from "../../classes/Exercise";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -95,12 +94,10 @@ interface CreateUploadExerciseComponentProps {
 export function CreateUploadExerciseComponent({ onCreateExercise }: CreateUploadExerciseComponentProps) {
     const dispatch = useAppDispatch();
     const [specification, setSpecification] = React.useState<{problems:{[key:string]: Partial<ProblemSpec>}, exercises:{[key:string]: Partial<ExerciseSpec>}}>();
-	const [fileIsSelected, setFileIsSelected] = React.useState(false);
 	const [errors, setErrors] = React.useState<string[]>([]);
 
     async function selectFile(e:React.ChangeEvent<HTMLInputElement>) {
         if(e.currentTarget.files !== null) {
-            setFileIsSelected(true);
             console.log(e.currentTarget.files[0]);
             const filetext = await e.currentTarget.files[0].text();
             try {

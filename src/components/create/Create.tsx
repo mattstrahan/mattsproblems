@@ -70,11 +70,7 @@ export function CreateTextMarkdownField({ label, value, onChange, buttons }: Cre
     )
 }
 
-interface CreateExerciseButtonsProps {
-
-}
-
-export function CreateExerciseButtons({ }: CreateExerciseButtonsProps) {
+export function CreateExerciseButtons() {
     const exercise = useAppSelector(state => state.create.exercise);
     const problems = useAppSelector(state => state.create.problems);
     const dispatch = useAppDispatch();
