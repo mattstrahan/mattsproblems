@@ -9,7 +9,7 @@ import hast from 'hast';
 import mdast from 'mdast';
 import { visit } from 'unist-util-visit'
 import Input, { InputProps } from '@mui/material/Input';
-import { TextFieldProps, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useEffect } from 'react';
 import React from 'react';
 

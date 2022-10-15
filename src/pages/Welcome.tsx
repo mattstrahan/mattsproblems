@@ -1,5 +1,3 @@
-import { Box, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
 import { FetchMarkdown } from "../components/Markdown";
 import WelcomePage from "./Welcome.md"
 

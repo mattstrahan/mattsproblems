@@ -1,10 +1,8 @@
-import { Box, Paper, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Box } from "@mui/material";
 import aboutMMP from './AboutMMP.md';
 import aboutFAQ from './AboutFAQ.md';
 import aboutStuffWeUse from './AboutStuffWeUse.md';
 import { FetchMarkdown } from "../components/Markdown";
-import MPPaper from "../components/MPPaper";
 
 export default function About() {
     return (
