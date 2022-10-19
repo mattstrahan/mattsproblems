@@ -37,16 +37,18 @@ class TextStageSpec {
     }
 }
 
-interface ProblemStageSpec {
+export interface ProblemStageSpec {
     type: "problem";
     probid: string;
     parameters?: { [key: string]: string | number };
+    repeats?: number | string;
 }
 
-class ProblemStageSpec {
+export class ProblemStageSpec {
     constructor(spec: Partial<ProblemStageSpec>) {
         this.probid = spec.probid ? spec.probid : "";
         this.parameters = spec.parameters ? spec.parameters : {};
+        this.repeats = spec.repeats ? spec.repeats : 1;
     }
 
     getStage?(problemrepository: ProblemRepository, parameters?: envtype, questionnumber:number = 0): Stage | undefined {
@@ -114,11 +116,27 @@ export class ExerciseSpec implements ExerciseSpec {
         let questionnumber = 1;
         for (let stage of this.stages) {
             if (stage.getStage) {
-                const newstage = stage.getStage(problemrepository, parameters, questionnumber);
-                if (newstage && newstage.type === "problem")
-                    questionnumber += 1;
-                if(newstage)
-                    stages.push(newstage);
+                if ("probid" in stage) {
+                    let repeats : number = 1;
+                    if(stage.repeats) {
+                        if(typeof stage.repeats === "string")
+                            repeats = parseInt(getStrValue(stage.repeats, parameters));
+                        else
+                            repeats = stage.repeats;
+                        if(repeats > 50) // Put an upper limit on this
+                            repeats = 50;
+                    }
+                    for(let i = 0; i < repeats; i++) {
+                        const newstage = stage.getStage(problemrepository, parameters, questionnumber);
+                        if(newstage)
+                            stages.push(newstage);
+                        questionnumber += 1;
+                    }
+                } else {
+                    const newstage = stage.getStage(problemrepository, parameters, questionnumber);
+                    if(newstage)
+                        stages.push(newstage);
+                }
             }
         }
         return {

@@ -16,12 +16,12 @@ interface CreateParameterComponentProps {
     probid: string;
     parname: string;
     stageindex: number;
-    showDefault?: boolean;
+    isRepeat?: boolean;
     showSet?: boolean;
 }
 
 
-function CreateParameterComponent({ probid, parname, showDefault, showSet, stageindex }: CreateParameterComponentProps) {
+function CreateParameterComponent({ probid, parname, isRepeat, stageindex }: CreateParameterComponentProps) {
     const parameter = useAppSelector(state => state.create.problems?.[probid]?.parameters?.[parname]);
     const exerciseparameters = useAppSelector(state => state.create.exercise?.stages?.[stageindex]?.parameters);
     const dispatch = useAppDispatch();
@@ -29,11 +29,17 @@ function CreateParameterComponent({ probid, parname, showDefault, showSet, stage
     if(!parameter)
         return <div>Parameter {parname} not found</div>
     
-    function onParameterChange(newdefault: string) {
-        if(parameter?.type === "number")
-            dispatch(setParameter({probid:probid, parname:parname, parameter:{type:"number", default:newdefault}}));
-        else
-            dispatch(setParameter({probid:probid, parname:parname, parameter:{type:"string", default:newdefault}}));
+    function onParameterChange(value: string) {
+        dispatch(setExerciseProblemParameter({probid: probid, parname: parname, stageindex: stageindex, value:value}))
+
+        // If it's not the original problem, we set the default to also be the set value
+        if(!isRepeat) {
+            if(parameter?.type === "number") {
+                dispatch(setParameter({probid:probid, parname:parname, parameter:{type:"number", default:Number(value)}}));
+            } else {
+                dispatch(setParameter({probid:probid, parname:parname, parameter:{type:"string", default:value}}));
+            }
+        }
     }
     function onParameterTypeChange(newtype: string) {
         if(newtype === "number") {
@@ -62,19 +68,6 @@ function CreateParameterComponent({ probid, parname, showDefault, showSet, stage
                         <DeleteIcon />
                     </IconButton> Name: {parname}</Typography></Box>
                 </Grid>
-                {showDefault ? 
-                <Grid xs={12} sm>
-                <Box padding={1}>
-                <CreateTextField
-                    label="Default"
-                    initial={parameter.default.toString()}
-                    handleChange={(e:string) => onParameterChange(e)}
-                    sx={{width: "100%"}}
-                    errorcheck={parameter.type === "number" ? checkNumber : undefined} />
-                </Box>
-                </Grid>
-                : (null) }
-                {showSet ? 
                 <Grid xs={12} sm>
                 <Box padding={1}>
                 <CreateTextField
@@ -82,14 +75,13 @@ function CreateParameterComponent({ probid, parname, showDefault, showSet, stage
                     initial={exerciseparameters !== undefined && exerciseparameters[parname] !== undefined 
                         ? exerciseparameters[parname].toString() 
                         : parameter.default.toString()}
-                    handleChange={(e:string) => dispatch(setExerciseProblemParameter({probid: probid, parname: parname, stageindex: stageindex, value:e}))}
+                    handleChange={(e:string) => onParameterChange(e)}
                     sx={{width: "100%"}}
                     errorcheck={parameter.type === "number" ? checkNumber : undefined} />
                 </Box>
                 </Grid>
-                : (null) }
                 
-                {showDefault ? 
+                {!isRepeat ? 
                 <Grid xs="auto">
                 <Box padding={1}>
                     <IconButton onClick={() => onParameterTypeChange("number")} disabled={parameter.type === "number"}><Filter1Icon /></IconButton>
@@ -132,27 +124,30 @@ export function CreateParametersCompactComponent({ probid, stageindex }: CreateP
 
 interface CreateParametersExpandedComponentProps {
     probid: string;
-    showDefault?: boolean;
-    showSet?: boolean;
+    isRepeat?: boolean;
     stageindex: number;
 }
 
-export function CreateParametersExpandedComponent({ probid, showDefault, showSet, stageindex }: CreateParametersExpandedComponentProps) {
+export function CreateParametersExpandedComponent({ probid, isRepeat, stageindex }: CreateParametersExpandedComponentProps) {
     const parameters = useAppSelector(state => state.create.problems[probid].parameters);
     const [newparname, setNewParName] = React.useState<string>("");
     const dispatch = useAppDispatch();
+
+    // If it's a repeat problem and there's no parameters don't show them
+    if(isRepeat && (!parameters || Object.keys(parameters).length === 0))
+        return <div></div>;
 
     return (
         <Box>
         {parameters ? 
             Object.entries(parameters).map((entry, index) => {
                 const id = entry[0];
-                return <CreateParameterComponent stageindex={stageindex} showDefault={showDefault} showSet={showSet} key={index} probid={probid} parname={id} />
+                return <CreateParameterComponent stageindex={stageindex} isRepeat={isRepeat} key={index} probid={probid} parname={id} />
             }
             )
             : <div></div>
         }
-        {showDefault ? 
+        {!isRepeat ? 
         
         <Grid container spacing={1} >
         <Grid xs={8} sm={4} >
@@ -173,25 +168,27 @@ export function CreateParametersExpandedComponent({ probid, showDefault, showSet
 
 interface CreateParametersComponentProps {
     probid: string;
-    showDefault?: boolean;
-    showSet?: boolean;
+    isRepeat?: boolean;
     stageindex: number;
 
 }
 
-export function CreateParametersComponent({ probid, showDefault, showSet, stageindex }: CreateParametersComponentProps) {
+export function CreateParametersComponent({ probid, isRepeat, stageindex }: CreateParametersComponentProps) {
+    const parameters = useAppSelector(state => state.create.problems[probid].parameters);
     const [compact, setCompact] = React.useState(false);
+
+    // If it's a repeat problem and there's no parameters don't show them
+    if(isRepeat && (!parameters || Object.keys(parameters).length === 0))
+        return <div></div>;
 
     return (
         <Box paddingY={2}>
-        <MPPaper>
             <Grid container spacing={1}>
                 <Grid xs><Typography paragraph variant="h6">Parameters</Typography></Grid>
                 <Grid xs="auto"><IconButton onClick={() => setCompact(!compact)}>{compact ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton></Grid>
             </Grid>
             
-        {compact ? <CreateParametersCompactComponent stageindex={stageindex} probid={probid} /> : <CreateParametersExpandedComponent stageindex={stageindex} showDefault={showDefault} showSet={showSet} probid={probid} />}
-        </MPPaper>
+        {compact ? <CreateParametersCompactComponent stageindex={stageindex} probid={probid} /> : <CreateParametersExpandedComponent stageindex={stageindex} isRepeat={isRepeat} probid={probid} />}
         </Box>
     )
 }

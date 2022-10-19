@@ -1,19 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AnswerSpec } from '../classes/Answers';
-import { ExerciseSpec } from '../classes/Exercise'
+import { ExerciseSpec, ProblemStageSpec } from '../classes/Exercise'
 import { ParameterSpec } from '../classes/Parameters';
 import { ProblemSpec } from '../classes/Problem';
 import { combinePartialVariableValues, VariableLetterSpec, VariableNumberSpec, VariableSpec } from '../classes/Variables';
 
+
+interface CreateProblemAdditionalProps {
+    showParameters?: boolean;
+    showRepeats?: boolean;
+}
+
 export type exerciseCreatorStateType = {
     exercise: Partial<ExerciseSpec> | undefined;
-    problems: { [key: string]: Partial<ProblemSpec> };
+    problems: { [key: string]: Partial<ProblemSpec> & CreateProblemAdditionalProps };
 }
 
 const initialExerciseCreatorState: exerciseCreatorStateType = {
     "exercise": undefined,
     problems: {}
 }
+
 
 const exerciseCreatorSlice = createSlice({
     name: 'exercisecreator',
@@ -74,6 +81,31 @@ const exerciseCreatorSlice = createSlice({
             if(state.exercise)
                 state?.exercise?.stages?.push({type: "problem", probid:newProblemID});
         },
+        moveStage: (state, action:PayloadAction<{stageindex:number, direction:"up"|"down"}>) => {
+            const stageindex = action.payload.stageindex;
+            const direction = action.payload.direction;
+            if(!state?.exercise?.stages)
+                return;
+            if(stageindex >= state.exercise.stages.length || stageindex < 0)
+                return;
+            if(direction === "up") {
+                if(stageindex === 0)
+                    return;
+                [state.exercise.stages[stageindex], state.exercise.stages[stageindex - 1]] = [state.exercise.stages[stageindex - 1], state.exercise.stages[stageindex]]
+            } else {
+                if(stageindex === state.exercise.stages.length)
+                    return;
+                [state.exercise.stages[stageindex], state.exercise.stages[stageindex + 1]] = [state.exercise.stages[stageindex + 1], state.exercise.stages[stageindex]]
+            }
+        },
+        removeStage: (state, action:PayloadAction<{stageindex:number}>) => {
+            const stageindex = action.payload.stageindex;
+            if(!state?.exercise?.stages)
+                return;
+            if(stageindex >= state.exercise.stages.length || stageindex < 0)
+                return;
+            state.exercise.stages.splice(stageindex)
+        },
         addNewProblem: (state, action:PayloadAction<string>) => {
             const keys = Object.keys(state.problems);
             var newProblemID = keys.length.toString();
@@ -87,7 +119,7 @@ const exerciseCreatorSlice = createSlice({
                 description: "",
                 parts: [],
                 question: "",
-                answer: {type:"number", label: "", value:"0", precision:"0", decimals: "0"},
+                answer: {type:"number", label: "Answer:", value:"0", precision:"0", decimals: "0"},
                 parameters: {},
                 variables: {}
             }
@@ -112,6 +144,14 @@ const exerciseCreatorSlice = createSlice({
             const text = action.payload.text;
             if(state?.exercise?.stages && id in state.exercise.stages && state.exercise.stages[id].type === "text") {
                 state.exercise.stages[id] = {type: "text", text: text};
+            }
+        },
+        setProblemStage: (state, action:PayloadAction<{stageindex: number, problemstage: ProblemStageSpec}>) => {
+            const stageindex = action.payload.stageindex;
+            const problemstage = action.payload.problemstage;
+            if(state?.exercise?.stages && stageindex in state.exercise.stages && state.exercise.stages[stageindex].type === "problem") {
+                console.log("Setting new problem stage");
+                state.exercise.stages[stageindex] = problemstage;
             }
         },
         setProblemTitle: (state, action:PayloadAction<{probid: string, title: string}>) => {
@@ -218,6 +258,22 @@ const exerciseCreatorSlice = createSlice({
             const probid = action.payload.probid;
             let newanswer = action.payload.answer;
             state.problems[probid].answer = newanswer
+        },
+        setShowParameters: (state, action:PayloadAction<{probid: string, setting: boolean}>) => {
+            const probid = action.payload.probid;
+            const setting = action.payload.setting;
+            if(state.problems[probid])
+                state.problems[probid].showParameters = setting;
+            else
+                console.error(`Attempting to set showParameters for problem that doesn't exist. probid: ${probid}`);
+        },
+        setShowRepeats: (state, action:PayloadAction<{probid: string, setting: boolean}>) => {
+            const probid = action.payload.probid;
+            const setting = action.payload.setting;
+            if(state.problems[probid])
+                state.problems[probid].showRepeats = setting;
+            else
+                console.error(`Attempting to set showRepeats for problem that doesn't exist. probid: ${probid}`);
         }
     }
 })
@@ -230,11 +286,14 @@ export const {
     setExerciseFinish,
     addTextStage,
     addProblem,
+    moveStage,
+    removeStage,
     addNewProblem,
     addRepeatProblem,
     setTextStageLabel,
     setProblemTitle,
     setProblemQuestion,
+    setProblemStage,
     addNewNumberVariable,
     addNewLetterVariable,
     addNewParameter,
@@ -244,6 +303,8 @@ export const {
     setVariableExample,
     setVariable,
     setParameter,
-    setAnswer
+    setAnswer,
+    setShowParameters,
+    setShowRepeats
 } = exerciseCreatorSlice.actions;
 export default exerciseCreatorSlice.reducer;

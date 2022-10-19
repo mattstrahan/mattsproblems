@@ -72,7 +72,6 @@ export class VariableNumberSpec {
     }
 
     getValue(env:envtype = {}):number {
-        console.log(`Get variable value with min: env ${JSON.stringify(env)}`);
         // Get a number variable.
         // spec should be {min: number, max: number, step: number}
         // min default is 0, max default is 1000, step default is 1
@@ -84,8 +83,6 @@ export class VariableNumberSpec {
 
         if(isNaN(min))
             min = 0
-
-        console.log(`min: ${min}, max: ${max}, step: ${step}`);
 
         if (min === max)
             return min; // There's no other value that it could be

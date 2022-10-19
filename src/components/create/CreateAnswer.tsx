@@ -27,7 +27,7 @@ function CreateTextAnswerComponent({ answer, onChange, env }: CreateTextAnswerPr
         <div>
         <Grid container spacing={2}>
         <Grid xs={12}>
-            <CreateTextField nunjucks label="Question" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({type:"text", label:e})} env={env} />
+            <CreateTextField nunjucks label="Label" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({type:"text", label:e})} env={env} />
         </Grid><Grid xs={12}>
             <CreateTextField nunjucks label="Answer" initial={answer.text ? answer.text : ""} handleChange={(e:string) => onChange({type:"text", text:e})} env={env} />
         </Grid></Grid>
@@ -49,7 +49,7 @@ function CreateNumberAnswerComponent({ answer, onChange, env }: CreateNumberAnsw
         <div>
             <Grid container spacing={2}>
             <Grid xs={12}>
-            <CreateTextField nunjucks label="Question" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({type:"number", label:e})} env={env} />
+            <CreateTextField nunjucks label="Label" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({type:"number", label:e})} env={env} />
             </Grid>
                 <Grid xs={4}>
             <CreateTextField nunjucks label="Answer" errorcheck={checkNumber} initial={answer.value ? answer.value.toString() : ""} handleChange={(e:string) => onChange({type:"number", value:e})} env={env} />
@@ -79,7 +79,7 @@ function CreateFillinsAnswerComponent({ answer, onChange, env }: CreateFillinsAn
     return (
         <div>
             <Box padding={2}>
-        <CreateTextField nunjucks label="Question" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({type:"fillins", label:e})} env={env} />
+        <CreateTextField nunjucks label="Label" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({type:"fillins", label:e})} env={env} />
         <CreateTextField
                 nunjucks
                 label="Answer"
@@ -106,7 +106,7 @@ export function CreateAnswerComponent({ probid, env }: CreateAnswerProps) {
     const [numberanswer, setNumberAnswer] = React.useState<Partial<NumberAnswerSpec>>(
         answer !== undefined && answer.type === "number" ? answer : 
             {type: "number",
-            label: "",
+            label: "Answer:",
             value: "",
             precision: "",
             decimals: ""
@@ -114,13 +114,13 @@ export function CreateAnswerComponent({ probid, env }: CreateAnswerProps) {
     const [textanswer, setTextAnswer] = React.useState<Partial<TextAnswerSpec>>(
         answer !== undefined && answer.type === "text" ? answer : 
             {type: "text",
-            label: "",
+            label: "Answer:",
             text: ""
         });
     const [fillinsanswer, setFillinsAnswer] = React.useState<Partial<FillinsAnswerSpec>>(
         answer !== undefined && answer.type === "fillins" ? answer : 
             {type: "fillins",
-            label: "",
+            label: "Answer:",
             value: ""
         });
 
@@ -145,9 +145,7 @@ export function CreateAnswerComponent({ probid, env }: CreateAnswerProps) {
     };
 
     return (
-        <Box paddingY={2}>
-        <Paper>
-        <Box padding={2}><Typography paragraph variant="h6">Question</Typography></Box>
+        <Box paddingY={2}><Typography paragraph variant="h6">Answer</Typography>
         <Tabs value={answertype} onChange={onChangeTab} >
           <Tab label="Number" />
           <Tab label="Text" />
@@ -170,7 +168,6 @@ export function CreateAnswerComponent({ probid, env }: CreateAnswerProps) {
                 env={env}
                 onChange={(newanswer:Partial<FillinsAnswerSpec>) => {changeAnswer(fillinsanswer, newanswer, setFillinsAnswer)}} />
         </div>
-        </Paper>
         </Box>
     )
 }

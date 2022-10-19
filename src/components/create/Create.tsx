@@ -3,7 +3,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { addNewProblem, addProblem, addRepeatProblem, addTextStage, setExerciseFinish, setExerciseTitle,  setTextStageLabel } from "../../reducers/CreateReducer";
-import Markdown from "../Markdown";
+import Markdown, { FetchMarkdown } from "../Markdown";
 import { addExercise } from "../../reducers/RepositoryReducer";
 import { useNavigate } from "react-router-dom";
 import MPPaper from "../MPPaper";
@@ -14,6 +14,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import { CreateProblemComponent, CreateProblemRepeatComponent } from "./CreateProblem";
 import { ProblemSpec } from "../../classes/Problem";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import exerciseCreatorInfo from '../../pages/ExerciseCreatorInfo.md';
 
 
 
@@ -62,7 +63,7 @@ export function CreateTextMarkdownField({ label, value, onChange, buttons }: Cre
                 <Paper>
                     <Box padding={3}>
                     <Markdown>{value}</Markdown>
-                    {buttons ? buttons.map((label) => <Button disabled>{label}</Button>) : ""}
+                    {buttons ? buttons.map((label, index) => <Button disabled key={index}>{label}</Button>) : ""}
                     </Box>
                 </Paper>
             </Grid>
@@ -121,6 +122,7 @@ export function RepeatProblemButton() {
                     {option[1].title ? option[1].title : option[0]}
                     </Box>
                 }
+                isOptionEqualToValue={(option,value) => option[0] === value[0]}
                 renderInput={(params) => <TextField {...params} label="Repeat problem" />}
                 value={existingproblem}
                 onChange={(event: any, newValue: [string, Partial<ProblemSpec>] | null) => {
@@ -145,7 +147,7 @@ export function AddRepositoryProblemButton() {
     const [existingproblem, setExistingProblem] = React.useState<[string, Partial<ProblemSpec>] | null | undefined>(null);
 
     const handleClick = () => {
-        if(existingproblem !== undefined && existingproblem !== null) {
+        if(existingproblem !== undefined && existingproblem !== null && existingproblem[1] !== undefined) {
             dispatch(addProblem(existingproblem[1]));
         }
     }
@@ -166,6 +168,7 @@ export function AddRepositoryProblemButton() {
                     {option[1].title ? option[1].title : option[0]}
                     </Box>
                 }
+                isOptionEqualToValue={(option,value) => option[0] === value[0]}
                 renderInput={(params) => <TextField {...params} label="Add problem" />}
                 value={existingproblem}
                 onChange={(event: any, newValue: [string, Partial<ProblemSpec>] | null) => {
@@ -255,7 +258,7 @@ export function CreateExerciseInformationComponent() {
                 ? <div><TextField label="Title" value={exercisetitle ? exercisetitle : ""} onChange={(e) => dispatch(setExerciseTitle(e.target.value))} /> <IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></div>
                 : <Typography variant="h3">{exercisetitle} <IconButton onClick={() => setEditTitle(true)}><EditIcon /></IconButton></Typography> 
                 }
-                
+                <FetchMarkdown>{exerciseCreatorInfo}</FetchMarkdown>
             </Box>
         )
 }

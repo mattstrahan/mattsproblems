@@ -272,14 +272,12 @@ export function CreateVariablesComponent({ probid }: CreateVariablesComponentPro
 
     return (
         <Box paddingY={2}>
-        <MPPaper>
             <Grid container spacing={1}>
                 <Grid xs><Typography paragraph variant="h6">Variables</Typography></Grid>
                 <Grid xs="auto"><IconButton onClick={() => setCompact(!compact)}>{compact ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton></Grid>
             </Grid>
             
         {compact ? <CreateVariablesCompactComponent probid={probid} /> : <CreateVariablesExpandedComponent probid={probid} />}
-        </MPPaper>
         </Box>
     )
 }
