@@ -6,24 +6,27 @@ import { AnswerKey, FillinsAnswerComponent, NumberAnswerComponent, TextAnswerCom
 export interface ProblemComponentProps {
     number?: number;
     problem: Problem;
-    answerKey: AnswerKey;
+    answerKey: Partial<AnswerKey>;
 }
 
 export function ProblemComponent ({number, problem, answerKey} : ProblemComponentProps) {
-    let answer;
     let isDone = false;
-    let ret = [];
+    let ret:JSX.Element[] = [];
     let partnumber = 1;
-    for(let part of problem.parts) {
+    
+    problem.parts.forEach((part, partindex) => {
+        if(isDone)
+            return;
         let partanswer;
-        if (!part.question)
-            part.question = "";
+        if(answerKey.exercise === undefined || answerKey.exerciseSpecId === undefined || answerKey.stage === undefined)
+            return
+        const newAnswerKey:AnswerKey = {exercise: answerKey.exercise, exerciseSpecId: answerKey.exerciseSpecId, stage: answerKey.stage, part:0};
         if (part.answer.type === 'text') {
-            partanswer = <TextAnswerComponent answer={part.answer as TextAnswer} answerKey={answerKey} />;
+            partanswer = <TextAnswerComponent answer={part.answer as TextAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
         } else if (part.answer.type === 'number') {
-            partanswer = <NumberAnswerComponent answer={part.answer as NumberAnswer} answerKey={answerKey} />;
+            partanswer = <NumberAnswerComponent answer={part.answer as NumberAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
         } else if (part.answer.type === 'fillins') {
-            partanswer = <FillinsAnswerComponent answer={part.answer as FillinsAnswer} answerKey={answerKey} />;
+            partanswer = <FillinsAnswerComponent answer={part.answer as FillinsAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
         }
         ret.push( (
             <div key={partnumber}>
@@ -34,26 +37,10 @@ export function ProblemComponent ({number, problem, answerKey} : ProblemComponen
             ) );
         if (!part.answer.isCorrect) {
             isDone = true;
-            break;
+            return;
         }
         partnumber += 1;
-    }
-    if (!isDone) {
-        if (problem.answer.type === 'text'){
-            answer = <TextAnswerComponent answer={problem.answer as TextAnswer} answerKey={answerKey} />;
-        } else if (problem.answer.type === 'number') {
-            answer = <NumberAnswerComponent answer={problem.answer as NumberAnswer} answerKey={answerKey} />;
-        } else if (problem.answer.type === 'fillins') {
-            answer = <FillinsAnswerComponent answer={problem.answer as FillinsAnswer} answerKey={answerKey} />;
-        }
-        ret.push((
-            <div key={partnumber}>
-                <h3>Question {number && <span>number</span>}</h3>
-                <ReactMarkdown>{problem.question}</ReactMarkdown>
-                {answer}
-            </div>
-        ));
-    }
+    });
     return (<div>
             {ret}
             </div>);

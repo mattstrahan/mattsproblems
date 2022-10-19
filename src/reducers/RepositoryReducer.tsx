@@ -3,7 +3,7 @@ import { RepositorySpec } from '../classes/Repository'
 import { Problem, ProblemRepository, ProblemSpec } from '../classes/Problem'
 import { Exercise, ExerciseSpec } from '../classes/Exercise'
 import { envtype } from '../helpers/env';
-import { AnswerKeyFull } from '../components/Answers';
+import { AnswerKey } from '../components/Answers';
 import repository from '../specs/repository';
 
 
@@ -82,16 +82,24 @@ const repositorySlice = createSlice({
         setCurrentExercise: (state, action: PayloadAction<string>) => {
             state.currentExercise = action.payload;
         },
-        answerIsCorrect: (state, action: PayloadAction<AnswerKeyFull>) => {
+        answerIsCorrect: (state, action: PayloadAction<AnswerKey>) => {
             const ak = action.payload;
             console.log("GETTING PAYLOAD ", JSON.stringify(action.payload))
             if (state.exercises[ak.exercise].stages[ak.stage].type === "text")
                 return;
             const problem = state.exercises[ak.exercise].stages[ak.stage] as Problem;
-            problem.isCorrect = true;
+            problem.parts[ak.part].answer.isCorrect = true;
+            let problemIsFinished = true;
+            for(let part of problem.parts) {
+                if(!part.answer.isCorrect)
+                    problemIsFinished = false;
+            }
+            problem.isFinished = problemIsFinished;
         },
-        nextProblem: (state, action: PayloadAction<AnswerKeyFull>) => {
+        nextProblem: (state, action: PayloadAction<Partial<AnswerKey>>) => {
             const ak = action.payload;
+            if(ak.exercise === undefined)
+                return;
             state.exercises[ak.exercise].currentProblem = state.exercises[ak.exercise].currentProblem + 1;
         }
     }

@@ -9,42 +9,45 @@ import ReactMarkdown from "react-markdown";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from "react";
 import { exportDOCX } from "./Export";
-import { AnswerKey, AnswerKeyFull } from "./Answers";
+import { AnswerKey } from "./Answers";
 import Grid from "@mui/material/Unstable_Grid2";
 
 interface TextStageProps {
     stage: TextStage;
-    answerKey: AnswerKey;
+    answerKey: Partial<AnswerKey>;
 }
 
 export function TextStageComponent({stage, answerKey}: TextStageProps) {
-    const ak = answerKey as AnswerKeyFull;
     const dispatch = useAppDispatch();
     return (<div>
         {stage.heading && <h1>stage</h1>}
         <ReactMarkdown>{stage.text}</ReactMarkdown>
-        <Button onClick={() => dispatch(nextProblem(ak))} >Go to the next problem</Button>
+        <Button onClick={() => dispatch(nextProblem(answerKey))} >Go to the next problem</Button>
     </div>);
 }
 
 export function FinishComponent({ stage, answerKey }: TextStageProps) {
     const dispatch = useAppDispatch();
     let navigate = useNavigate();
-    const ak = answerKey as AnswerKeyFull;
-    return (<div>
-        {stage.heading && <h1>stage</h1>}
-        <p>{stage.text}</p>
-        <Button onClick={() => { console.log(ak.exerciseSpecId); dispatch(newExercise({exerciseid: ak.exerciseSpecId}));
-                    navigate("/exercises/run/");
-                        }} >Do this exercise again</Button>
-    </div>);
+    if(answerKey.exerciseSpecId === undefined)
+        return <div>Exercise spec ID undefined</div>;
+    const exerciseSpecId = answerKey.exerciseSpecId;
+    if(typeof exerciseSpecId === "string")
+        return (<div>
+            {stage.heading && <h1>stage</h1>}
+            <p>{stage.text}</p>
+            <Button onClick={() => { console.log(answerKey.exerciseSpecId); dispatch(newExercise({exerciseid: exerciseSpecId}));
+                        navigate("/exercises/run/");
+                            }} >Do this exercise again</Button>
+        </div>);
+    return <div></div>;
 }
 
 
 interface StageProps {
     stage: Stage;
     key: number;
-    answerKey: AnswerKey;
+    answerKey: Partial<AnswerKey>;
 }
 
 export function StageComponent({stage, answerKey}: StageProps) {

@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import TextField from "@mui/material/TextField";
@@ -94,13 +93,17 @@ function CreateFillinsAnswerComponent({ answer, onChange, env }: CreateFillinsAn
 
 interface CreateAnswerProps {
     probid: string;
+    partindex?: number;
     env: envtype;
 }
 
-export function CreateAnswerComponent({ probid, env }: CreateAnswerProps) {
+export function CreateAnswerComponent({ probid, partindex, env }: CreateAnswerProps) {
 
-    const answer = useAppSelector(state => state.create.problems[probid].answer); // Get the main exercise simply to see if it's there
+    const mainanswer = useAppSelector(state => state.create.problems[probid].answer);
+    const additionalparts = useAppSelector(state => state.create.problems[probid].additionalparts);
     const dispatch = useAppDispatch();
+
+    const answer = partindex === undefined ? mainanswer : additionalparts?.[partindex]?.answer;
 
     const [answertype, setAnswerType] = React.useState(0);
     const [numberanswer, setNumberAnswer] = React.useState<Partial<NumberAnswerSpec>>(
@@ -123,6 +126,9 @@ export function CreateAnswerComponent({ probid, env }: CreateAnswerProps) {
             label: "Answer:",
             value: ""
         });
+
+    if(answer === undefined)
+    return <div>Part not found</div>;
 
     const changeAnswer = (oldanswer:Partial<AnswerSpec>, newanswer:Partial<AnswerSpec>, setFunction:Function) => {
         const subanswer = combinePartialAnswerValues(oldanswer, newanswer);

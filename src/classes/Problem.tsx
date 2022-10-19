@@ -13,22 +13,20 @@ export interface PartSpec {
 export interface ProblemSpec {
     title: string;
     description: string;
-    parts: Partial<PartSpec>[];
+    additionalparts: Partial<PartSpec>[];
     question: string;
     answer: Partial<AnswerSpec>;
     parameters: { [key: string]: ParameterSpec };
     variables: { [key: string]: Partial<VariableSpec> };
 }
 
-export interface Part { question: string; answer: Answer; };
+export interface Part { question: string; answer: Answer };
 
 export interface Problem {
     type: "problem";
     parts: Part[];
     questionnumber: number;
-    question: string;
-    answer: Answer;
-    isCorrect: boolean;
+    isFinished: boolean;
 }
 
 export class ProblemSpec implements ProblemSpec {
@@ -37,7 +35,7 @@ export class ProblemSpec implements ProblemSpec {
         this.description = spec.description ? spec.description : "";
         this.question = spec.question ? spec.question : "";
         this.answer = spec.answer ? spec.answer : { type: "text", text: "" };
-        this.parts = spec.parts ? spec.parts : [];
+        this.additionalparts = spec.additionalparts ? spec.additionalparts : [];
         this.variables = {};
         this.parameters = spec.parameters ? spec.parameters : {};
         for (let variable in spec["variables"]) {
@@ -78,8 +76,21 @@ export class ProblemSpec implements ProblemSpec {
                 if (this.getVariable)
                     env[variableid] = this.getVariable(variableid, env);
 
-        if (this.parts) {
-            for(let part of this.parts) {
+        if (this.question)
+            question = nunjucks.renderString(this.question, env);
+
+        if (this.answer)
+            if(this.answer.type === "number")
+                answer = buildNumberAnswer(this.answer as NumberAnswerSpec, env);
+            else if (this.answer.type === "fillins")
+                answer = buildFillinsAnswer(this.answer as FillinsAnswerSpec, env);
+            else
+                answer = buildTextAnswer(this.answer as TextAnswerSpec, env);
+        
+        parts.push({question:question, answer:answer})
+
+        if (this.additionalparts) {
+            for(let part of this.additionalparts) {
                 let newpart: Part = { question: "", answer: { type: "text", text: "", isCorrect: false }};
                 if (part.question)
                     newpart.question = nunjucks.renderString(part.question, env);
@@ -94,18 +105,7 @@ export class ProblemSpec implements ProblemSpec {
             }
         }
 
-        if (this.question)
-            question = nunjucks.renderString(this.question, env);
-
-        if (this.answer)
-            if(this.answer.type === "number")
-                answer = buildNumberAnswer(this.answer as NumberAnswerSpec, env);
-            else if (this.answer.type === "fillins")
-                answer = buildFillinsAnswer(this.answer as FillinsAnswerSpec, env);
-            else
-                answer = buildTextAnswer(this.answer as TextAnswerSpec, env);
-
-        return { type: "problem", "parts": parts, questionnumber: questionnumber, "question": question, "answer": answer, isCorrect: false };
+        return { type: "problem", "parts": parts, questionnumber: questionnumber, isFinished: false };
     }
 }
 

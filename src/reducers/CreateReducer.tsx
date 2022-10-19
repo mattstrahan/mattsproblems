@@ -8,6 +8,7 @@ import { combinePartialVariableValues, VariableLetterSpec, VariableNumberSpec, V
 
 interface CreateProblemAdditionalProps {
     showParameters?: boolean;
+    showParts?: boolean;
     showRepeats?: boolean;
 }
 
@@ -117,7 +118,7 @@ const exerciseCreatorSlice = createSlice({
             state.problems[newProblemID] = {
                 title: `Problem ${newProblemID}`,
                 description: "",
-                parts: [],
+                additionalparts: [],
                 question: "",
                 answer: {type:"number", label: "Answer:", value:"0", precision:"0", decimals: "0"},
                 parameters: {},
@@ -139,6 +140,19 @@ const exerciseCreatorSlice = createSlice({
                 console.error("Pushing repeat problem in create without an exercise being created.")
             }
         },
+        addNewPart: (state, action:PayloadAction<{probid: string}>) => {
+            const probid = action.payload.probid;
+            if(state.problems[probid]) {
+                const problem = state.problems[probid];
+                if(problem.additionalparts === undefined)
+                    problem.additionalparts = [{question: "",
+                        answer: {type:"number", label: "Answer:", value:"0", precision:"0", decimals: "0"}}]
+                else
+                    problem.additionalparts.push({question: "",
+                    answer: {type:"number", label: "Answer:", value:"0", precision:"0", decimals: "0"}});
+            }
+
+        },
         setTextStageLabel: (state, action:PayloadAction<{id: number, text: string}>) => {
             const id = action.payload.id;
             const text = action.payload.text;
@@ -150,7 +164,6 @@ const exerciseCreatorSlice = createSlice({
             const stageindex = action.payload.stageindex;
             const problemstage = action.payload.problemstage;
             if(state?.exercise?.stages && stageindex in state.exercise.stages && state.exercise.stages[stageindex].type === "problem") {
-                console.log("Setting new problem stage");
                 state.exercise.stages[stageindex] = problemstage;
             }
         },
@@ -160,10 +173,17 @@ const exerciseCreatorSlice = createSlice({
                 state.problems[probid].title = action.payload.title;
             }
         },
-        setProblemQuestion: (state, action:PayloadAction<{probid: string, text: string}>) => {
+        setProblemQuestion: (state, action:PayloadAction<{probid: string, text: string, partindex?: number}>) => {
             const probid = action.payload.probid;
+            const partindex = action.payload.partindex;
             if(state.problems[probid]) {
-                state.problems[probid].question = action.payload.text;
+                if(partindex === undefined)
+                    state.problems[probid].question = action.payload.text;
+                else {
+                    const problem = state.problems[probid];
+                    if(problem.additionalparts !== undefined && problem.additionalparts[partindex] !== undefined)
+                        problem.additionalparts[partindex].question = action.payload.text
+                }
             }
         },
         addNewNumberVariable: (state, action:PayloadAction<{probid: string, varname: string}>) => {
@@ -254,10 +274,19 @@ const exerciseCreatorSlice = createSlice({
                 };
             
         },
-        setAnswer: (state, action:PayloadAction<{probid: string, answer: Partial<AnswerSpec>}>) => {
+        setAnswer: (state, action:PayloadAction<{probid: string,partindex?: number, answer: Partial<AnswerSpec>}>) => {
             const probid = action.payload.probid;
             let newanswer = action.payload.answer;
-            state.problems[probid].answer = newanswer
+            const partindex = action.payload.partindex;
+            if(state.problems[probid]) {
+                if(partindex === undefined)
+                    state.problems[probid].answer = newanswer
+                else {
+                    const problem = state.problems[probid];
+                    if(problem.additionalparts !== undefined && problem.additionalparts[partindex] !== undefined)
+                        problem.additionalparts[partindex].answer = newanswer;
+                }
+            }
         },
         setShowParameters: (state, action:PayloadAction<{probid: string, setting: boolean}>) => {
             const probid = action.payload.probid;
@@ -266,6 +295,14 @@ const exerciseCreatorSlice = createSlice({
                 state.problems[probid].showParameters = setting;
             else
                 console.error(`Attempting to set showParameters for problem that doesn't exist. probid: ${probid}`);
+        },
+        setShowParts: (state, action:PayloadAction<{probid: string, setting: boolean}>) => {
+            const probid = action.payload.probid;
+            const setting = action.payload.setting;
+            if(state.problems[probid])
+                state.problems[probid].showParts = setting;
+            else
+                console.error(`Attempting to set showParts for problem that doesn't exist. probid: ${probid}`);
         },
         setShowRepeats: (state, action:PayloadAction<{probid: string, setting: boolean}>) => {
             const probid = action.payload.probid;
@@ -290,6 +327,7 @@ export const {
     removeStage,
     addNewProblem,
     addRepeatProblem,
+    addNewPart,
     setTextStageLabel,
     setProblemTitle,
     setProblemQuestion,
@@ -305,6 +343,7 @@ export const {
     setParameter,
     setAnswer,
     setShowParameters,
+    setShowParts,
     setShowRepeats
 } = exerciseCreatorSlice.actions;
 export default exerciseCreatorSlice.reducer;

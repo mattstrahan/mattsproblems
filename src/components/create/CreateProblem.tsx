@@ -10,7 +10,7 @@ import { ParameterSpec } from "../../classes/Parameters";
 import { VariableSpec } from "../../classes/Variables";
 import { defaultenv, envtype, getStrValue } from "../../helpers/env";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { moveStage, removeStage, setProblemQuestion, setProblemStage, setProblemTitle, setShowParameters, setShowRepeats } from "../../reducers/CreateReducer";
+import { addNewPart, moveStage, removeStage, setProblemQuestion, setProblemStage, setProblemTitle, setShowParameters, setShowParts, setShowRepeats } from "../../reducers/CreateReducer";
 import Markdown from "../Markdown";
 import MPPaper from "../MPPaper";
 import { CreateAnswerComponent, CreateShowAnswerComponent } from "./CreateAnswer";
@@ -32,6 +32,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { AnswerSpec } from "../../classes/Answers";
 
 export function getCreateEnv(parameters?: { [key: string]: ParameterSpec }, variables?: { [key: string]: Partial<VariableSpec> }, stopParametersAt:string="", stopVariablesAt:string="") {
     // Go through and get the env from the variables. We only need to loop until we see our own varname.
@@ -85,6 +86,7 @@ interface CreateProblemTitleComponentProps {
 export function CreateProblemTitleComponent({probid, stageindex} : CreateProblemTitleComponentProps) {
     const title = useAppSelector(state => state.create?.problems?.[probid]?.title); // Get the main exercise simply to see if it's there
     const showParameters = useAppSelector(state => state.create?.problems?.[probid]?.showParameters);
+    const showParts = useAppSelector(state => state.create?.problems?.[probid]?.showParts);
     const showRepeats = useAppSelector(state => state.create?.problems?.[probid]?.showRepeats);
     const [editTitle, setEditTitle] = React.useState<boolean>(false);
     const dispatch = useAppDispatch();
@@ -127,15 +129,15 @@ export function CreateProblemTitleComponent({probid, stageindex} : CreateProblem
                     >
                         <MenuItem>
                             <ListItemText onClick={() => dispatch(setShowParameters({probid:probid, setting: !showParameters}))}>Show parameters</ListItemText>
-                            <Switch checked={showParameters} onChange={(e) => dispatch(setShowParameters({probid:probid, setting: e.target.checked}))} />
+                            <Switch inputProps={{ 'aria-label': 'controlled' }} checked={showParameters} onChange={(e) => dispatch(setShowParameters({probid:probid, setting: e.target.checked}))} />
                         </MenuItem>
                         <MenuItem>
-                            <ListItemText onClick={() => dispatch(setShowParameters({probid:probid, setting: !showParameters}))}>Show parts</ListItemText>
-                            <Switch checked={showParameters} onChange={(e) => dispatch(setShowParameters({probid:probid, setting: e.target.checked}))} />
+                            <ListItemText onClick={() => dispatch(setShowParts({probid:probid, setting: !showParts}))}>Show parts</ListItemText>
+                            <Switch inputProps={{ 'aria-label': 'controlled' }} checked={showParts} onChange={(e) => dispatch(setShowParts({probid:probid, setting: e.target.checked}))} />
                         </MenuItem>
                         <MenuItem>
                             <ListItemText onClick={() => dispatch(setShowRepeats({probid:probid, setting: !showRepeats}))}>Show repeat slider</ListItemText>
-                            <Switch checked={showRepeats} onChange={(e) => dispatch(setShowRepeats({probid:probid, setting: e.target.checked}))} />
+                            <Switch inputProps={{ 'aria-label': 'controlled' }} checked={showRepeats} onChange={(e) => dispatch(setShowRepeats({probid:probid, setting: e.target.checked}))} />
                         </MenuItem>
                         <Divider />
                         <MenuItem>
@@ -193,11 +195,9 @@ export function CreateRepeatProblemSelector({ stageindex }: CreateRepeatProblemS
             setrepeats = 1;
         if(setrepeats > 50)
             setrepeats = 50;
-        console.log(`Setting repeats to ${setrepeats}`)
         setCurrentValue(setrepeats)
         if(problemstage !== undefined && problemstage.type === "problem") {
             const newproblemstage:ProblemStageSpec = {...problemstage, repeats:setrepeats};
-            console.log(`New problem stage: ${JSON.stringify(newproblemstage)}`);
             dispatch(setProblemStage({stageindex:stageindex, problemstage: newproblemstage}));
         }
     }
@@ -228,6 +228,65 @@ export function CreateRepeatProblemSelector({ stageindex }: CreateRepeatProblemS
     )
 }
 
+interface CreatePartComponentProps {
+    probid: string;
+    partindex?: number;
+}
+
+export function CreatePartComponent({ probid, partindex }: CreatePartComponentProps) {
+    const problem = useAppSelector(state => state.create.problems[probid]); // Get the main exercise simply to see if it's there
+    const dispatch = useAppDispatch();
+
+    if(!problem)
+        return <div>Problem not {probid} found.</div>
+    
+    const question:string | undefined = partindex === undefined ? problem.question : problem?.additionalparts?.[partindex]?.question;
+
+    if(question === undefined)
+        return <div>Part not found</div>
+    
+    const env = getCreateEnv(problem.parameters, problem.variables);
+
+    return (
+        <Box>
+            {partindex !== undefined ? <Typography paragraph variant="h5">Part {partindex+2}</Typography> : (null)}
+            <Typography paragraph variant="h6">Question</Typography>
+            <CreateTextField nunjucks multiline label="" initial={problem.question} handleChange={(e:string) => dispatch(setProblemQuestion({probid:probid, text:e, partindex:partindex}))} env={env} />
+            <CreateAnswerComponent env={env} probid={probid} partindex={partindex} />
+        </Box>
+    )
+}
+
+interface CreateShowPartComponentProps {
+    probid: string;
+    partindex?: number;
+}
+
+export function CreateShowPartComponent({ probid, partindex }: CreateShowPartComponentProps) {
+    const problem = useAppSelector(state => state.create.problems[probid]);
+
+    if(!problem)
+        return <div>Problem not {probid} found.</div>
+    
+    const question:string | undefined = partindex === undefined ? problem.question : problem?.additionalparts?.[partindex]?.question;
+    const answer:Partial<AnswerSpec> | undefined = partindex === undefined ? problem.answer : problem?.additionalparts?.[partindex]?.answer;
+
+    if(question === undefined)
+        return <div>Part not found</div>
+    if(answer === undefined)
+        return <div>Part not found</div>
+    
+    const env = getCreateEnv(problem.parameters, problem.variables);
+
+    return (
+        <Box>
+            {partindex !== undefined ? <Typography paragraph variant="h6">Part {partindex+2}</Typography> : (null)}
+            <Markdown>{question ? getStrValue(question, env) : ""}</Markdown>
+            <CreateShowAnswerComponent answer={answer} env={env} />
+        </Box>
+    )
+}
+
 interface CreateProblemComponentProps {
     probid: string;
     stageindex: number;
@@ -239,8 +298,6 @@ export function CreateProblemComponent({ probid, stageindex }: CreateProblemComp
 
     if(!problem)
         return <div>Problem not {probid} found.</div>
-    
-    const env = getCreateEnv(problem.parameters, problem.variables);
 
     return (
         <Box paddingY={3} >
@@ -250,17 +307,20 @@ export function CreateProblemComponent({ probid, stageindex }: CreateProblemComp
             <CreateVariablesComponent probid={probid} />
             <Grid container spacing={4}>
                 <Grid xs={12} sm={6}>
-                    <Typography paragraph variant="h6">Question</Typography>
-                    <CreateTextField nunjucks multiline label="" initial={problem.question} handleChange={(e:string) => dispatch(setProblemQuestion({probid:probid, text:e}))} env={env} />
-                    <CreateAnswerComponent env={env} probid={probid} />
-
+                    <Box>
+                    {problem.showParts ? <Typography paragraph variant="h5">Part 1</Typography> : (null)}
+                    <CreatePartComponent probid={probid} />
+                    {problem.showParts && problem.additionalparts !== undefined ? problem.additionalparts.map((part, index) => <CreatePartComponent probid={probid} partindex={index} />) : (null)}
+                    {problem.showParts && problem.additionalparts !== undefined ? <Button onClick={() => dispatch(addNewPart({probid: probid}))}>Add new part</Button> : (null)}
+                    </Box>
                 </Grid>
                 <Grid xs={12} sm={6}>
                     <Paper>
                         <Box padding={3}>
-                        <Typography paragraph variant="h6">Example</Typography>
-                        <Markdown>{problem.question ? getStrValue(problem.question, env) : ""}</Markdown>
-                        <CreateShowAnswerComponent answer={problem.answer} env={env} />
+                        <Typography paragraph variant="h5">Example</Typography>
+                        {problem.showParts ? <Typography paragraph variant="h6">Part 1</Typography> : (null)}
+                        <CreateShowPartComponent probid={probid} />
+                        {problem.showParts && problem.additionalparts !== undefined ? problem.additionalparts.map((part, index) => <CreateShowPartComponent probid={probid} partindex={index} />) : (null)}
                         <Button disabled>Submit answer</Button> <Button disabled>Skip</Button>
                         </Box>
                     </Paper>

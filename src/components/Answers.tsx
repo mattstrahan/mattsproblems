@@ -6,15 +6,10 @@ import { answerIsCorrect, nextProblem } from "../reducers/RepositoryReducer";
 import Markdown, { MarkdownFillins } from "./Markdown";
 
 export interface AnswerKey {
-    exerciseSpecId?: string;
-    exercise?: string;
-    stage?: number;
-}
-
-export interface AnswerKeyFull {
     exerciseSpecId: string;
     exercise: string;
     stage: number;
+    part: number;
 }
 
 export interface NumberAnswerComponentProps {
@@ -25,7 +20,6 @@ export interface NumberAnswerComponentProps {
 export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerComponentProps) {
     const numberAnswer = answer;
     const precision = numberAnswer.precision ? numberAnswer.precision : 0;
-    const answerKeyFull = answerKey as AnswerKeyFull;
     const [enteredanswer, setEnteredAnswer] = React.useState('');
     const [opentryagain, setOpenTryAgain] = React.useState(false);
     const [isCorrect, setIsCorrect] = React.useState(false);
@@ -45,7 +39,7 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
 
         if (variance <= precision && variance >= -1 * precision) {
             setIsCorrect(true);
-            dispatch(answerIsCorrect(answerKeyFull));
+            dispatch(answerIsCorrect(answerKey));
         } else {
             setOpenTryAgain(true);
         }
@@ -58,7 +52,7 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
                     {numberAnswer.label ? numberAnswer.label : "Answer: "}
                     {numberAnswer.value}
                 </div>
-                <Button onClick={() => dispatch(nextProblem(answerKeyFull))} >Continue</Button>
+                <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
             </div>
         );
     }
@@ -83,7 +77,7 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
                 />
                 <Button type="submit">Submit answer</Button>
             </form>
-            <Button onClick={() => dispatch(nextProblem(answerKeyFull))} >Skip</Button>
+            <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
     );
 }
@@ -95,7 +89,6 @@ export interface FillinsAnswerComponentProps {
 
 export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerComponentProps) {
     const fillinAnswer = answer;
-    const answerKeyFull = answerKey as AnswerKeyFull;
 
     // This is used to hold the initial answers for each fillin - a whole bunch of blanks
     const initea: string[] = Array(fillinAnswer.fillins.length).fill('');
@@ -145,7 +138,7 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
             }
         }
         setIsCorrect(true);
-        dispatch(answerIsCorrect(answerKeyFull));
+        dispatch(answerIsCorrect(answerKey));
     };
 
     if (isCorrect) {
@@ -155,7 +148,7 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
                     <Markdown>{fillinAnswer.label ? fillinAnswer.label : "Answer: "}</Markdown>
                     <Markdown>{fillinAnswer.answertext}</Markdown>
                 </div>
-                <Button onClick={() => dispatch(nextProblem(answerKeyFull))} >Continue</Button>
+                <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
             </div>
         );
     }
@@ -175,7 +168,7 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
                 <MarkdownFillins onFillinChange={onFillinChange}>{fillinAnswer.answerfillins}</MarkdownFillins>
                 <Button type="submit">Submit answer</Button>
             </form>
-            <Button onClick={() => dispatch(nextProblem(answerKeyFull))} >Skip</Button>
+            <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
     );
 }
