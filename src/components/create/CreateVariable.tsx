@@ -8,7 +8,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React from "react";
 import Filter1Icon from '@mui/icons-material/Filter1';
 import AbcIcon from '@mui/icons-material/Abc';
-import MPPaper from "../MPPaper";
 import Grid from "@mui/material/Unstable_Grid2";
 import { CreateTextField } from "./CreateTextField";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -273,7 +272,7 @@ export function CreateVariablesComponent({ probid }: CreateVariablesComponentPro
     return (
         <Box paddingY={2}>
             <Grid container spacing={1}>
-                <Grid xs><Typography paragraph variant="h6">Variables</Typography></Grid>
+                <Grid xs><Typography paragraph variant="h5">Variables</Typography></Grid>
                 <Grid xs="auto"><IconButton onClick={() => setCompact(!compact)}>{compact ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton></Grid>
             </Grid>
             

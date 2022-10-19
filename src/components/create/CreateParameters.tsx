@@ -5,7 +5,6 @@ import Filter1Icon from '@mui/icons-material/Filter1';
 import AbcIcon from '@mui/icons-material/Abc';
 import { addNewParameter, removeParameter, setExerciseProblemParameter, setParameter } from "../../reducers/CreateReducer";
 import React from "react";
-import MPPaper from "../MPPaper";
 import Grid from "@mui/material/Unstable_Grid2";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -184,7 +183,7 @@ export function CreateParametersComponent({ probid, isRepeat, stageindex }: Crea
     return (
         <Box paddingY={2}>
             <Grid container spacing={1}>
-                <Grid xs><Typography paragraph variant="h6">Parameters</Typography></Grid>
+                <Grid xs><Typography paragraph variant="h5">Parameters</Typography></Grid>
                 <Grid xs="auto"><IconButton onClick={() => setCompact(!compact)}>{compact ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton></Grid>
             </Grid>
             
