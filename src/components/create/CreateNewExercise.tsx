@@ -12,6 +12,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Unstable_Grid2";
 import { CreateUploadExerciseComponent } from "./CreateFileUpload";
+import { FetchMarkdown } from "../Markdown";
+import exerciseCreatorInfo from '../../pages/ExerciseCreatorInfo.md';
 
 
 interface CreateBaseOffExistingExerciseComponentProps {
@@ -75,6 +77,7 @@ export function CreateNewExerciseComponent({ onCreateExercise }: CreateNewExerci
     return (
         <Box>
         <Typography paragraph variant="h2">Exercise creator</Typography>
+        <FetchMarkdown>{exerciseCreatorInfo}</FetchMarkdown>
         <MPPaper>
             {exercises !== undefined ? 
                 <div>
