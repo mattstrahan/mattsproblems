@@ -1,4 +1,4 @@
-import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 import { getVariableFromType, VariableLetterSpec, VariableNumberSpec, VariableSpec } from "../../classes/Variables";
 import { envtype } from "../../helpers/env";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
@@ -136,17 +136,17 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
     }
 
     return (
+        <Box paddingY={2}>
         <Grid container xs={12} spacing={1}>
                 <Grid xs={12} sm={3}>
                 <Box padding={1}>
                     
-                    <Typography><IconButton onClick={() => dispatch(removeVariable({probid: probid, varname: varname}))} >
-                        <DeleteIcon />
-                    </IconButton> Name: {varname}</Typography></Box>
+                    <Typography> Name: {varname}</Typography></Box>
                 </Grid>
                 <Grid xs={12} sm={2}>
                 <CreateTextField
                     label="Minimum value"
+                    tooltip="The minimum value the variable can take"
                     initial={numbervariable.min.toString()}
                     handleChange={(e:string) => onValueChange("min", e)}
                     env={env}
@@ -155,6 +155,7 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                 <Grid xs={12} sm={2}>
                 <CreateTextField
                     label="Maximum value"
+                    tooltip="The maximum value the variable can take"
                     initial={numbervariable.max.toString()}
                     handleChange={(e:string) => onValueChange("max", e)}
                     env={env}
@@ -163,17 +164,24 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                 <Grid xs={12} sm={2}>
                 <CreateTextField
                     label="Steps between values"
+                    tooltip="How big a step between possible values the variable can have"
                     initial={numbervariable.step.toString()}
                     handleChange={(e:string) => onValueChange("step", e)}
                     env={env}
                     errorcheck={checkNumber} />
                 </Grid>
-                <Grid xs={12} sm={3}>
-                <Box padding={1}>
+                <Grid xs={12} sm={2}>
                     <VariableExampleComponent probid={probid} varname={varname} />
+                </Grid>
+                <Grid xs="auto">
+                <Box padding={1}>
+                    <IconButton onClick={() => dispatch(removeVariable({probid: probid, varname: varname}))} >
+                        <DeleteIcon />
+                    </IconButton>
                     </Box>
                 </Grid>
         </Grid>
+        </Box>
     )
 }
 
@@ -185,7 +193,19 @@ interface CreateVariablesExpandedComponentProps {
 export function CreateVariablesExpandedComponent({ probid }: CreateVariablesExpandedComponentProps) {
     const problem = useAppSelector(state => state.create.problems[probid]); // Get the main exercise simply to see if it's there
     const [newvarname, setNewVarName] = React.useState<string>("");
+    const [type, setType] = React.useState<string | null>('number');
     const dispatch = useAppDispatch();
+
+    function addNewParameter() {
+        setNewVarName("")
+        if(type === "number") {
+            dispatch(addNewNumberVariable({probid: probid, varname: newvarname}));
+        }
+        if(type === "letter") {
+            dispatch(addNewLetterVariable({probid: probid, varname: newvarname}));
+        }
+        
+    }
 
     return (
         <div>
@@ -204,14 +224,36 @@ export function CreateVariablesExpandedComponent({ probid }: CreateVariablesExpa
             }
 
             <Grid container spacing={4}>
-            <Grid xs={9} sm={4} >
-            <TextField label="Add new variable" value={newvarname} onChange={(e) => setNewVarName(e.target.value)} sx={{width:"100%"}} />
-            </Grid>
             <Grid xs >
+                <Tooltip title="The variable name" arrow >
+            <TextField label="Add new variable" value={newvarname} onChange={(e) => setNewVarName(e.target.value)} sx={{width:"100%"}} />
+                </Tooltip>
+            </Grid>
+            <Grid xs="auto" >
             <Box padding={1}>
 
-            <IconButton onClick={() => {dispatch(addNewNumberVariable({probid: probid, varname: newvarname}));setNewVarName("")}}><Filter1Icon /></IconButton>
-            <IconButton onClick={() => {dispatch(addNewLetterVariable({probid: probid, varname: newvarname}));setNewVarName("")}}><AbcIcon /></IconButton>
+            <ToggleButtonGroup
+            value={type}
+            exclusive
+            onChange={(e, newType:string | null) => setType(newType)}
+            aria-label="text alignment"
+            >
+            <ToggleButton value="number">
+                <Tooltip title="Add a number variable" arrow >
+                <Filter1Icon />
+                </Tooltip>
+            </ToggleButton>
+            <ToggleButton value="letter">
+                <Tooltip title="Add a letter variable" arrow >
+                <AbcIcon />
+                </Tooltip>
+            </ToggleButton>
+            </ToggleButtonGroup>
+            </Box>
+            </Grid>
+            <Grid xs="auto" >
+            <Box padding={1}>
+            <Button onClick={() => addNewParameter()}>Add new variable</Button>
             </Box>
             </Grid>
             </Grid>

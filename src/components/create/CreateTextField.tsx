@@ -10,9 +10,10 @@ interface CreateTextFieldProps {
     env?: envtype;
     nunjucks?: Boolean;
     errorcheck?: Function;
+    tooltip?: string;
 }
 
-export function CreateTextField({ initial, handleChange, nunjucks, env, errorcheck, ...textfieldprops }: CreateTextFieldProps & TextFieldProps) {
+export function CreateTextField({ initial, handleChange, nunjucks, env, errorcheck, tooltip, ...textfieldprops }: CreateTextFieldProps & TextFieldProps) {
     const [textfieldcur, setTextFieldCur] = React.useState<string>(initial ? initial : "");
     const [textfielderror, setTextFieldError] = React.useState<string>("");
     // This is a component that extends the Textfield component to allow for error checking in the case
@@ -41,7 +42,7 @@ export function CreateTextField({ initial, handleChange, nunjucks, env, errorche
 
     return (
         <div>
-            <Tooltip title={textfielderror} arrow>
+            <Tooltip title={textfielderror !== "" ? textfielderror : tooltip} arrow>
                 <TextField {...textfieldprops} value={textfieldcur} onChange={(e) => onTexFieldChange(e.target.value)} sx={{width: "100%"}} error={textfielderror !== ""} /> 
             </Tooltip>
         </div>

@@ -1,6 +1,12 @@
 courses:
-  grade2:
+  nsw_year_2:
     title: NSW Grade 2
     description: Exercises for topics covered in Grade 2 of the NSW syllabus.
     exercises:
       - exerciseid: simpleaddition
+  nsw_year_9:
+    title: NSW Year 9
+    description: Exercises for topics covered in Year 9 of the NSW syllabus.
+    exercises:
+      - exerciseid: integerarithmetic_simplenegativenumbers
+  

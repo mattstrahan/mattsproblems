@@ -2,6 +2,7 @@ import ReactMarkdown from "react-markdown";
 import { FillinsAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
 import { Problem } from "../classes/Problem";
 import { AnswerKey, FillinsAnswerComponent, NumberAnswerComponent, TextAnswerComponent } from "./Answers";
+import Markdown from "./Markdown";
 
 export interface ProblemComponentProps {
     number?: number;
@@ -31,7 +32,7 @@ export function ProblemComponent ({number, problem, answerKey} : ProblemComponen
         ret.push( (
             <div key={partnumber}>
                 <h3>Question {number && <span>number</span>}</h3>
-                <ReactMarkdown>{part.question}</ReactMarkdown>
+                <Markdown>{part.question}</Markdown>
                 { partanswer }
             </div>
             ) );

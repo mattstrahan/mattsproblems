@@ -11,12 +11,21 @@ const repository : RepositorySpec = {
                 }
             ]
         },
-        "grade2": {
+        "nsw_year_2": {
             "title": "NSW Grade 2",
             "description": "Exercises for topics covered in Grade 2 of the NSW syllabus.",
             "exercises": [
                 {
                     "exerciseid": "simpleaddition"
+                }
+            ]
+        },
+        "nsw_year_9": {
+            "title": "NSW Year 9",
+            "description": "Exercises for topics covered in Year 9 of the NSW syllabus.",
+            "exercises": [
+                {
+                    "exerciseid": "integerarithmetic_simplenegativenumbers"
                 }
             ]
         }
@@ -51,6 +60,33 @@ const repository : RepositorySpec = {
             "finish": {
                 "text": "You've finished! Well done!"
             }
+        },
+        "integerarithmetic_simplenegativenumbers": {
+            "title": "Simple negative number arithmetic",
+            "description": "Adding, subtracting, multiplying, and dividing negative numbers",
+            "topic": "Integer Arithmetic",
+            "stages": [
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_simplenegativenumberaddition",
+                    "repeats": 2
+                },
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_simplenegativenumbersubtraction",
+                    "repeats": 2
+                },
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_simplenegativenumbermultiplication",
+                    "repeats": 2
+                },
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_simplenegativenumberdivision",
+                    "repeats": 2
+                }
+            ]
         },
         "matrixvector": {
             "title": "Applying a matrix to a vector",
@@ -205,6 +241,126 @@ const repository : RepositorySpec = {
                 "value": "{{ a + b + c }}"
             }
         },
+        "integerarithmetic_simplenegativenumberaddition": {
+            "title": "Simple negative number addition",
+            "description": "",
+            "additionalparts": [],
+            "question": "What is ${{a}}+{%if b>0%}{{b}}{%else%}({{b}}){%endif%}$?",
+            "answer": {
+                "type": "number",
+                "label": "Answer:",
+                "value": "{{a+b}}",
+                "precision": "0",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "a": {
+                    "type": "number",
+                    "min": "-20",
+                    "max": "10",
+                    "step": 1,
+                    "example": -13
+                },
+                "b": {
+                    "type": "number",
+                    "min": "-20",
+                    "max": "10",
+                    "step": 1,
+                    "example": -5
+                }
+            }
+        },
+        "integerarithmetic_simplenegativenumbermultiplication": {
+            "title": "Simple negative number multiplication",
+            "description": "",
+            "additionalparts": [],
+            "question": "What is ${{a}}\\times{%if b>0%}{{b}}{%else%}({{b}}){%endif%}$?",
+            "answer": {
+                "type": "number",
+                "label": "Answer:",
+                "value": "{{a*b}}",
+                "precision": "0",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "a": {
+                    "type": "number",
+                    "min": "-12",
+                    "max": "12",
+                    "step": 1,
+                    "example": -10
+                },
+                "b": {
+                    "type": "number",
+                    "min": "-12",
+                    "max": "12",
+                    "step": 1,
+                    "example": 5
+                }
+            }
+        },
+        "integerarithmetic_simplenegativenumberdivision": {
+            "title": "Simple negative number division",
+            "description": "",
+            "additionalparts": [],
+            "question": "What is ${{a*b}}\\div{%if b>0%}{{b}}{%else%}({{b}}){%endif%}$?",
+            "answer": {
+                "type": "number",
+                "label": "Answer:",
+                "value": "{{a}}",
+                "precision": "0",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "a": {
+                    "type": "number",
+                    "min": "-12",
+                    "max": "12",
+                    "step": 1,
+                    "example": -12
+                },
+                "b": {
+                    "type": "number",
+                    "min": "-12",
+                    "max": "12",
+                    "step": 1,
+                    "example": -3
+                }
+            }
+        },
+        "integerarithmetic_simplenegativenumbersubtraction": {
+            "title": "Simple negative number subtraction",
+            "description": "",
+            "additionalparts": [],
+            "question": "What is ${{a}}-{%if b>0%}{{b}}{%else%}({{b}}){%endif%}$?",
+            "answer": {
+                "type": "number",
+                "label": "Answer:",
+                "value": "{{a-b}}",
+                "precision": "0",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "a": {
+                    "type": "number",
+                    "min": "-20",
+                    "max": "10",
+                    "step": 1,
+                    "example": 7
+                },
+                "b": {
+                    "type": "number",
+                    "min": "-20",
+                    "max": 10,
+                    "step": 1,
+                    "example": -3
+                }
+            }
+        },
         "2x2matrixvectormultiply": {
             "title": "Multiply a 2x2 matrix and a 1x2 vector",
             "description": "",
@@ -322,6 +478,13 @@ const repository : RepositorySpec = {
             "exerciseids": [
                 "matrixvector",
                 "matrixmultiply"
+            ]
+        },
+        "Integer Arithmetic": {
+            "title": "Integer Arithmetic",
+            "level": 99,
+            "exerciseids": [
+                "integerarithmetic_simplenegativenumbers"
             ]
         }
     }

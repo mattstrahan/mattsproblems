@@ -9,7 +9,9 @@ export const correct: string[] =
         "Congratulations!",
         "Another one down!",
         "Right again!",
-        "What an answer!"
+        "What an answer!",
+        "Great stuff!",
+        "That's it!"
     ]
 
 export {};

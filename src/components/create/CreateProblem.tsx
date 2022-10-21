@@ -33,6 +33,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { AnswerSpec } from "../../classes/Answers";
+import Tooltip from "@mui/material/Tooltip";
 
 export function getCreateEnv(parameters?: { [key: string]: ParameterSpec }, variables?: { [key: string]: Partial<VariableSpec> }, stopParametersAt:string="", stopVariablesAt:string="") {
     // Go through and get the env from the variables. We only need to loop until we see our own varname.
@@ -104,8 +105,14 @@ export function CreateProblemTitleComponent({probid, stageindex} : CreateProblem
                 <Grid container>
                     <Grid xs>
                         {editTitle
-                        ? <div><TextField label="Title" value={title ? title : ""} onChange={(e) => dispatch(setProblemTitle({probid:probid, title:e.target.value}))} /> <IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></div>
-                        : <Typography variant="h3">{title} <IconButton onClick={() => setEditTitle(true)}><EditIcon /></IconButton></Typography> 
+                        ? <div>
+                            <TextField label="Title" value={title ? title : ""} onChange={(e) => dispatch(setProblemTitle({probid:probid, title:e.target.value}))} />
+                            <Tooltip title="Finish editing problem title" arrow ><IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></Tooltip>
+                          </div>
+                        :
+                            <Typography variant="h3">{title}
+                            <Tooltip title="Edit problem title" arrow><IconButton onClick={() => setEditTitle(true)}><EditIcon /></IconButton></Tooltip>
+                            </Typography>
                         }
                     </Grid>
                     <Grid xs="auto">
@@ -203,7 +210,7 @@ export function CreateRepeatProblemSelector({ stageindex }: CreateRepeatProblemS
     }
 
     return (
-        <Box>How many times should we repeat the problem?
+        <Box>How many times should we show this problem?
             
         <Grid container spacing={2} alignItems="center">
         <Grid xs>
