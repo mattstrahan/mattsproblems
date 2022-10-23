@@ -1,4 +1,3 @@
-import ReactMarkdown from "react-markdown";
 import { FillinsAnswer, MultipleChoiceAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
 import { Problem } from "../classes/Problem";
 import { AnswerKey, FillinsAnswerComponent, MultipleChoiceAnswerComponent, NumberAnswerComponent, TextAnswerComponent } from "./Answers";

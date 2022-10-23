@@ -26,6 +26,9 @@ const repository : RepositorySpec = {
             "exercises": [
                 {
                     "exerciseid": "integerarithmetic_simplenegativenumbers"
+                },
+                {
+                    "exerciseid": "integerarithmetic_roundingsigfigures"
                 }
             ]
         }
@@ -59,6 +62,27 @@ const repository : RepositorySpec = {
             ],
             "finish": {
                 "text": "You've finished! Well done!"
+            }
+        },
+        "integerarithmetic_roundingsigfigures": {
+            "title": "Rounding significant figures",
+            "description": "Rounding significant figures with \"closer to\" introductions.",
+            "topic": "Integer Arithmetic",
+            "parameters": {},
+            "stages": [
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_roundingsigfigures2part",
+                    "repeats": 2
+                },
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_roundingsigfigures",
+                    "repeats": 2
+                }
+            ],
+            "finish": {
+                "text": "You've finished!"
             }
         },
         "integerarithmetic_simplenegativenumbers": {
@@ -239,6 +263,93 @@ const repository : RepositorySpec = {
                 "type": "number",
                 "label": "{{a}} + {{b}} + {{c}} = ",
                 "value": "{{ a + b + c }}"
+            }
+        },
+        "integerarithmetic_roundingsigfigures2part": {
+            "title": "Round significant figures 2 parts",
+            "description": "Rounding to significant figures with \"closer to\" introduction",
+            "additionalparts": [
+                {
+                    "question": "What is ${{floor(n/(10**d))}}$ rounded to {{sf}} significant figures?",
+                    "answer": {
+                        "type": "number",
+                        "label": "Answer:",
+                        "value": "{%if floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) == round(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) %}{{floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}{%else%}{{round(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}{%endif%}",
+                        "precision": "0",
+                        "decimals": "0"
+                    }
+                }
+            ],
+            "question": "Is ${{floor(n/(10**d))}}$ closer to ${{floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}$ or ${{floor(floor(n/(10**d))/(10**(7-sf-d))+1)*(10**(7-sf-d))}}$?",
+            "answer": {
+                "type": "multiplechoice",
+                "label": "Answer:",
+                "values": [
+                    "{%if floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) == round(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) %}{{floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}{%else%}{{floor(floor(n/(10**d))/(10**(7-sf-d))+1)*(10**(7-sf-d))}}{%endif%}",
+                    "{%if floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) != round(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) %}{{floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}{%else%}{{floor(floor(n/(10**d))/(10**(7-sf-d))+1)*(10**(7-sf-d))}}{%endif%}"
+                ],
+                "answer": 0
+            },
+            "parameters": {},
+            "variables": {
+                "n": {
+                    "type": "number",
+                    "min": "1000000",
+                    "max": "9999999",
+                    "step": 1,
+                    "example": 7177284
+                },
+                "d": {
+                    "type": "number",
+                    "min": "0",
+                    "max": "5",
+                    "step": 1,
+                    "example": 3
+                },
+                "sf": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{6-d}}",
+                    "step": 1,
+                    "example": 2
+                }
+            }
+        },
+        "integerarithmetic_roundingsigfigures": {
+            "title": "Round significant figures",
+            "description": "Rounding to significant figures",
+            "additionalparts": [],
+            "question": "What is ${{floor(n/(10**d))}}$ rounded to {{sf}} significant figures?",
+            "answer": {
+                "type": "number",
+                "label": "Answer:",
+                "value": "{%if floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) == round(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d)) %}{{floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}{%else%}{{round(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}{%endif%}",
+                "precision": "0",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "d": {
+                    "type": "number",
+                    "min": 0,
+                    "max": "5",
+                    "step": 1,
+                    "example": 1
+                },
+                "sf": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{6-d}}",
+                    "step": 1,
+                    "example": 4
+                },
+                "n": {
+                    "type": "number",
+                    "min": "1000000",
+                    "max": "9999999",
+                    "step": 1,
+                    "example": 5109776
+                }
             }
         },
         "integerarithmetic_simplenegativenumberaddition": {
@@ -484,6 +595,7 @@ const repository : RepositorySpec = {
             "title": "Integer Arithmetic",
             "level": 99,
             "exerciseids": [
+                "integerarithmetic_roundingsigfigures",
                 "integerarithmetic_simplenegativenumbers"
             ]
         }

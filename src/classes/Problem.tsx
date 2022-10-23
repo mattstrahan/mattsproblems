@@ -1,5 +1,5 @@
 import * as nunjucks from 'nunjucks';
-import { envtype } from '../helpers/env';
+import { defaultenv, envtype } from '../helpers/env';
 import { Answer, AnswerSpec, buildFillinsAnswer, buildMultipleChoiceAnswer, buildNumberAnswer, buildTextAnswer, FillinsAnswerSpec, MultipleChoiceAnswerSpec, NumberAnswerSpec, TextAnswerSpec } from './Answers';
 import { getParameters, ParameterSpec } from './Parameters';
 import { VariableLetterSpec, VariableNumberSpec, VariableSpec } from './Variables';
@@ -63,9 +63,9 @@ export class ProblemSpec implements ProblemSpec {
 
     getProblem(parameters: { [key: string]: string | number } = {}, questionnumber: number = 0) : Problem {
 
-        let env: envtype = {};
+        let env: envtype = defaultenv;
         if(this.parameters)
-            env = getParameters(this.parameters, parameters);
+            env = {...env, ...getParameters(this.parameters, parameters)};
         let parts : Part[] = [];
         let question: string = "";
         let answer: Answer = { type: "text", text: "", isCorrect: false };

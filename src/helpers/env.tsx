@@ -13,7 +13,10 @@ export function pm(value: number) {
 }
 
 export const defaultenv = {
-    pm: pm
+    pm: pm,
+    round: Math.round,
+    floor: Math.floor,
+    abs: Math.abs
 }
 
 export interface envtype {

@@ -188,7 +188,7 @@ export function CreateAnswerComponent({ probid, partindex, env }: CreateAnswerPr
 
     const changeAnswer = (oldanswer:Partial<AnswerSpec>, newanswer:Partial<AnswerSpec>, setFunction:Function) => {
         const subanswer = combinePartialAnswerValues(oldanswer, newanswer);
-        dispatch(setAnswer({probid:probid, answer:subanswer}));
+        dispatch(setAnswer({probid:probid, answer:subanswer, partindex:partindex}));
         setFunction(subanswer);
     }
 

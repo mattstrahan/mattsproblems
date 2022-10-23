@@ -31,6 +31,15 @@ class Repository:
 
     def output(self, file):
         # Output the final repository to a TSX file to be read by MMP typescript
+        
+        # Remove exercise creator variables if found
+        for problemid in self.repository["problems"]:
+            if "showRepeats" in self.repository["problems"][problemid]:
+                del self.repository["problems"][problemid]["showRepeats"]
+            if "showParts" in self.repository["problems"][problemid]:
+                del self.repository["problems"][problemid]["showParts"]
+            if "showParameters" in self.repository["problems"][problemid]:
+                del self.repository["problems"][problemid]["showParameters"]
 
         # Sort out topics
         for exerciseid in self.repository["exercises"]:

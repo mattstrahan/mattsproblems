@@ -164,8 +164,6 @@ export function buildMultipleChoiceAnswer(multipleChoiceAnswerSpec: MultipleChoi
     const doNotRandomise = multipleChoiceAnswerSpec.doNotRandomise;
 
     const randomArray = shuffleArray<number>([...Array(multipleChoiceAnswerSpec.values.length).keys()]);
-    console.log(`randomArray: ${randomArray}`)
-    console.log(`answer: ${multipleChoiceAnswerSpec.answer}`)
     const answer = multipleChoiceAnswerSpec.doNotRandomise ? multipleChoiceAnswerSpec.answer : randomArray.findIndex(object => object === multipleChoiceAnswerSpec.answer);
     let values = multipleChoiceAnswerSpec.values;
     if(!doNotRandomise) {
@@ -182,7 +180,5 @@ export function buildMultipleChoiceAnswer(multipleChoiceAnswerSpec: MultipleChoi
         values = newValues;
         
     }
-    console.log(`new values: ${values}`)
-    console.log(`new answer: ${answer}`)
     return { type: "multiplechoice", label: label, values: values, answer: answer, isCorrect: false };
 }

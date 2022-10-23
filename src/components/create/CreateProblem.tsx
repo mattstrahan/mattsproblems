@@ -258,7 +258,7 @@ export function CreatePartComponent({ probid, partindex }: CreatePartComponentPr
         <Box>
             {partindex !== undefined ? <Typography paragraph variant="h5">Part {partindex+2}</Typography> : (null)}
             <Typography paragraph variant="h6">Question</Typography>
-            <CreateTextField nunjucks multiline label="" initial={problem.question} handleChange={(e:string) => dispatch(setProblemQuestion({probid:probid, text:e, partindex:partindex}))} env={env} />
+            <CreateTextField nunjucks multiline label="" initial={question} handleChange={(e:string) => dispatch(setProblemQuestion({probid:probid, text:e, partindex:partindex}))} env={env} />
             <CreateAnswerComponent env={env} probid={probid} partindex={partindex} />
         </Box>
     )

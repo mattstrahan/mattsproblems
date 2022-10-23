@@ -17,7 +17,7 @@ import { getCreateEnv } from "./CreateProblem";
 export function checkNumber(value:string) {
     const valuenumber = parseInt(value);
     if(isNaN(valuenumber))
-        throw new Error("Value does not end up as a number");
+        throw new Error(`Value does not end up as a number: ${value}`);
     return true;
 }
 
@@ -145,6 +145,7 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                 </Grid>
                 <Grid xs={12} sm={2}>
                 <CreateTextField
+                    nunjucks
                     label="Minimum value"
                     tooltip="The minimum value the variable can take"
                     initial={numbervariable.min.toString()}
@@ -154,6 +155,7 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                 </Grid>
                 <Grid xs={12} sm={2}>
                 <CreateTextField
+                    nunjucks
                     label="Maximum value"
                     tooltip="The maximum value the variable can take"
                     initial={numbervariable.max.toString()}
@@ -163,6 +165,7 @@ function CreateVariableNumberComponent({ probid, varname }: CreateVariableNumber
                 </Grid>
                 <Grid xs={12} sm={2}>
                 <CreateTextField
+                    nunjucks
                     label="Steps between values"
                     tooltip="How big a step between possible values the variable can have"
                     initial={numbervariable.step.toString()}

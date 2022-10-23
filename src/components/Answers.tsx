@@ -1,4 +1,4 @@
-import { Alert, Button, Snackbar, TextField } from "@mui/material";
+import { Alert, Button, TextField } from "@mui/material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Box from "@mui/system/Box";
@@ -10,7 +10,6 @@ import randomTryAgainMessage from "../lists/tryagain";
 import { answerIsCorrect, nextProblem } from "../reducers/RepositoryReducer";
 import Markdown, { MarkdownFillins } from "./Markdown";
 import Grid from "@mui/material/Unstable_Grid2";
-import ListItemText from "@mui/material/ListItemText";
 import ListItemButton from "@mui/material/ListItemButton";
 
 export interface AnswerKey {
