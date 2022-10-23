@@ -17,14 +17,23 @@ const worksheetTemplate = `
 {% elif stage.type == "problem" %}
 ## Question {{stage.questionnumber}}
 
-{{stage.question}}
-{% if stage.answer.type == "text" %}
-{{stage.answer.label}} __________
-{% elif stage.answer.type == "fillins" %}
-{{stage.answer.label}} {{stage.answer.answerworksheet | safe}}
-{% elif stage.answer.type == "number" %}
-{{stage.answer.label}} __________
+{%- for part in stage.parts %}
+
+{{part.question}}
+{% if part.answer.type == "text" %}
+{{part.answer.label}} __________
+{% elif part.answer.type == "fillins" %}
+{{part.answer.label}} {{part.answer.answerworksheet | safe}}
+{% elif part.answer.type == "number" %}
+{{part.answer.label}} __________
+{% elif part.answer.type == "multiplechoice" %}
+{{part.answer.label}}
+{% for answer in part.answer.values %}
+- {{answer}}
+{% endfor %}
 {%- endif %}
+{%- endfor %}
+
 {%- endif %}
 {%- endfor %}
 
@@ -32,13 +41,17 @@ const worksheetTemplate = `
 
 {% for stage in exercise.stages %}
 {%- if stage.type == "problem" %}
-{% if stage.answer.type == "text" %}
-{{stage.answer.label}} {{stage.answer.text}}
-{% elif stage.answer.type == "fillins" %}
-{{stage.answer.label}} {{stage.answer.answertext | safe}}
-{% elif stage.answer.type == "number" %}
-{{stage.answer.label}} {{stage.answer.value}}
+{%- for part in stage.parts %}
+{% if part.answer.type == "text" %}
+{{part.answer.label}} {{part.answer.text}}
+{% elif part.answer.type == "fillins" %}
+{{part.answer.label}} {{part.answer.answertext | safe}}
+{% elif part.answer.type == "number" %}
+{{part.answer.label}} {{part.answer.value}}
+{% elif part.answer.type == "multiplechoice" %}
+{{part.answer.label}} {{part.answer.values[part.answer.answer]}}
 {%- endif %}
+{% endfor %}
 {%- endif %}
 {%- endfor %}
 `;
