@@ -41,6 +41,7 @@ const worksheetTemplate = `
 
 {% for stage in exercise.stages %}
 {%- if stage.type == "problem" %}
+## Question {{stage.questionnumber}}
 {%- for part in stage.parts %}
 {% if part.answer.type == "text" %}
 {{part.answer.label}} {{part.answer.text}}
