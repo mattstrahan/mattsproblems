@@ -1,6 +1,6 @@
 import * as nunjucks from 'nunjucks';
 import { envtype } from '../helpers/env';
-import { Answer, AnswerSpec, buildFillinsAnswer, buildNumberAnswer, buildTextAnswer, FillinsAnswerSpec, NumberAnswerSpec, TextAnswerSpec } from './Answers';
+import { Answer, AnswerSpec, buildFillinsAnswer, buildMultipleChoiceAnswer, buildNumberAnswer, buildTextAnswer, FillinsAnswerSpec, MultipleChoiceAnswerSpec, NumberAnswerSpec, TextAnswerSpec } from './Answers';
 import { getParameters, ParameterSpec } from './Parameters';
 import { VariableLetterSpec, VariableNumberSpec, VariableSpec } from './Variables';
 
@@ -84,6 +84,8 @@ export class ProblemSpec implements ProblemSpec {
                 answer = buildNumberAnswer(this.answer as NumberAnswerSpec, env);
             else if (this.answer.type === "fillins")
                 answer = buildFillinsAnswer(this.answer as FillinsAnswerSpec, env);
+            else if (this.answer.type === "multiplechoice")
+                answer = buildMultipleChoiceAnswer(this.answer as MultipleChoiceAnswerSpec, env);
             else
                 answer = buildTextAnswer(this.answer as TextAnswerSpec, env);
         
@@ -99,6 +101,8 @@ export class ProblemSpec implements ProblemSpec {
                         newpart.answer = buildNumberAnswer(part.answer as NumberAnswerSpec, env);
                     else if (part.answer.type === "fillins")
                         newpart.answer = buildFillinsAnswer(part.answer as FillinsAnswerSpec, env);
+                    else if (part.answer.type === "multiplechoice")
+                        newpart.answer = buildMultipleChoiceAnswer(part.answer as MultipleChoiceAnswerSpec, env);
                     else
                         newpart.answer = buildTextAnswer(part.answer as TextAnswerSpec, env);
                 parts.push(newpart);
