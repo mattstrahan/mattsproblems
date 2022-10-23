@@ -32,7 +32,15 @@ export interface FillinsAnswer {
     isCorrect: boolean;
 }
 
-export type Answer = TextAnswer | NumberAnswer | FillinsAnswer;
+export interface MultipleChoiceAnswer {
+    type: "multiplechoice";
+    label?: string;
+    values: string[];
+    answer: number;
+    isCorrect: boolean;
+}
+
+export type Answer = TextAnswer | NumberAnswer | FillinsAnswer | MultipleChoiceAnswer;
 
 export interface NumberAnswerSpec {
     type: "number";
@@ -54,6 +62,14 @@ export interface FillinsAnswerSpec {
     value: string;
 }
 
+export interface MultipleChoiceAnswerSpec {
+    type: "multiplechoice";
+    label?: string;
+    values: string[];
+    answer: number;
+    doNotRandomise?: boolean;
+}
+
 export function combinePartialAnswerValues(answera:Partial<AnswerSpec>, answerb:Partial<AnswerSpec>) {
     if (answera["type"] === "number" && answerb["type"] === "number")
         return {...answera as Partial<NumberAnswerSpec>, ...answerb as Partial<NumberAnswerSpec>};
@@ -61,11 +77,13 @@ export function combinePartialAnswerValues(answera:Partial<AnswerSpec>, answerb:
         return {...answera as Partial<TextAnswerSpec>, ...answerb as Partial<TextAnswerSpec>};
     if (answera["type"] === "fillins" && answerb["type"] === "fillins")
         return {...answera as Partial<FillinsAnswerSpec>, ...answerb as Partial<FillinsAnswerSpec>};
+    if (answera["type"] === "multiplechoice" && answerb["type"] === "multiplechoice")
+        return {...answera as Partial<MultipleChoiceAnswerSpec>, ...answerb as Partial<MultipleChoiceAnswerSpec>};
     return answera;
 }
 
 
-export type AnswerSpec = NumberAnswerSpec | TextAnswerSpec | FillinsAnswerSpec;
+export type AnswerSpec = NumberAnswerSpec | TextAnswerSpec | FillinsAnswerSpec | MultipleChoiceAnswerSpec;
 
 export function buildTextAnswer(textAnswerSpec : TextAnswerSpec, env : envtype) : TextAnswer {
     const text = nunjucks.renderString(textAnswerSpec.text, env);
@@ -125,4 +143,46 @@ export function buildFillinsAnswer(fillinAnswerSpec: FillinsAnswerSpec, env: env
         fillins: getfillins.fillins,
         isCorrect: false
     };
+}
+
+// Needed for multiple choice
+function shuffleArray<T>(array:Array<T>) : Array<T> {
+    // Loop through the array backwards
+    for(let ci = array.length - 1; ci >= 0; ci--) {
+        // Swap the element with a random one before it.
+        let ri = Math.floor(Math.random() * (ci+1));
+        [array[ci], array[ri]] = [array[ri], array[ci]];
+    }
+    return array;
+}
+
+export function buildMultipleChoiceAnswer(multipleChoiceAnswerSpec: MultipleChoiceAnswerSpec, env: envtype): MultipleChoiceAnswer {
+    const label = typeof multipleChoiceAnswerSpec.label === "string"
+        ? nunjucks.renderString(multipleChoiceAnswerSpec.label, env)
+        : undefined;
+    
+    const doNotRandomise = multipleChoiceAnswerSpec.doNotRandomise;
+
+    const randomArray = shuffleArray<number>([...Array(multipleChoiceAnswerSpec.values.length).keys()]);
+    console.log(`randomArray: ${randomArray}`)
+    console.log(`answer: ${multipleChoiceAnswerSpec.answer}`)
+    const answer = multipleChoiceAnswerSpec.doNotRandomise ? multipleChoiceAnswerSpec.answer : randomArray.findIndex(object => object === multipleChoiceAnswerSpec.answer);
+    let values = multipleChoiceAnswerSpec.values;
+    if(!doNotRandomise) {
+        let newValues:string[] = []
+        for(let i = 0; i < randomArray.length; i++) {
+            newValues.push(nunjucks.renderString(values[randomArray[i]], env));
+        }
+        values = newValues;
+    } else {
+        let newValues:string[] = []
+        for(let i = 0; i < randomArray.length; i++) {
+            newValues.push(nunjucks.renderString(values[i], env));
+        }
+        values = newValues;
+        
+    }
+    console.log(`new values: ${values}`)
+    console.log(`new answer: ${answer}`)
+    return { type: "multiplechoice", label: label, values: values, answer: answer, isCorrect: false };
 }

@@ -1,6 +1,5 @@
 // This is a list of messages to appear when you get something right.
-
-export const correct: string[] =
+const correct: string[] =
     [
         "You got it right!",
         "Great going!",
@@ -11,7 +10,12 @@ export const correct: string[] =
         "Right again!",
         "What an answer!",
         "Great stuff!",
-        "That's it!"
+        "That's it!",
+        "Correct!",
+        "Brilliant!",
+        "Another right answer!"
     ]
 
-export {};
+const randomCorrectMessage = () =>  correct[Math.floor(Math.random()*correct.length)];
+
+export default randomCorrectMessage;

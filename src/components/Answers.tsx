@@ -1,9 +1,17 @@
 import { Alert, Button, Snackbar, TextField } from "@mui/material";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Box from "@mui/system/Box";
 import React from "react";
-import { FillinsAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
+import { FillinsAnswer, MultipleChoiceAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
 import { useAppDispatch } from "../hooks/hooks";
+import randomCorrectMessage from "../lists/correct";
+import randomTryAgainMessage from "../lists/tryagain";
 import { answerIsCorrect, nextProblem } from "../reducers/RepositoryReducer";
 import Markdown, { MarkdownFillins } from "./Markdown";
+import Grid from "@mui/material/Unstable_Grid2";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemButton from "@mui/material/ListItemButton";
 
 export interface AnswerKey {
     exerciseSpecId: string;
@@ -25,13 +33,6 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
     const [isCorrect, setIsCorrect] = React.useState(false);
     const dispatch = useAppDispatch();
 
-    const handleCloseTryAgain = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenTryAgain(false);
-    };
-
     const handleSubmit = (event: React.SyntheticEvent, reason?: string) => {
         event.preventDefault();
         if (!enteredanswer) return;
@@ -49,8 +50,15 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
         return (
             <div>
                 <div>
-                    {numberAnswer.label ? numberAnswer.label : "Answer: "}
-                    {numberAnswer.value}
+                    <form>
+                        {numberAnswer.label ? numberAnswer.label : "Answer: "}
+                        <TextField
+                            disabled
+                            className="correct-answer"
+                            value={enteredanswer}
+                        />
+                    </form>
+                    <Alert onClose={() => {}}>{randomCorrectMessage()}</Alert>
                 </div>
                 <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
             </div>
@@ -58,24 +66,16 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
     }
     return (
         <div>
-            <Snackbar
-                open={opentryagain}
-                autoHideDuration={4000}
-                onClose={handleCloseTryAgain}
-            >
-                <Alert onClose={handleCloseTryAgain} severity="error">
-                    Try again!
-                </Alert>
-            </Snackbar>
             <form onSubmit={handleSubmit}>
                 {numberAnswer.label ? numberAnswer.label : "Answer: "}
                 <TextField
                     autoFocus
                     className="answer"
                     value={enteredanswer}
-                    onChange={e => setEnteredAnswer(e.target.value)}
+                    onChange={e => {setEnteredAnswer(e.target.value); setOpenTryAgain(false)}}
                 />
                 <Button type="submit">Submit answer</Button>
+                <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
             </form>
             <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
@@ -102,20 +102,10 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
 
     // This is fed into onChange for each input.
     const onFillinChange = (id: string, event: { target: HTMLInputElement; }, reason?: string) => {
-        console.log(`current entered answer: ${enteredanswer}`);
         const fillin_id = parseInt(id.substring(7));
         const newenteredanswers = enteredanswer;
         newenteredanswers[fillin_id] = event.target.value;
         setEnteredAnswer(newenteredanswers);
-        console.log(enteredanswer);
-        console.log(`${id} with value ${event.target.value}`);
-    };
-
-
-    const handleCloseTryAgain = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
         setOpenTryAgain(false);
     };
 
@@ -147,6 +137,7 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
                 <div>
                     <Markdown>{fillinAnswer.label ? fillinAnswer.label : "Answer: "}</Markdown>
                     <Markdown>{fillinAnswer.answertext}</Markdown>
+                    <Alert onClose={() => {}}>{randomCorrectMessage()}</Alert>
                 </div>
                 <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
             </div>
@@ -154,19 +145,11 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
     }
     return (
         <div>
-            <Snackbar
-                open={opentryagain}
-                autoHideDuration={4000}
-                onClose={handleCloseTryAgain}
-            >
-                <Alert onClose={handleCloseTryAgain} severity="error">
-                    Try again!
-                </Alert>
-            </Snackbar>
             <form onSubmit={handleSubmit}>
                 <Markdown>{fillinAnswer.label ? fillinAnswer.label : "Answer: "}</Markdown>
                 <MarkdownFillins onFillinChange={onFillinChange}>{fillinAnswer.answerfillins}</MarkdownFillins>
                 <Button type="submit">Submit answer</Button>
+                <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
             </form>
             <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
@@ -181,4 +164,71 @@ export interface TextAnswerComponentProps {
 export function TextAnswerComponent({ answer, answerKey }: TextAnswerComponentProps) {
     const textAnswer = answer as TextAnswer;
     return (<p>{textAnswer.text}</p>);
+}
+
+export interface MultipleChoiceComponentProps {
+    answer: MultipleChoiceAnswer;
+    answerKey: AnswerKey;
+}
+
+export function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleChoiceComponentProps) {
+    const [opentryagain, setOpenTryAgain] = React.useState(false);
+    const [isCorrect, setIsCorrect] = React.useState(false);
+    const dispatch = useAppDispatch();
+
+    const handleClick = (index:number) => {
+        if (index === answer.answer) {
+            setIsCorrect(true);
+            dispatch(answerIsCorrect(answerKey));
+        } else {
+            setOpenTryAgain(true);
+        }
+    };
+
+    if (isCorrect) {
+        return (
+            <div>
+            <Grid container>
+            <Grid xs="auto">
+                <Markdown>{answer.label ? answer.label : "Answer: "}</Markdown>
+            </Grid>
+                <Grid xs>
+                <List>
+                    {answer.values.map((answerValue, index) => 
+                        <ListItem key={index}>
+                            <ListItemButton selected={answer.answer === index} >
+                                <Markdown>{answerValue}</Markdown>
+                            </ListItemButton>
+                        </ListItem>
+                    )}
+                </List>
+                </Grid>
+            </Grid>
+                <Alert onClose={() => {}}>{randomCorrectMessage()}</Alert>
+                <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
+            </div>
+        );
+    }
+    return (
+        <div>
+            <Grid container>
+                <Grid xs="auto">
+                    <Markdown>{answer.label ? answer.label : "Answer: "}</Markdown>
+                </Grid>
+                <Grid xs>
+                <List>
+                    {answer.values.map((answerValue, index) => 
+                        <ListItem key={index}>
+                            <ListItemButton onClick={() => handleClick(index)}>
+                                <Markdown>{answerValue}</Markdown>
+                            </ListItemButton>
+                        </ListItem>
+                    )}
+                </List>
+                </Grid>
+            </Grid>
+            <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
+            <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
+        </div>
+    );
 }

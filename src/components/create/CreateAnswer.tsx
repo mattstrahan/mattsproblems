@@ -4,7 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import React from "react";
-import { AnswerSpec, buildFillinsAnswer, buildNumberAnswer, buildTextAnswer, combinePartialAnswerValues, FillinsAnswerSpec, NumberAnswerSpec, TextAnswerSpec } from "../../classes/Answers";
+import { AnswerSpec, buildFillinsAnswer, buildMultipleChoiceAnswer, buildNumberAnswer, buildTextAnswer, combinePartialAnswerValues, FillinsAnswerSpec, MultipleChoiceAnswerSpec, NumberAnswerSpec, TextAnswerSpec } from "../../classes/Answers";
 import { envtype, getStrValue } from "../../helpers/env";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { setAnswer } from "../../reducers/CreateReducer";
@@ -12,6 +12,15 @@ import Markdown from "../Markdown";
 import { CreateTextField } from "./CreateTextField";
 import Grid from "@mui/material/Unstable_Grid2";
 import { checkNumber } from "./CreateVariable";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import CheckIcon from '@mui/icons-material/Check';
+import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
+import IconButton from "@mui/material/IconButton";
+import ListItemButton from "@mui/material/ListItemButton";
 
 interface CreateTextAnswerProps {
     answer: Partial<TextAnswerSpec>;
@@ -90,6 +99,46 @@ function CreateFillinsAnswerComponent({ answer, onChange, env }: CreateFillinsAn
     )
 }
 
+interface CreateMultipleChoiceAnswerProps {
+    answer: Partial<MultipleChoiceAnswerSpec>;
+    onChange: Function;
+    env?: envtype;
+}
+
+function CreateMultipleChoiceComponent({ answer, onChange, env }: CreateMultipleChoiceAnswerProps) {
+    let values:string[] = answer.values !== undefined ? answer.values : [];
+
+    return (
+        <div>
+            <Box padding={2}>
+        <CreateTextField nunjucks label="Label" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({...answer, label:e})} env={env} />
+        <Grid container>
+        {values.map((answerValue, index) =>
+            <Grid container>
+                <Grid xs="auto">
+                {answer.answer === index
+                    ? <IconButton disabled><CheckIcon /></IconButton>
+                    : <IconButton onClick={() => onChange({...answer, answer:index})}><HorizontalRuleIcon /></IconButton>
+                }
+                </Grid>
+                <Grid xs>
+                <CreateTextField
+                nunjucks
+                label={`Answer ${index+1}`}
+                initial={answerValue}
+                handleChange={(e:string) => {onChange({...answer, values:values.slice(0,index).concat([e],values.slice(index+1,values.length))})}}
+                env={env} />
+                </Grid>
+            </Grid>
+            )}
+        </Grid>
+        <Button onClick={() => onChange({...answer, values:values.concat([""])})}>Add new option</Button>
+        Randomise: <Checkbox checked={!answer.doNotRandomise} onChange={() => onChange({...answer, doNotRandomise:!answer.doNotRandomise})} />
+                </Box>
+        </div>
+    )
+}
+
 
 interface CreateAnswerProps {
     probid: string;
@@ -126,6 +175,13 @@ export function CreateAnswerComponent({ probid, partindex, env }: CreateAnswerPr
             label: "Answer:",
             value: ""
         });
+    const [multipleChoiceAnswer, setMultipleChoiceAnswer] = React.useState<Partial<MultipleChoiceAnswerSpec>>(
+        answer !== undefined && answer.type === "multiplechoice" ? answer : 
+            {type: "multiplechoice",
+            label: "Answer:",
+            values: [""],
+            answer:0
+        });
 
     if(answer === undefined)
     return <div>Part not found</div>;
@@ -141,13 +197,14 @@ export function CreateAnswerComponent({ probid, partindex, env }: CreateAnswerPr
 
     const onChangeTab = (event: React.SyntheticEvent, newtype: number) => {
         setAnswerType(newtype);
-        console.log(`new tab ${newtype}`)
         if(newtype === 0)
             dispatch(setAnswer({probid:probid, answer:numberanswer}));
         else if(newtype === 1)
             dispatch(setAnswer({probid:probid, answer:textanswer}));
         else if(newtype === 2)
             dispatch(setAnswer({probid:probid, answer:fillinsanswer}));
+        else if(newtype === 3)
+            dispatch(setAnswer({probid:probid, answer:multipleChoiceAnswer}));
     };
 
     return (
@@ -156,6 +213,7 @@ export function CreateAnswerComponent({ probid, partindex, env }: CreateAnswerPr
           <Tab label="Number" />
           <Tab label="Text" />
           <Tab label="Fillins" />
+          <Tab label="Multiple Choice" />
         </Tabs>
         <div hidden={answertype !== 0}>
             <CreateNumberAnswerComponent
@@ -173,6 +231,12 @@ export function CreateAnswerComponent({ probid, partindex, env }: CreateAnswerPr
                 answer={fillinsanswer}
                 env={env}
                 onChange={(newanswer:Partial<FillinsAnswerSpec>) => {changeAnswer(fillinsanswer, newanswer, setFillinsAnswer)}} />
+        </div>
+        <div hidden={answertype !== 3}>
+            <CreateMultipleChoiceComponent
+                answer={multipleChoiceAnswer}
+                env={env}
+                onChange={(newanswer:Partial<MultipleChoiceAnswerSpec>) => {changeAnswer(multipleChoiceAnswer, newanswer, setMultipleChoiceAnswer)}} />
         </div>
         </Box>
     )
@@ -227,6 +291,28 @@ export function CreateShowAnswerComponent({ answer, env }: CreateShowAnswerProps
             <Markdown >{fillinsanswer.answertext}</Markdown>
             </Grid></Grid>
             </div>
+        )
+    }
+    
+    if(answer.type === "multiplechoice"){
+        var multipleChoiceAnswer = buildMultipleChoiceAnswer(answer as MultipleChoiceAnswerSpec, env);
+        return (
+            <Grid container>
+                <Grid xs="auto">
+                    <Markdown>{multipleChoiceAnswer.label !== undefined ? multipleChoiceAnswer.label : "Answer: "}</Markdown>
+                </Grid>
+                <Grid xs>
+                <List>
+                    {multipleChoiceAnswer.values.map((answerValue, index) => 
+                        <ListItem key={index}>
+                            <ListItemButton selected={answer.answer === index} disabled >
+                                <Markdown>{getStrValue(answerValue, env)}</Markdown>
+                            </ListItemButton>
+                        </ListItem>
+                    )}
+                </List>
+                </Grid>
+            </Grid>
         )
     }
 

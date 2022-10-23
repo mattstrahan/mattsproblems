@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
-import { FillinsAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
+import { FillinsAnswer, MultipleChoiceAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
 import { Problem } from "../classes/Problem";
-import { AnswerKey, FillinsAnswerComponent, NumberAnswerComponent, TextAnswerComponent } from "./Answers";
+import { AnswerKey, FillinsAnswerComponent, MultipleChoiceAnswerComponent, NumberAnswerComponent, TextAnswerComponent } from "./Answers";
 import Markdown from "./Markdown";
 
 export interface ProblemComponentProps {
@@ -28,6 +28,8 @@ export function ProblemComponent ({number, problem, answerKey} : ProblemComponen
             partanswer = <NumberAnswerComponent answer={part.answer as NumberAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
         } else if (part.answer.type === 'fillins') {
             partanswer = <FillinsAnswerComponent answer={part.answer as FillinsAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
+        } else if (part.answer.type === 'multiplechoice') {
+            partanswer = <MultipleChoiceAnswerComponent answer={part.answer as MultipleChoiceAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
         }
         ret.push( (
             <div key={partnumber}>

@@ -1,4 +1,4 @@
-export const tryagain:string[] =
+const tryagain:string[] =
 [
     "Better luck next time!",
     "You're getting there!",
@@ -6,6 +6,6 @@ export const tryagain:string[] =
     "Try again!"
     ]
 
-export const randomTryAgain = () =>  tryagain[Math.floor(Math.random()*tryagain.length)];
+const randomTryAgainMessage = () =>  tryagain[Math.floor(Math.random()*tryagain.length)];
 
-export { };
+export default randomTryAgainMessage;

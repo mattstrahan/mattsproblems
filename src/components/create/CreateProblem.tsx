@@ -106,7 +106,7 @@ export function CreateProblemTitleComponent({probid, stageindex} : CreateProblem
                     <Grid xs>
                         {editTitle
                         ? <div>
-                            <TextField label="Title" value={title ? title : ""} onChange={(e) => dispatch(setProblemTitle({probid:probid, title:e.target.value}))} />
+                            <TextField autoFocus label="Title" value={title ? title : ""} onChange={(e) => dispatch(setProblemTitle({probid:probid, title:e.target.value}))} />
                             <Tooltip title="Finish editing problem title" arrow ><IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></Tooltip>
                           </div>
                         :

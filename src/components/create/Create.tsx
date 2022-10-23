@@ -255,7 +255,7 @@ export function CreateExerciseInformationComponent() {
     return (
             <Box paddingY={2}>
                 {editTitle
-                ? <div><TextField label="Title" value={exercisetitle ? exercisetitle : ""} onChange={(e) => dispatch(setExerciseTitle(e.target.value))} /> <IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></div>
+                ? <div><TextField autoFocus label="Title" value={exercisetitle ? exercisetitle : ""} onChange={(e) => dispatch(setExerciseTitle(e.target.value))} /> <IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></div>
                 : <Typography variant="h3">{exercisetitle} <IconButton onClick={() => setEditTitle(true)}><EditIcon /></IconButton></Typography> 
                 }
                 <FetchMarkdown>{exerciseCreatorInfo}</FetchMarkdown>
