@@ -23,17 +23,19 @@ const repository : RepositorySpec = {
         "nsw_year_9": {
             "title": "NSW Year 9",
             "description": "Exercises for topics covered in Year 9 of the NSW syllabus.",
-            "exercises": [
-                {
-                    "exerciseid": "integerarithmetic_simplenegativenumbers"
-                },
-                {
-                    "exerciseid": "integerarithmetic_roundingsigfigures"
-                },
-                {
-                    "exerciseid": "integerarithmetic_roundingdecplaces"
-                }
-            ]
+            "topics": {
+                "Integer Arithmetic": [
+                    {
+                        "exerciseid": "integerarithmetic_simplenegativenumbers"
+                    },
+                    {
+                        "exerciseid": "integerarithmetic_roundingsigfigures"
+                    },
+                    {
+                        "exerciseid": "integerarithmetic_roundingdecplaces"
+                    }
+                ]
+            }
         }
     },
     "exercises": {

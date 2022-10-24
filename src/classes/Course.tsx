@@ -8,7 +8,8 @@ export interface CourseExerciseSpec {
 export interface Course {
     title?: string;
     description?: string;
-    exercises: CourseExerciseSpec[];
+    exercises?: CourseExerciseSpec[];
+    topics?: { [key: string]: CourseExerciseSpec[] }
 }
 
 export interface CourseRepository {

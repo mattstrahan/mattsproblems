@@ -31,7 +31,18 @@ export function CourseComponent({ course } : CourseComponentProps) {
             <Box padding={3}>
                 <Typography paragraph variant="h3">{course.title}</Typography>
                 <Typography paragraph variant="subtitle1">{course.description}</Typography>
-                <CourseExerciseList exercises={course.exercises} />
+                { course.topics !== undefined 
+                ? Object.keys(course.topics).map((key, index) => 
+                    <Box>
+                        <Typography paragraph variant="h4">{key}</Typography>
+                        {course?.topics?.[key] ? <CourseExerciseList exercises={course.topics[key]} /> : (null)}
+                    </Box>
+                    )
+                : (null)
+                }
+                {course.exercises !== undefined
+                ? <CourseExerciseList exercises={course.exercises} />
+                : (null)}
             </Box>
         </Paper>
     )
