@@ -29,6 +29,9 @@ const repository : RepositorySpec = {
                 },
                 {
                     "exerciseid": "integerarithmetic_roundingsigfigures"
+                },
+                {
+                    "exerciseid": "integerarithmetic_roundingdecplaces"
                 }
             ]
         }
@@ -73,12 +76,33 @@ const repository : RepositorySpec = {
                 {
                     "type": "problem",
                     "probid": "integerarithmetic_roundingsigfigures2part",
-                    "repeats": 2
+                    "repeats": 4
                 },
                 {
                     "type": "problem",
                     "probid": "integerarithmetic_roundingsigfigures",
-                    "repeats": 2
+                    "repeats": 4
+                }
+            ],
+            "finish": {
+                "text": "You've finished!"
+            }
+        },
+        "integerarithmetic_roundingdecplaces": {
+            "title": "Rounding to decimal places",
+            "description": "Rounding to decimal places with initial \"Closer to\" introduction",
+            "topic": "Integer Arithmetic",
+            "parameters": {},
+            "stages": [
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_roundingdecplaces2part",
+                    "repeats": 4
+                },
+                {
+                    "type": "problem",
+                    "probid": "integerarithmetic_roundingdecplaces",
+                    "repeats": 4
                 }
             ],
             "finish": {
@@ -199,40 +223,12 @@ const repository : RepositorySpec = {
                     "min": "{{min}}",
                     "max": "{{max}}",
                     "step": 1
-                },
-                "c": {
-                    "type": "letter",
-                    "exclude": "{{min}}"
                 }
             },
-            "question": "",
+            "question": "What is ${{a}} + {{b}}$?",
             "answer": {
                 "type": "number",
-                "label": "{{a}} + {{b}} = ",
                 "value": "{{a + b}}"
-            }
-        },
-        "multiplytwonumbers": {
-            "title": "Multiply two single digit numbers",
-            "description": "Multiplying together two numbers that are less than ten",
-            "variables": {
-                "a": {
-                    "type": "number",
-                    "min": 1,
-                    "max": 10,
-                    "step": 1
-                },
-                "b": {
-                    "type": "number",
-                    "min": 1,
-                    "max": 10,
-                    "step": 1
-                }
-            },
-            "question": "{{a}} x {{b}} =",
-            "answer": {
-                "type": "number",
-                "value": "{{a * b}}"
             }
         },
         "threenumber": {
@@ -258,10 +254,9 @@ const repository : RepositorySpec = {
                     "step": 1
                 }
             },
-            "question": "",
+            "question": "What is ${{a}} + {{b}} + {{c}}$?",
             "answer": {
                 "type": "number",
-                "label": "{{a}} + {{b}} + {{c}} = ",
                 "value": "{{ a + b + c }}"
             }
         },
@@ -280,7 +275,7 @@ const repository : RepositorySpec = {
                     }
                 }
             ],
-            "question": "Is ${{floor(n/(10**d))}}$ closer to ${{floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}$ or ${{floor(floor(n/(10**d))/(10**(7-sf-d))+1)*(10**(7-sf-d))}}$?",
+            "question": "Is ${{floor(n/(10**d))}}$ closer to ${{floor(floor(n/(10**d))/(10**(7-sf-d)))*(10**(7-sf-d))}}$ or ${{floor(floor(n/(10**d))/(10**(7-sf-d))+1)*(10**(7-sf-d))}}$?\n\n\nNote: numbers ending in 5 round up",
             "answer": {
                 "type": "multiplechoice",
                 "label": "Answer:",
@@ -349,6 +344,107 @@ const repository : RepositorySpec = {
                     "max": "9999999",
                     "step": 1,
                     "example": 5109776
+                }
+            }
+        },
+        "integerarithmetic_roundingdecplaces2part": {
+            "title": "Rounding to decimal places 2 part",
+            "description": "Rounding to decimal places with \"closer to\" introduction",
+            "additionalparts": [
+                {
+                    "question": "What is ${{floor(n/(10**(7-d)))/(10**dp)}}$ to ${{tdp}}$ decimal places?",
+                    "answer": {
+                        "type": "number",
+                        "label": "Answer:",
+                        "value": "{% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) == round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) %}{{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}{%else%}{{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}{%endif%}",
+                        "precision": "0",
+                        "decimals": "0"
+                    }
+                }
+            ],
+            "question": "Is ${{floor(n/(10**(7-d)))/(10**dp)}}$ closer to ${{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}$ or ${{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}$?\n\n\nNote: numbers ending in 5 round up",
+            "answer": {
+                "type": "multiplechoice",
+                "label": "Answer:",
+                "values": [
+                    "{% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) == round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) %}${{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}${%else%}${{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}${%endif%}",
+                    "{% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) !== round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) %}${{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}${%else%}${{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}${%endif%}"
+                ],
+                "answer": 0
+            },
+            "parameters": {},
+            "variables": {
+                "n": {
+                    "type": "number",
+                    "min": "1000000",
+                    "max": "9999999",
+                    "step": 1,
+                    "example": 5608150
+                },
+                "d": {
+                    "type": "number",
+                    "min": "3",
+                    "max": "7",
+                    "step": 1,
+                    "example": 7
+                },
+                "dp": {
+                    "type": "number",
+                    "min": "2",
+                    "max": "{{d-1}}",
+                    "step": 1,
+                    "example": 4
+                },
+                "tdp": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{dp-1}}",
+                    "step": 1,
+                    "example": 2
+                }
+            }
+        },
+        "integerarithmetic_roundingdecplaces": {
+            "title": "Rounding to decimal places",
+            "description": "Rounding to decimal places 3-7 digits",
+            "additionalparts": [],
+            "question": "What is ${{floor(n/(10**(7-d)))/(10**dp)}}$ to ${{tdp}}$ decimal places?",
+            "answer": {
+                "type": "number",
+                "label": "Answer:",
+                "value": "{% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) == round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) %}{{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}{%else%}{{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp), tdp)}}{%endif%}",
+                "precision": "0.0000001",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "n": {
+                    "type": "number",
+                    "min": "1000000",
+                    "max": "9999999",
+                    "step": 1,
+                    "example": 4916516
+                },
+                "d": {
+                    "type": "number",
+                    "min": "3",
+                    "max": "7",
+                    "step": 1,
+                    "example": 6
+                },
+                "dp": {
+                    "type": "number",
+                    "min": "2",
+                    "max": "{{d-1}}",
+                    "step": 1,
+                    "example": 3
+                },
+                "tdp": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{dp-1}}",
+                    "step": 1,
+                    "example": 2
                 }
             }
         },
@@ -596,6 +692,7 @@ const repository : RepositorySpec = {
             "level": 99,
             "exerciseids": [
                 "integerarithmetic_roundingsigfigures",
+                "integerarithmetic_roundingdecplaces",
                 "integerarithmetic_simplenegativenumbers"
             ]
         }

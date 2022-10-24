@@ -10,4 +10,5 @@ courses:
     exercises:
       - exerciseid: integerarithmetic_simplenegativenumbers
       - exerciseid: integerarithmetic_roundingsigfigures
+      - exerciseid: integerarithmetic_roundingdecplaces
   

@@ -11,6 +11,7 @@ import { answerIsCorrect, nextProblem } from "../reducers/RepositoryReducer";
 import Markdown, { MarkdownFillins } from "./Markdown";
 import Grid from "@mui/material/Unstable_Grid2";
 import ListItemButton from "@mui/material/ListItemButton";
+import Divider from "@mui/material/Divider";
 
 export interface AnswerKey {
     exerciseSpecId: string;
@@ -189,7 +190,7 @@ export function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleCho
             <div>
             <Grid container>
             <Grid xs="auto">
-                <Markdown>{answer.label ? answer.label : "Answer: "}</Markdown>
+                <Box paddingY={4}><Markdown>{answer.label ? answer.label : "Answer: "}</Markdown></Box>
             </Grid>
                 <Grid xs>
                 <List>
@@ -212,16 +213,20 @@ export function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleCho
         <div>
             <Grid container>
                 <Grid xs="auto">
-                    <Markdown>{answer.label ? answer.label : "Answer: "}</Markdown>
+                    <Box padding={2}><Markdown>{answer.label ? answer.label : "Answer: "}</Markdown></Box>
                 </Grid>
                 <Grid xs>
                 <List>
+                    <Divider />
                     {answer.values.map((answerValue, index) => 
+                        <Box>
                         <ListItem key={index}>
                             <ListItemButton onClick={() => handleClick(index)}>
                                 <Markdown>{answerValue}</Markdown>
                             </ListItemButton>
                         </ListItem>
+                        <Divider />
+                        </Box>
                     )}
                 </List>
                 </Grid>

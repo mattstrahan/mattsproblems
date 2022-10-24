@@ -20,32 +20,10 @@ problems:
         min: "{{min}}"
         max: "{{max}}"
         step: 1
-      c:
-        type: letter
-        exclude: "{{min}}"
-    question: ""
+    question: "What is ${{a}} + {{b}}$?"
     answer:
       type: number
-      label: "{{a}} + {{b}} = "
       value: "{{a + b}}"
-  multiplytwonumbers:
-    title: Multiply two single digit numbers
-    description: Multiplying together two numbers that are less than ten
-    variables:
-      a:
-        type: number
-        min: 1
-        max: 10
-        step: 1
-      b:
-        type: number
-        min: 1
-        max: 10
-        step: 1
-    question: "{{a}} x {{b}} ="
-    answer:
-      type: number
-      value: "{{a * b}}"
   threenumber:
     title: Simple 3 number addition
     description: Adding together three numbers that are less than ten
@@ -65,10 +43,9 @@ problems:
         min: 1
         max: 10
         step: 1
-    question: ""
+    question: "What is ${{a}} + {{b}} + {{c}}$?"
     answer:
       type: number
-      label: "{{a}} + {{b}} + {{c}} = "
       value: "{{ a + b + c }}"
 exercises:
   simpleaddition:

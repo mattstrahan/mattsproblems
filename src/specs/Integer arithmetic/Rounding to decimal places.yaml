@@ -1,0 +1,130 @@
+problems:
+  integerarithmetic_roundingdecplaces2part:
+    title: Rounding to decimal places 2 part
+    description: Rounding to decimal places with "closer to" introduction
+    additionalparts:
+      - question: >-
+          What is ${{floor(n/(10**(7-d)))/(10**dp)}}$ to ${{tdp}}$ decimal
+          places?
+        answer:
+          type: number
+          label: 'Answer:'
+          value: >-
+            {% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) ==
+            round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp)
+            %}{{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+            tdp)}}{%else%}{{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+            tdp)}}{%endif%}
+          precision: '0'
+          decimals: '0'
+    question: >-
+      Is ${{floor(n/(10**(7-d)))/(10**dp)}}$ closer to
+      ${{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+      tdp)}}$ or
+      ${{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+      tdp)}}$?
+
+      
+
+      Note: numbers ending in 5 round up
+    answer:
+      type: multiplechoice
+      label: 'Answer:'
+      values:
+        - >-
+          {% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) ==
+          round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp)
+          %}${{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+          tdp)}}${%else%}${{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+          tdp)}}${%endif%}
+        - >-
+          {% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) !==
+          round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp)
+          %}${{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+          tdp)}}${%else%}${{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+          tdp)}}${%endif%}
+      answer: 0
+    parameters: {}
+    variables:
+      'n':
+        type: number
+        min: '1000000'
+        max: '9999999'
+        step: 1
+        example: 5608150
+      d:
+        type: number
+        min: '3'
+        max: '7'
+        step: 1
+        example: 7
+      dp:
+        type: number
+        min: '2'
+        max: '{{d-1}}'
+        step: 1
+        example: 4
+      tdp:
+        type: number
+        min: '1'
+        max: '{{dp-1}}'
+        step: 1
+        example: 2
+    showParts: true
+  integerarithmetic_roundingdecplaces:
+    title: Rounding to decimal places
+    description: Rounding to decimal places 3-7 digits
+    additionalparts: []
+    question: What is ${{floor(n/(10**(7-d)))/(10**dp)}}$ to ${{tdp}}$ decimal places?
+    answer:
+      type: number
+      label: 'Answer:'
+      value: >-
+        {% if floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp) ==
+        round(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp)
+        %}{{showDecimals(floor(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+        tdp)}}{%else%}{{showDecimals(ceil(floor(n/(10**(7-d)))/(10**(dp-tdp)))/(10**tdp),
+        tdp)}}{%endif%}
+      precision: '0.0000001'
+      decimals: '0'
+    parameters: {}
+    variables:
+      'n':
+        type: number
+        min: '1000000'
+        max: '9999999'
+        step: 1
+        example: 4916516
+      d:
+        type: number
+        min: '3'
+        max: '7'
+        step: 1
+        example: 6
+      dp:
+        type: number
+        min: '2'
+        max: '{{d-1}}'
+        step: 1
+        example: 3
+      tdp:
+        type: number
+        min: '1'
+        max: '{{dp-1}}'
+        step: 1
+        example: 2
+exercises:
+  integerarithmetic_roundingdecplaces:
+    title: Rounding to decimal places
+    description: Rounding to decimal places with initial "Closer to" introduction
+    topic: Integer Arithmetic
+    parameters: {}
+    stages:
+      - type: problem
+        probid: integerarithmetic_roundingdecplaces2part
+        repeats: 4
+      - type: problem
+        probid: integerarithmetic_roundingdecplaces
+        repeats: 4
+    finish:
+      text: You've finished!
