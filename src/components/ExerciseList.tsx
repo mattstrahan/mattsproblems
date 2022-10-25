@@ -30,7 +30,7 @@ export function ExerciseListItem({ exerciseid, parameters }: ExerciseListItemPro
             <ListItemIcon>
                 <ArrowForwardIosIcon />
             </ListItemIcon>
-            <ListItemText primary={exercise.description} />
+            <ListItemText primary={exercise.title} secondary={exercise.description} />
         </ListItem>
     )
 }

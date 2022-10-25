@@ -32,6 +32,7 @@ export function rehypeFillins(options: reHypeFillinsOptions){
 export interface MarkdownFillinsAdditionalProps {
     onFillinChange?: Function;
     additionalInputProps?: InputProps;
+    autoFocus?: boolean;
 }
 
 // Process the supplied fillins
@@ -39,6 +40,7 @@ export function MarkdownFillins(props: ReactMarkdownOptions & MarkdownFillinsAdd
     const katexoptions: KatexOptions = { trust: (context) => context.command === '\\htmlId' }; // This is our secret fillin replacer
     const rehypeplugins: PluggableList = [[rehypeKatex, katexoptions], rehypeFillins];
     const remarkplugins: PluggableList = [remarkGfm, remarkMath];
+    let firstAutoFocus=false;
     const newProps:ReactMarkdownOptions = {
         ...props,
         remarkPlugins: remarkplugins,
@@ -57,7 +59,13 @@ export function MarkdownFillins(props: ReactMarkdownOptions & MarkdownFillinsAdd
                 {
                     // Only change the fillins
                     if(inputprops.id && inputprops.id.startsWith("fillin_")) {
-                        return <Input id={inputprops.id} size="small" onChange={value => {if(props.onFillinChange !== undefined) props.onFillinChange(inputprops.id, value) }} style={{ height: "1em", padding: "2px 2px" }} {...props.additionalInputProps} />
+                        return <Input
+                            autoFocus={props.autoFocus && !firstAutoFocus ? firstAutoFocus=true : false}
+                            id={inputprops.id}
+                            size="small"
+                            onChange={value => {if(props.onFillinChange !== undefined) props.onFillinChange(inputprops.id, value) }}
+                            style={{ height: "1.2em", fontSize:'1em', width: '1.5em', padding: "3px 3px", backgroundColor: "#eee", alignContent: 'center' }}
+                            {...props.additionalInputProps} />
                     } else
                         return <input {...inputprops} />
                 }

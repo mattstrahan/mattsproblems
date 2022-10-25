@@ -24,7 +24,7 @@ const repository : RepositorySpec = {
             "title": "NSW Year 9",
             "description": "Exercises for topics covered in Year 9 of the NSW syllabus.",
             "topics": {
-                "Integer Arithmetic": [
+                "Revision of computation and financial maths": [
                     {
                         "exerciseid": "integerarithmetic_simplenegativenumbers"
                     },
@@ -33,6 +33,9 @@ const repository : RepositorySpec = {
                     },
                     {
                         "exerciseid": "integerarithmetic_roundingdecplaces"
+                    },
+                    {
+                        "exerciseid": "fractions_simplifyingandmixed"
                     }
                 ]
             }
@@ -67,6 +70,33 @@ const repository : RepositorySpec = {
             ],
             "finish": {
                 "text": "You've finished! Well done!"
+            }
+        },
+        "fractions_simplifyingandmixed": {
+            "title": "Simplifying fractions and mixed numerals",
+            "description": "Simplifying fractions, converting mixed numerals, and changing numerators and denominators",
+            "topic": "Fractions",
+            "parameters": {},
+            "stages": [
+                {
+                    "type": "problem",
+                    "probid": "fractions_mixednumerals"
+                },
+                {
+                    "type": "problem",
+                    "probid": "fractions_simplifying"
+                },
+                {
+                    "type": "problem",
+                    "probid": "fractions_changedenominator"
+                },
+                {
+                    "type": "problem",
+                    "probid": "fractions_changenumerator"
+                }
+            ],
+            "finish": {
+                "text": "You've finished!"
             }
         },
         "integerarithmetic_roundingsigfigures": {
@@ -260,6 +290,139 @@ const repository : RepositorySpec = {
             "answer": {
                 "type": "number",
                 "value": "{{ a + b + c }}"
+            }
+        },
+        "fractions_mixednumerals": {
+            "title": "Mixed numeral fractions",
+            "description": "",
+            "additionalparts": [],
+            "question": "Write the following fraction as a mixed numeral.",
+            "answer": {
+                "type": "fillins",
+                "label": " ",
+                "value": "$$\n\\frac{ {{b}} }{ {{a}} }={{fillin(floor(b/a))}}\\frac{ {{fillin((b%a))}} }{ {{a}} }\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "a": {
+                    "type": "number",
+                    "min": "2",
+                    "max": 10,
+                    "step": 1,
+                    "example": 10
+                },
+                "b": {
+                    "type": "number",
+                    "min": "{{a+1}}",
+                    "max": "30",
+                    "step": 1,
+                    "example": 28
+                }
+            }
+        },
+        "fractions_simplifying": {
+            "title": "Simplifying fractions",
+            "description": "",
+            "additionalparts": [],
+            "question": "Simplify the following fraction.",
+            "answer": {
+                "type": "fillins",
+                "label": "Answer:",
+                "value": "$$\n\\frac{ {{b*c}} }{ {{a*c}} }=\\frac{ {{fillin(b/gcd(a,b))}} }{ {{fillin(a/gcd(a,b))}} }\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "a": {
+                    "type": "number",
+                    "min": "3",
+                    "max": "12",
+                    "step": 1,
+                    "example": 20
+                },
+                "b": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{a-1}}",
+                    "step": 1,
+                    "example": 4
+                },
+                "c": {
+                    "type": "number",
+                    "min": "2",
+                    "max": "8",
+                    "step": 1,
+                    "example": 6
+                }
+            }
+        },
+        "fractions_changedenominator": {
+            "title": "Changing fraction denominator",
+            "description": "",
+            "additionalparts": [],
+            "question": "Fill in the missing number.",
+            "answer": {
+                "type": "fillins",
+                "label": "Answer:",
+                "value": "$$\n\\frac{ {{n}} }{ {{d}} }=\\frac{ {{fillin(n*m)}} }{ {{d*m}} }\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "d": {
+                    "type": "number",
+                    "min": "3",
+                    "max": "12",
+                    "step": 1,
+                    "example": 9
+                },
+                "n": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{d-1}}",
+                    "step": 1,
+                    "example": 2
+                },
+                "m": {
+                    "type": "number",
+                    "min": "2",
+                    "max": "8",
+                    "step": 1,
+                    "example": 4
+                }
+            }
+        },
+        "fractions_changenumerator": {
+            "title": "Changing fraction numerator",
+            "description": "",
+            "additionalparts": [],
+            "question": "Fill in the missing number.",
+            "answer": {
+                "type": "fillins",
+                "label": "Answer:",
+                "value": "$$\n\\frac{ {{n}} }{ {{d}} }=\\frac{ {{n*m}} }{ {{fillin(d*m)}} }\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "d": {
+                    "type": "number",
+                    "min": "3",
+                    "max": "12",
+                    "step": 1,
+                    "example": 10
+                },
+                "n": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{d-1}}",
+                    "step": 1,
+                    "example": 3
+                },
+                "m": {
+                    "type": "number",
+                    "min": "2",
+                    "max": "8",
+                    "step": 1,
+                    "example": 3
+                }
             }
         },
         "integerarithmetic_roundingsigfigures2part": {
@@ -687,6 +850,13 @@ const repository : RepositorySpec = {
             "exerciseids": [
                 "matrixvector",
                 "matrixmultiply"
+            ]
+        },
+        "Fractions": {
+            "title": "Fractions",
+            "level": 99,
+            "exerciseids": [
+                "fractions_simplifyingandmixed"
             ]
         },
         "Integer Arithmetic": {

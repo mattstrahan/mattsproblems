@@ -8,7 +8,7 @@ import { AnswerSpec, buildFillinsAnswer, buildMultipleChoiceAnswer, buildNumberA
 import { envtype, getStrValue } from "../../helpers/env";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { setAnswer } from "../../reducers/CreateReducer";
-import Markdown from "../Markdown";
+import Markdown, { MarkdownFillins } from "../Markdown";
 import { CreateTextField } from "./CreateTextField";
 import Grid from "@mui/material/Unstable_Grid2";
 import { checkNumber } from "./CreateVariable";
@@ -89,6 +89,7 @@ function CreateFillinsAnswerComponent({ answer, onChange, env }: CreateFillinsAn
         <CreateTextField nunjucks label="Label" initial={answer.label ? answer.label : ""} handleChange={(e:string) => onChange({type:"fillins", label:e})} env={env} />
         <CreateTextField
                 nunjucks
+                multiline
                 label="Answer"
                 initial={answer.value ? answer.value : ""}
                 handleChange={(e:string) => onChange({type:"fillins", value:e})}
@@ -287,7 +288,7 @@ export function CreateShowAnswerComponent({ answer, env }: CreateShowAnswerProps
             <Grid xs="auto">
             <Markdown>{fillinsanswer.label ? getStrValue(fillinsanswer.label, env) : ""}</Markdown>
             </Grid><Grid xs>
-            <Markdown >{fillinsanswer.answertext}</Markdown>
+            <MarkdownFillins additionalInputProps={{"readOnly":true}}>{fillinsanswer.answerfillins}</MarkdownFillins>
             </Grid></Grid>
             </div>
         )

@@ -147,7 +147,7 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
         <div>
             <form onSubmit={handleSubmit}>
                 <Markdown>{fillinAnswer.label ? fillinAnswer.label : "Answer: "}</Markdown>
-                <MarkdownFillins onFillinChange={onFillinChange}>{fillinAnswer.answerfillins}</MarkdownFillins>
+                <MarkdownFillins autoFocus onFillinChange={onFillinChange}>{fillinAnswer.answerfillins}</MarkdownFillins>
                 <Button type="submit">Submit answer</Button>
                 <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
             </form>
