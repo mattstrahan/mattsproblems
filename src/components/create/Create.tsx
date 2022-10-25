@@ -211,7 +211,7 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
                         }
                         else if(stage?.["probid"] && stage?.["probid"]) {
                             seenproblems.push(stage["probid"])
-                            return <CreateProblemComponent stageindex={index} key={index} probid={stage?.probid ? stage.probid : ""} />
+                            return <CreateProblemComponent stageindex={index} key={stage?.probid ? stage.probid : index} probid={stage?.probid ? stage.probid : ""} />
                         }
                     }
                     return <div></div>

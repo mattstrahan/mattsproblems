@@ -14,7 +14,7 @@ function lcm(a:number, b:number):number {
     return (a * b) / gcd(a, b);   
 }
 
-function pm(value: number) {
+function pip(value: number) {
     // Return "+" if and only if the provided value is negative
     if(value < 0)
         return ""
@@ -27,7 +27,7 @@ function showDecimals(value: number, dp: number) {
 }
 
 export const defaultenv = {
-    pm: pm,
+    pip: pip,
     round: Math.round,
     floor: Math.floor,
     ceil: Math.ceil,
