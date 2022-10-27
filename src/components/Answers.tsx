@@ -12,6 +12,7 @@ import Markdown, { MarkdownFillins } from "./Markdown";
 import Grid from "@mui/material/Unstable_Grid2";
 import ListItemButton from "@mui/material/ListItemButton";
 import Divider from "@mui/material/Divider";
+import FormControl from "@mui/material/FormControl";
 
 export interface AnswerKey {
     exerciseSpecId: string;
@@ -49,34 +50,43 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
     if (isCorrect) {
         return (
             <div>
-                <div>
-                    <form>
-                        {numberAnswer.label ? numberAnswer.label : "Answer: "}
+                <Grid container>
+                    <Grid xs="auto">
+                        <Box padding={2}><Markdown>{answer.label ? answer.label : "Answer: "}</Markdown></Box>
+                    </Grid>
+                    <Grid xs>
                         <TextField
                             disabled
                             className="correct-answer"
                             value={enteredanswer}
                         />
-                    </form>
                     <Alert onClose={() => {}}>{randomCorrectMessage()}</Alert>
-                </div>
+                </Grid>
+            </Grid>
+            <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
                 <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
-            </div>
+        </div>
         );
     }
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                {numberAnswer.label ? numberAnswer.label : "Answer: "}
-                <TextField
-                    autoFocus
-                    className="answer"
-                    value={enteredanswer}
-                    onChange={e => {setEnteredAnswer(e.target.value); setOpenTryAgain(false)}}
-                />
-                <Button type="submit">Submit answer</Button>
+            <Grid container>
+                <Grid xs="auto">
+                    <Box padding={2}><Markdown>{answer.label ? answer.label : "Answer: "}</Markdown></Box>
+                </Grid>
+                <Grid xs>
+                    <form onSubmit={handleSubmit}>
+                    <TextField
+                        autoFocus
+                        className="answer"
+                        value={enteredanswer}
+                        onChange={e => {setEnteredAnswer(e.target.value); setOpenTryAgain(false)}}
+                    />
+                    <Button type="submit">Submit answer</Button>
+                    </form>
                 <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
-            </form>
+                </Grid>
+            </Grid>
             <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
     );

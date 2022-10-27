@@ -194,7 +194,7 @@ interface CreateVariablesExpandedComponentProps {
 }
 
 export function CreateVariablesExpandedComponent({ probid }: CreateVariablesExpandedComponentProps) {
-    const problem = useAppSelector(state => state.create.problems[probid]); // Get the main exercise simply to see if it's there
+    const variables = useAppSelector(state => state.create.problems[probid].variables);
     const [newvarname, setNewVarName] = React.useState<string>("");
     const [type, setType] = React.useState<string | null>('number');
     const dispatch = useAppDispatch();
@@ -212,8 +212,8 @@ export function CreateVariablesExpandedComponent({ probid }: CreateVariablesExpa
 
     return (
         <div>
-            {problem.variables ? 
-                Object.entries(problem.variables).map((entry, index) => {
+            {variables ? 
+                Object.entries(variables).map((entry, index) => {
                     const id = entry[0];
                     const variable = entry[1];
                     if(variable.type === "number")

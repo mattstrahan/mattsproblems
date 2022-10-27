@@ -154,7 +154,11 @@ export function CreateAnswerComponent({ probid, partindex, env }: CreateAnswerPr
 
     const answer = partindex === undefined ? mainanswer : additionalparts?.[partindex]?.answer;
 
-    const [answertype, setAnswerType] = React.useState(0);
+    const [answertype, setAnswerType] = React.useState(answer === undefined ? 0 :
+                                                       answer.type === "number" ? 0 :
+                                                       answer.type === "text" ? 1 :
+                                                       answer.type === "fillins" ? 2 :
+                                                       answer.type === "multiplechoice" ? 3 : 0);
     const [numberanswer, setNumberAnswer] = React.useState<Partial<NumberAnswerSpec>>(
         answer !== undefined && answer.type === "number" ? answer : 
             {type: "number",

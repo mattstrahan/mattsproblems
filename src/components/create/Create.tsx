@@ -185,6 +185,24 @@ export function AddRepositoryProblemButton() {
     )
 }
 
+export function CreateFinishComponent() {
+    const finish = useAppSelector(state => state.create.exercise?.finish); // Get the main exercise simply to see if it's there
+    const dispatch = useAppDispatch();
+    return (
+        <Box paddingY={3} >
+            <MPPaper>
+                <Typography paragraph variant="h4">Finish message</Typography>
+                <CreateTextMarkdownField
+                    label="Finish message"
+                    value={finish ? finish.text : ""}
+                    onChange={(e) => dispatch(setExerciseFinish(e))}
+                    buttons={["Finish"]}
+                    />
+            </MPPaper>
+        </Box>
+    )
+}
+
 interface CreateExerciseComponentProps {
     onCreateExercise: Function
 }
@@ -192,7 +210,6 @@ interface CreateExerciseComponentProps {
 
 export function CreateExerciseComponent({onCreateExercise} : CreateExerciseComponentProps) {
     const stages = useAppSelector(state => state.create.exercise?.stages); // Get the main exercise simply to see if it's there
-    const finish = useAppSelector(state => state.create.exercise?.finish); // Get the main exercise simply to see if it's there
     const dispatch = useAppDispatch();
     let seenproblems:string[] = [];
 
@@ -230,17 +247,7 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
             </MPPaper>
             </Box>
 
-            <Box paddingY={3} >
-            <MPPaper>
-            <Typography paragraph variant="h4">Finish message</Typography>
-            <CreateTextMarkdownField
-                label="Finish message"
-                value={finish ? finish.text : ""}
-                onChange={(e) => dispatch(setExerciseFinish(e))}
-                buttons={["Finish"]}
-                />
-                </MPPaper>
-                </Box>
+                <CreateFinishComponent />
                 <CreateExerciseButtons />
             </Box>
     )
@@ -255,7 +262,7 @@ export function CreateExerciseInformationComponent() {
     return (
             <Box paddingY={2}>
                 {editTitle
-                ? <div><TextField autoFocus label="Title" value={exercisetitle ? exercisetitle : ""} onChange={(e) => dispatch(setExerciseTitle(e.target.value))} /> <IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></div>
+                ? <div><form onSubmit={() => setEditTitle(false)}><TextField autoFocus label="Title" value={exercisetitle ? exercisetitle : ""} onChange={(e) => dispatch(setExerciseTitle(e.target.value))} /> <IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></form></div>
                 : <Typography variant="h3">{exercisetitle} <IconButton onClick={() => setEditTitle(true)}><EditIcon /></IconButton></Typography> 
                 }
                 <FetchMarkdown>{exerciseCreatorInfo}</FetchMarkdown>

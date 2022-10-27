@@ -12,14 +12,19 @@ import Input, { InputProps } from '@mui/material/Input';
 import { Typography } from '@mui/material';
 import { useEffect } from 'react';
 import React from 'react';
+import katex from 'katex';
+import JXG from 'jsxgraph'
+import { JSGFigureStore } from '../classes/Problem';
 
-export interface reHypeFillinsOptions {
+JXG.Options.text.useKatex=true;
+
+interface reHypeFillinsOptions {
 }
 
 // This is the secret sauce for fill ins. It looks for spans with a HTML ID of "fillin_" and changes them to inputs
 // Because we've set \\htmlId in Katex options, we can look for spans with that ID and capture them.
 /** @type {import('unified').Plugin<[Options?]>} */
-export function rehypeFillins(options: reHypeFillinsOptions){
+function rehypeFillins(options: reHypeFillinsOptions){
     return function (tree: mdast.Root) {
         visit(tree, 'element', (node: hast.Element, index: number) => {
             if (node.properties && node.properties.id && node.properties.id.toString().startsWith("fillin_")) {
@@ -101,6 +106,56 @@ export function FetchMarkdown(props: ReactMarkdownOptions) {
         }
     };
     return <ReactMarkdown {...newProps} children={markdownText} />;
+}
+
+export interface MarkdownFiguresAdditionalProps {
+    jsgFigureStore?: { [key: string]: JSGFigureStore }
+}
+
+// Markdown parser that allows figures and a figure store.
+export function MarkdownFigures(props: ReactMarkdownOptions & MarkdownFiguresAdditionalProps) {
+    useEffect(() => {
+        if(props.jsgFigureStore) {
+            for (let bid in props.jsgFigureStore) {
+                try {
+                let board = JXG.JSXGraph.initBoard(bid, {showCopyright:false, showNavigation:false, registerEvents: false});
+                board.jc.parse(props.jsgFigureStore[bid].logic);
+                }
+                catch(exception){
+                }
+            }
+        }
+    })
+
+    const rehypeplugins: PluggableList = [rehypeKatex];
+    const remarkplugins: PluggableList = [remarkGfm, remarkMath];
+    const newProps: ReactMarkdownOptions = {
+        ...props,
+        remarkPlugins: remarkplugins,
+        rehypePlugins: rehypeplugins,
+        components: {
+            // MUI components
+            h1: ({ node, ...props }) => <Typography variant='h1' paragraph {...props} />,
+            h2: ({ node, ...props }) => <Typography variant='h2' paragraph {...props} />,
+            h3: ({ node, ...props }) => <Typography variant='h3' paragraph {...props} />,
+            h4: ({ node, ...props }) => <Typography variant='h4' paragraph {...props} />,
+            h5: ({ node, ...props }) => <Typography variant='h5' paragraph {...props} />,
+            h6: ({ node, ...props }) => <Typography variant='h6' paragraph {...props} />,
+            p: ({ node, ...props }) => <Typography variant='body1' paragraph {...props} />,
+            img: ({ node, ...iprops }) => 
+                {
+                    // Only change the fillins
+                    if(iprops.src === "jsxgraph_figurestore"
+                        && props.jsgFigureStore !== undefined
+                        && iprops.alt !== undefined
+                        && iprops.alt in props.jsgFigureStore) {
+                            return <div id={iprops.alt} style={{ width: "100%", height: 500 }}>Board</div>
+                    } else
+                        return <img {...iprops} />
+                }
+        }
+    };
+    return <ReactMarkdown {...newProps} />;
 }
 
 // Our regular Markdown generator without Fillins. Here we turn on Katex and Github extensions.

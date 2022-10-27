@@ -3,17 +3,20 @@ import { RepositorySpec } from "../classes/Repository"
 const repository : RepositorySpec = {
     "courses": {
         "3blue1brown_linearalgebra": {
-            "title": "3Blue1Brown - Linear Algebra",
-            "description": "Exercises to support the 3Blue1Brown Linear Algebra playlist.",
+            "title": "3Blue1Brown - Essence of linear algebra",
+            "description": "Exercises to support the 3Blue1Brown Essence of linear algebra playlist.",
             "exercises": [
+                {
+                    "exerciseid": "3blue1brownvectors"
+                },
                 {
                     "exerciseid": "matrixmultiply"
                 }
             ]
         },
         "nsw_year_2": {
-            "title": "NSW Grade 2",
-            "description": "Exercises for topics covered in Grade 2 of the NSW syllabus.",
+            "title": "NSW Year 2",
+            "description": "Exercises for topics covered in Year 2 of the NSW syllabus.",
             "exercises": [
                 {
                     "exerciseid": "simpleaddition"
@@ -24,7 +27,7 @@ const repository : RepositorySpec = {
             "title": "NSW Year 9",
             "description": "Exercises for topics covered in Year 9 of the NSW syllabus.",
             "topics": {
-                "Revision of computation and financial maths": [
+                "Revision of arithmetic and financial maths": [
                     {
                         "exerciseid": "integerarithmetic_simplenegativenumbers"
                     },
@@ -226,6 +229,49 @@ const repository : RepositorySpec = {
             ],
             "finish": {
                 "text": "You've finished! Well done!"
+            }
+        },
+        "3blue1brownvectors": {
+            "title": "Vectors | Chapter 1",
+            "description": "Vector introduction based on the first video of 3blue1brown",
+            "topic": "",
+            "parameters": {},
+            "stages": [
+                {
+                    "type": "text",
+                    "text": "This exercise is based off the first video of 3Blue1Brown's **Essence of linear algebra** playlist. Here we\nwill go through identifying the x and y components of vectors, vector addition, and vector scaling.\n\nThe video itself is available [here](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=1)."
+                },
+                {
+                    "type": "problem",
+                    "probid": "linearalgebra_vectorcomponentsgraph",
+                    "repeats": 2
+                },
+                {
+                    "type": "problem",
+                    "probid": "linearalgebra_vectorcomponents"
+                },
+                {
+                    "type": "problem",
+                    "probid": "linearalgebra_vectoradditiongraph",
+                    "repeats": 2
+                },
+                {
+                    "type": "problem",
+                    "probid": "linearalgebra_vectoraddition",
+                    "repeats": 2
+                },
+                {
+                    "type": "problem",
+                    "probid": "linearalgebra_vectorscalinggraph"
+                },
+                {
+                    "type": "problem",
+                    "probid": "linearalgebra_vectorscaling",
+                    "repeats": 2
+                }
+            ],
+            "finish": {
+                "text": "You've finished!"
             }
         }
     },
@@ -774,11 +820,11 @@ const repository : RepositorySpec = {
                     "step": 1
                 }
             },
-            "question": "What does is the resulting vector?",
+            "question": "What is the resulting vector?",
             "answer": {
                 "type": "fillins",
                 "label": " ",
-                "value": "$ \\begin{bmatrix} {{a}} & {{c}} \\\\ {{b}} & {{d}} \\end{bmatrix}\\begin{bmatrix} {{e}} \\\\ {{f}} \\end{bmatrix}=\\begin{bmatrix} {{fillin(a*e+c*f)}} \\\\ {{fillin(b*e+d*f)}} \\end{bmatrix} $\n"
+                "value": "$$\n\\begin{bmatrix}\n{{a}} & {{c}} \\\\\n{{b}} & {{d}}\n\\end{bmatrix}\\begin{bmatrix} {{e}} \\\\\n{{f}}\n\\end{bmatrix}=\\begin{bmatrix}\n{{fillin(a*e+c*f)}} \\\\\n{{fillin(b*e+d*f)}}\n\\end{bmatrix}\n$$"
             }
         },
         "2x2matrixmultiply": {
@@ -838,7 +884,243 @@ const repository : RepositorySpec = {
             "answer": {
                 "type": "fillins",
                 "label": " ",
-                "value": "$ \\begin{bmatrix} {{a}} & {{c}} \\\\ {{b}} & {{d}} \\end{bmatrix}\\begin{bmatrix} {{e}} & {{g}} \\\\ {{f}} & {{h}} \\end{bmatrix}=\\begin{bmatrix} {{fillin(a*e+c*f)}} & {{fillin(a*c+c*d)}} \\\\ {{fillin(b*e+d*f)}} & {{fillin(b*e+d*f)}} \\end{bmatrix} $\n"
+                "value": "$$\n\\begin{bmatrix}\n{{a}} & {{c}} \\\\\n{{b}} & {{d}}\n\\end{bmatrix}\\begin{bmatrix} {{e}} & {{g}} \\\\\n{{f}} & {{h}}\n\\end{bmatrix}=\\begin{bmatrix}\n{{fillin(a*e+c*f)}} & {{fillin(a*c+c*d)}} \\\\\n{{fillin(b*e+d*f)}} & {{fillin(b*e+d*f)}}\n\\end{bmatrix}\n$$"
+            }
+        },
+        "linearalgebra_vectorcomponentsgraph": {
+            "title": "x and y components of vectors with graph",
+            "description": "Identifying the x and y components of vectors with the help of a graph",
+            "additionalparts": [
+                {
+                    "question": "",
+                    "answer": {
+                        "type": "number",
+                        "label": "What is the $y$ component of $\\vec{v}$?",
+                        "value": "{{y}}",
+                        "precision": "0",
+                        "decimals": "0"
+                    }
+                }
+            ],
+            "question": "{{JSXGraph(\"\n$board.setView([-6, 6, 6, -6]);\n\nxaxis=axis([0.0,-1.0],[0.0,0.0]);\nyaxis=axis([-1.0,0.0],[0.0,0.0]);\n\nv=point(\" + x + \",\" + y + \");\nv.size=0;\nva=line([0,0],v);\nva.straightFirst=false;\nva.straightLast=false;\nva.lastArrow=true;\n\nxline=segment([0,0],[\"+x+\",0]);\nxline.name='\"+x+\"';\nxline.withLabel=true;\nxline.labelColor='#f00';\nxline.strokeColor = '#f00';\nyline=segment([\"+x+\",0],[\"+x+\",\"+y+\"]);\nyline.name='\"+y+\"';\nyline.withLabel=true;\nyline.labelColor='#f00';\nyline.strokeColor = '#f00';\n\")}}\n\n$\\vec{v}$ is a vector where $\\vec{v}=\\begin{bmatrix} {{x}} \\\\ {{y}}\\end{bmatrix}$",
+            "answer": {
+                "type": "number",
+                "label": "What is the $x$ component of $\\vec{v}$?",
+                "value": "{{x}}",
+                "precision": "0",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "x": {
+                    "type": "number",
+                    "min": "-5",
+                    "max": "5",
+                    "step": 1,
+                    "example": 5
+                },
+                "y": {
+                    "type": "number",
+                    "min": "-5",
+                    "max": "5",
+                    "step": 1,
+                    "example": -4
+                }
+            }
+        },
+        "linearalgebra_vectorcomponents": {
+            "title": "x and y components of vector",
+            "description": "Identifying the x and y components of a vector",
+            "additionalparts": [
+                {
+                    "question": "",
+                    "answer": {
+                        "type": "number",
+                        "label": "What is the $y$ component of $\\vec{v}$?",
+                        "value": "{{y}}",
+                        "precision": "0",
+                        "decimals": "0"
+                    }
+                }
+            ],
+            "question": "$\\vec{v}$ is a vector where $\\vec{v}=\\begin{bmatrix} {{x}} \\\\ {{y}}\\end{bmatrix}$",
+            "answer": {
+                "type": "number",
+                "label": "What is the $x$ component of $\\vec{v}$?",
+                "value": "{{x}}",
+                "precision": "0",
+                "decimals": "0"
+            },
+            "parameters": {},
+            "variables": {
+                "x": {
+                    "type": "number",
+                    "min": "-9",
+                    "max": "9",
+                    "step": 1,
+                    "example": 2
+                },
+                "y": {
+                    "type": "number",
+                    "min": "-9",
+                    "max": "9",
+                    "step": 1,
+                    "example": 5
+                }
+            }
+        },
+        "linearalgebra_vectoradditiongraph": {
+            "title": "Adding two vectors with graph",
+            "description": "Adding two vectors together with the help of a graph",
+            "additionalparts": [],
+            "question": "{{JSXGraph(\"\n$board.setView([-1, 10, 10, -1]);\n\nxaxis=axis([0.0,-1.0],[0.0,0.0]);\nyaxis=axis([-1.0,0.0],[0.0,0.0]);\n\nv=point(\" + vx + \",\" + vy + \");\nv.size=0;\nv.name='\\\\\\\\vec{v}';\nva=line([0,0],v);\nva.straightFirst=false;\nva.straightLast=false;\nva.lastArrow=true;\nva.strokeColor='#ee0';\n\n\nw=point(\" + (vx + wx) + \",\" + (vy + wy) + \");\nw.size=0;\nw.name='\\\\\\\\vec{w}';\nwa=line(v,w);\nwa.straightFirst=false;\nwa.straightLast=false;\nwa.lastArrow=true;\nwa.strokeColor='#DB7093';\n\nvw=point(\" + (vx + wx) + \",\" + (vy + wy) + \");\nvw.size=0;\nvw.name='';\nvwa=segment([0,0],w);\nvwa.lastArrow=true;\nvwa.name='\\\\\\\\vec{v}+\\\\\\\\vec{w}';\nvwa.withLabel=true;\nvwa.strokeColor='#9400D3';\n\n\")}}\n\n$\\vec{v}$ and $\\vec{w}$ are vectors where $v=\\begin{bmatrix} {{vx}} \\\\ {{vy}}\\end{bmatrix}$ and $w=\\begin{bmatrix} {{wx}} \\\\ {{wy}}\\end{bmatrix}$. What is $\\vec{v}+\\vec{w}$?",
+            "answer": {
+                "type": "fillins",
+                "label": "",
+                "value": "$$\n\\begin{bmatrix} {{vx}} \\\\ {{vy}}\\end{bmatrix}+\\begin{bmatrix} {{wx}} \\\\ {{wy}}\\end{bmatrix}=\\begin{bmatrix} {{fillin(vx+wx)}} \\\\ {{fillin(vy+wy)}}\\end{bmatrix}\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "vx": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "5",
+                    "step": 1,
+                    "example": 2
+                },
+                "vy": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "5",
+                    "step": 1,
+                    "example": 5
+                },
+                "wx": {
+                    "type": "number",
+                    "min": "{{-1-vx}}",
+                    "max": "{{10-vx}}",
+                    "step": 1,
+                    "example": 4
+                },
+                "wy": {
+                    "type": "number",
+                    "min": "{{-1-vy}}",
+                    "max": "{{10-vy}}",
+                    "step": 1,
+                    "example": 4
+                }
+            }
+        },
+        "linearalgebra_vectoraddition": {
+            "title": "Adding two vectors",
+            "description": "Adding two vectors together",
+            "additionalparts": [],
+            "question": "",
+            "answer": {
+                "type": "fillins",
+                "label": "",
+                "value": "$$\n\\begin{bmatrix} {{vx}} \\\\ {{vy}}\\end{bmatrix}+\\begin{bmatrix} {{wx}} \\\\ {{wy}}\\end{bmatrix}=\\begin{bmatrix} {{fillin(vx+wx)}} \\\\ {{fillin(vy+wy)}}\\end{bmatrix}\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "vx": {
+                    "type": "number",
+                    "min": "-10",
+                    "max": 10,
+                    "step": 1,
+                    "example": 4
+                },
+                "vy": {
+                    "type": "number",
+                    "min": "-10",
+                    "max": 10,
+                    "step": 1,
+                    "example": 5
+                },
+                "wx": {
+                    "type": "number",
+                    "min": "-10",
+                    "max": 10,
+                    "step": 1,
+                    "example": 9
+                },
+                "wy": {
+                    "type": "number",
+                    "min": "-10",
+                    "max": 10,
+                    "step": 1,
+                    "example": 1
+                }
+            }
+        },
+        "linearalgebra_vectorscalinggraph": {
+            "title": "Scaling a vector with graph",
+            "description": "Multiplying a scalar and a vector to get a scaled vector with the help of a graph",
+            "additionalparts": [],
+            "question": "{{JSXGraph(\"\n$board.setView([-1, 10, 10, -1]);\n\nxaxis=axis([0.0,-1.0],[0.0,0.0]);\nyaxis=axis([-1.0,0.0],[0.0,0.0]);\n\nv=point(\" + vx + \",\" + vy + \");\nv.size=0;\nv.name='\\\\\\\\vec{v}';\nva=line([0,0],v);\nva.straightFirst=false;\nva.straightLast=false;\nva.lastArrow=true;\nva.strokeColor='#ee0';\n\n\nw=point(\" + (vx * scalar) + \",\" + (vy * scalar) + \");\nw.size=0;\nw.name='\\\\\\\\vec{w}';\nwa=line(v,w);\nwa.straightFirst=false;\nwa.straightLast=false;\nwa.lastArrow=true;\nwa.strokeColor='#DB7093';\n\n\")}}\n\n$\\vec{v}$ is a vector where $v=\\begin{bmatrix} {{vx}} \\\\ {{vy}}\\end{bmatrix}$. What is ${{scalar}}.\\vec{v}$?",
+            "answer": {
+                "type": "fillins",
+                "label": "",
+                "value": "$$\n{{scalar}}.\\begin{bmatrix} {{vx}} \\\\ {{vy}}\\end{bmatrix}=\\begin{bmatrix} {{fillin(vx*scalar)}} \\\\ {{fillin(vy*scalar)}}\\end{bmatrix}\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "vx": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "3",
+                    "step": 1,
+                    "example": 2
+                },
+                "vy": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "3",
+                    "step": 1,
+                    "example": 2
+                },
+                "scalar": {
+                    "type": "number",
+                    "min": "1",
+                    "max": "{{min(10/vx,10/vy)}}",
+                    "step": 1,
+                    "example": 3
+                }
+            }
+        },
+        "linearalgebra_vectorscaling": {
+            "title": "Scaling vector",
+            "description": "",
+            "additionalparts": [],
+            "question": "",
+            "answer": {
+                "type": "fillins",
+                "label": "",
+                "value": "$$\n{{s}}.\\begin{bmatrix} {{vx}} \\\\ {{vy}}\\end{bmatrix}=\\begin{bmatrix} {{fillin(vx*scalar)}} \\\\ {{fillin(vy*scalar)}}\\end{bmatrix}\n$$"
+            },
+            "parameters": {},
+            "variables": {
+                "vx": {
+                    "type": "number",
+                    "min": "-10",
+                    "max": 10,
+                    "step": 1,
+                    "example": 1
+                },
+                "vy": {
+                    "type": "number",
+                    "min": "-10",
+                    "max": 10,
+                    "step": 1,
+                    "example": -8
+                },
+                "s": {
+                    "type": "number",
+                    "min": "-10",
+                    "max": "10",
+                    "step": 1,
+                    "example": -3
+                }
             }
         }
     },
@@ -866,6 +1148,13 @@ const repository : RepositorySpec = {
                 "integerarithmetic_roundingsigfigures",
                 "integerarithmetic_roundingdecplaces",
                 "integerarithmetic_simplenegativenumbers"
+            ]
+        },
+        "": {
+            "title": "",
+            "level": 99,
+            "exerciseids": [
+                "3blue1brownvectors"
             ]
         }
     }

@@ -11,7 +11,7 @@ import { VariableSpec } from "../../classes/Variables";
 import { defaultenv, envtype, getStrValue } from "../../helpers/env";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { addNewPart, moveStage, removeStage, setProblemQuestion, setProblemStage, setProblemTitle, setShowParameters, setShowParts, setShowRepeats } from "../../reducers/CreateReducer";
-import Markdown from "../Markdown";
+import { MarkdownFigures } from "../Markdown";
 import MPPaper from "../MPPaper";
 import { CreateAnswerComponent, CreateShowAnswerComponent } from "./CreateAnswer";
 import { CreateParametersComponent } from "./CreateParameters";
@@ -34,6 +34,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { AnswerSpec } from "../../classes/Answers";
 import Tooltip from "@mui/material/Tooltip";
+import { v4 as uuidv4 } from 'uuid';
+import { JSGFigureStore } from "../../classes/Problem";
 
 export function getCreateEnv(parameters?: { [key: string]: ParameterSpec }, variables?: { [key: string]: Partial<VariableSpec> }, stopParametersAt:string="", stopVariablesAt:string="") {
     // Go through and get the env from the variables. We only need to loop until we see our own varname.
@@ -106,8 +108,10 @@ export function CreateProblemTitleComponent({probid, stageindex} : CreateProblem
                     <Grid xs>
                         {editTitle
                         ? <div>
+                            <form onSubmit={() => setEditTitle(false)}>
                             <TextField autoFocus label="Title" value={title ? title : ""} onChange={(e) => dispatch(setProblemTitle({probid:probid, title:e.target.value}))} />
                             <Tooltip title="Finish editing problem title" arrow ><IconButton onClick={() => setEditTitle(false)}><DoneIcon /></IconButton></Tooltip>
+                            </form>
                           </div>
                         :
                             <Typography variant="h3">{title}
@@ -241,18 +245,24 @@ interface CreatePartComponentProps {
 }
 
 export function CreatePartComponent({ probid, partindex }: CreatePartComponentProps) {
-    const problem = useAppSelector(state => state.create.problems[probid]); // Get the main exercise simply to see if it's there
+    const problemQuestion = useAppSelector(state => state.create.problems[probid].question);
+    const partQuestion = useAppSelector(state => state.create.problems?.[probid]?.additionalparts?.[partindex ? partindex : 0]?.question);
+    const parameters = useAppSelector(state => state.create.problems[probid].parameters);
+    const variables = useAppSelector(state => state.create.problems[probid].variables);
     const dispatch = useAppDispatch();
-
-    if(!problem)
-        return <div>Problem not {probid} found.</div>
     
-    const question:string | undefined = partindex === undefined ? problem.question : problem?.additionalparts?.[partindex]?.question;
+    const question:string | undefined = partindex === undefined ? problemQuestion : partQuestion;
 
     if(question === undefined)
         return <div>Part not found</div>
-    
-    const env = getCreateEnv(problem.parameters, problem.variables);
+
+    function setJSXGraphFigure(jessiecode?:string) {
+        return "figure";
+    }
+
+    const env = getCreateEnv(parameters, variables);
+
+    env["JSXGraph"] = setJSXGraphFigure;
 
     return (
         <Box>
@@ -270,25 +280,56 @@ interface CreateShowPartComponentProps {
 }
 
 export function CreateShowPartComponent({ probid, partindex }: CreateShowPartComponentProps) {
-    const problem = useAppSelector(state => state.create.problems[probid]);
-
-    if(!problem)
-        return <div>Problem not {probid} found.</div>
+    const problemQuestion = useAppSelector(state => state.create.problems[probid].question);
+    const problemAnswer = useAppSelector(state => state.create.problems[probid].answer);
+    const partQuestion = useAppSelector(state => state.create.problems?.[probid]?.additionalparts?.[partindex ? partindex : 0]?.question);
+    const partAnswer = useAppSelector(state => state.create.problems?.[probid]?.additionalparts?.[partindex ? partindex : 0]?.answer);
+    const parameters = useAppSelector(state => state.create.problems[probid].parameters);
+    const variables = useAppSelector(state => state.create.problems[probid].variables);
+    const [JSXFigureStore, setJSXFigureStore] = React.useState<{[key:string]:JSGFigureStore}>({});
     
-    const question:string | undefined = partindex === undefined ? problem.question : problem?.additionalparts?.[partindex]?.question;
-    const answer:Partial<AnswerSpec> | undefined = partindex === undefined ? problem.answer : problem?.additionalparts?.[partindex]?.answer;
+    const question:string | undefined = partindex === undefined ? problemQuestion : partQuestion;
+    const answer:Partial<AnswerSpec> | undefined = partindex === undefined ? problemAnswer : partAnswer;
+
+    let jsgFigureStore:{[key:string]:JSGFigureStore} = {};
 
     if(question === undefined)
         return <div>Part not found</div>
     if(answer === undefined)
         return <div>Part not found</div>
-    
-    const env = getCreateEnv(problem.parameters, problem.variables);
+
+    function setJSXGraphFigure(jessiecode?:string) {
+        if(!jessiecode)
+            return "";
+        let prevuuid = "";
+        for(let pu in JSXFigureStore) {
+            if(JSXFigureStore[pu].logic === jessiecode) {
+                prevuuid = pu;
+                break;
+            }
+        }
+        const uuid = prevuuid !== "" ? prevuuid : uuidv4();
+        jsgFigureStore[uuid] = {logic:jessiecode};
+        return `![${uuid}](jsxgraph_figurestore)`
+
+    }
+
+    let env = getCreateEnv(parameters, variables);
+
+    env["JSXGraph"] = setJSXGraphFigure;
+    const parsedQuestion = question ? getStrValue(question, env) : "";
+
+    // Set the new figure store if it's been updated
+    for(let bid in jsgFigureStore) {
+        if(!JSXFigureStore[bid]) {
+            setJSXFigureStore(jsgFigureStore);
+            break;
+        }
+    }
 
     return (
         <Box>
-            {partindex !== undefined ? <Typography paragraph variant="h6">Part {partindex+2}</Typography> : (null)}
-            <Markdown>{question ? getStrValue(question, env) : ""}</Markdown>
+            <MarkdownFigures jsgFigureStore={jsgFigureStore}>{parsedQuestion}</MarkdownFigures>
             <CreateShowAnswerComponent answer={answer} env={env} />
         </Box>
     )
@@ -300,40 +341,39 @@ interface CreateProblemComponentProps {
 }
 
 export function CreateProblemComponent({ probid, stageindex }: CreateProblemComponentProps) {
-    const problem = useAppSelector(state => state.create.problems[probid]); // Get the main exercise simply to see if it's there
+    const showParts = useAppSelector(state => state.create.problems[probid].showParts);
+    const showRepeats = useAppSelector(state => state.create.problems[probid].showRepeats);
+    const showParameters = useAppSelector(state => state.create.problems[probid].showParameters);
+    const additionalParts = useAppSelector(state => state.create.problems[probid].additionalparts);
     const dispatch = useAppDispatch();
-
-    if(!problem)
-        return <div>Problem not {probid} found.</div>
 
     return (
         <Box paddingY={3} >
         <MPPaper>
             <CreateProblemTitleComponent stageindex={stageindex} probid={probid} />
-            {problem.showParameters ? <CreateParametersComponent stageindex={stageindex} probid={probid} /> : (null)}
+            {showParameters ? <CreateParametersComponent stageindex={stageindex} probid={probid} /> : (null)}
             <CreateVariablesComponent probid={probid} />
             <Grid container spacing={4}>
                 <Grid xs={12} sm={6}>
                     <Box>
-                    {problem.showParts ? <Typography paragraph variant="h5">Part 1</Typography> : (null)}
+                    {showParts ? <Typography paragraph variant="h5">Part 1</Typography> : (null)}
                     <CreatePartComponent probid={probid} />
-                    {problem.showParts && problem.additionalparts !== undefined ? problem.additionalparts.map((part, index) => <CreatePartComponent probid={probid} partindex={index} />) : (null)}
-                    {problem.showParts && problem.additionalparts !== undefined ? <Button onClick={() => dispatch(addNewPart({probid: probid}))}>Add new part</Button> : (null)}
+                    {showParts && additionalParts !== undefined ? additionalParts.map((part, index) => <CreatePartComponent probid={probid} partindex={index} />) : (null)}
+                    {showParts && additionalParts !== undefined ? <Button onClick={() => dispatch(addNewPart({probid: probid}))}>Add new part</Button> : (null)}
                     </Box>
                 </Grid>
                 <Grid xs={12} sm={6}>
                     <Paper>
                         <Box padding={3}>
                         <Typography paragraph variant="h5">Example</Typography>
-                        {problem.showParts ? <Typography paragraph variant="h6">Part 1</Typography> : (null)}
                         <CreateShowPartComponent probid={probid} />
-                        {problem.showParts && problem.additionalparts !== undefined ? problem.additionalparts.map((part, index) => <CreateShowPartComponent probid={probid} partindex={index} />) : (null)}
+                        {showParts && additionalParts !== undefined ? additionalParts.map((part, index) => <CreateShowPartComponent probid={probid} partindex={index} />) : (null)}
                         <Button disabled>Submit answer</Button> <Button disabled>Skip</Button>
                         </Box>
                     </Paper>
                 </Grid>
             </Grid>
-            {problem.showRepeats ? <CreateRepeatProblemSelector stageindex={stageindex} /> : (null)}
+            {showRepeats ? <CreateRepeatProblemSelector stageindex={stageindex} /> : (null)}
         </MPPaper>
         </Box>
     )

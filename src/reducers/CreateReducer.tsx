@@ -177,12 +177,14 @@ const exerciseCreatorSlice = createSlice({
             const probid = action.payload.probid;
             const partindex = action.payload.partindex;
             if(state.problems[probid]) {
-                if(partindex === undefined)
+                if(partindex === undefined) {
                     state.problems[probid].question = action.payload.text;
+                }
                 else {
                     const problem = state.problems[probid];
-                    if(problem.additionalparts !== undefined && problem.additionalparts[partindex] !== undefined)
+                    if(problem.additionalparts !== undefined && problem.additionalparts[partindex] !== undefined) {
                         problem.additionalparts[partindex].question = action.payload.text
+                    }
                 }
             }
         },

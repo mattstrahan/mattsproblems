@@ -1,12 +1,14 @@
 import * as nunjucks from 'nunjucks';
-import { defaultenv, envtype } from '../helpers/env';
+import { defaultenv, envtype, getStrValue } from '../helpers/env';
 import { Answer, AnswerSpec, buildFillinsAnswer, buildMultipleChoiceAnswer, buildNumberAnswer, buildTextAnswer, FillinsAnswerSpec, MultipleChoiceAnswerSpec, NumberAnswerSpec, TextAnswerSpec } from './Answers';
 import { getParameters, ParameterSpec } from './Parameters';
 import { VariableLetterSpec, VariableNumberSpec, VariableSpec } from './Variables';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export interface PartSpec {
      question: string;
+     figurestore?: {[key:string]:string};
      answer: Partial<AnswerSpec>;
 }
 
@@ -15,12 +17,17 @@ export interface ProblemSpec {
     description: string;
     additionalparts: Partial<PartSpec>[];
     question: string;
+    figurestore?: {[key:string]:string};
     answer: Partial<AnswerSpec>;
     parameters: { [key: string]: ParameterSpec };
     variables: { [key: string]: Partial<VariableSpec> };
 }
 
-export interface Part { question: string; answer: Answer };
+export interface JSGFigureStore {
+    logic: string;
+}
+
+export interface Part { question: string; answer: Answer, jsgFigureStore?: {[key:string]:JSGFigureStore} };
 
 export interface Problem {
     type: "problem";
@@ -76,8 +83,21 @@ export class ProblemSpec implements ProblemSpec {
                 if (this.getVariable)
                     env[variableid] = this.getVariable(variableid, env);
 
-        if (this.question)
-            question = nunjucks.renderString(this.question, env);
+        // Allow the generation of the jsgFigureStore
+        let jsgFigureStore:{[key:string]:JSGFigureStore} = {};
+        function setJSXGraphFigure(jessiecode?:string) {
+            if(!jessiecode)
+                return "";
+            
+            const uuid = uuidv4();
+            jsgFigureStore[uuid] = {logic:jessiecode};
+            return `![${uuid}](jsxgraph_figurestore)`
+    
+        }
+        const questionenv:envtype = Object.assign({}, env);
+        questionenv["JSXGraph"] = setJSXGraphFigure;
+        question = this.question ? getStrValue(this.question, questionenv) : "";
+        
 
         if (this.answer)
             if(this.answer.type === "number")
@@ -89,7 +109,7 @@ export class ProblemSpec implements ProblemSpec {
             else
                 answer = buildTextAnswer(this.answer as TextAnswerSpec, env);
         
-        parts.push({question:question, answer:answer})
+        parts.push({question:question, answer:answer, jsgFigureStore:jsgFigureStore})
 
         if (this.additionalparts) {
             for(let part of this.additionalparts) {

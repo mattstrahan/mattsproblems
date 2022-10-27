@@ -33,12 +33,12 @@ problems:
         min: -5
         max: 5
         step: 1
-    question: "What does is the resulting vector?"
+    question: "What is the resulting vector?"
     answer:
       type: fillins
       label: " "
-      value: >
-        $
+      value: |-
+        $$
         \begin{bmatrix}
         {{a}} & {{c}} \\
         {{b}} & {{d}}
@@ -48,7 +48,7 @@ problems:
         {{fillin(a*e+c*f)}} \\
         {{fillin(b*e+d*f)}}
         \end{bmatrix}
-        $
+        $$
   2x2matrixmultiply:
     title: Multiply a 2x2 matrix
     description: Multiplying two 2x2 matrices
@@ -97,8 +97,8 @@ problems:
     answer:
       type: fillins
       label: " "
-      value: >
-        $
+      value: |-
+        $$
         \begin{bmatrix}
         {{a}} & {{c}} \\
         {{b}} & {{d}}
@@ -108,7 +108,7 @@ problems:
         {{fillin(a*e+c*f)}} & {{fillin(a*c+c*d)}} \\
         {{fillin(b*e+d*f)}} & {{fillin(b*e+d*f)}}
         \end{bmatrix}
-        $
+        $$
 exercises:
   matrixvector:
     title: Applying a matrix to a vector

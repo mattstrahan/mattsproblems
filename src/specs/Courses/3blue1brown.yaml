@@ -1,6 +1,7 @@
 courses:
   3blue1brown_linearalgebra:
-    title: 3Blue1Brown - Linear Algebra
-    description: Exercises to support the 3Blue1Brown Linear Algebra playlist.
+    title: 3Blue1Brown - Essence of linear algebra
+    description: Exercises to support the 3Blue1Brown Essence of linear algebra playlist.
     exercises:
+      - exerciseid: 3blue1brownvectors
       - exerciseid: matrixmultiply

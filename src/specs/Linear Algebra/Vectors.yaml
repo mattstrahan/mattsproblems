@@ -1,0 +1,426 @@
+problems:
+  linearalgebra_vectorcomponentsgraph:
+    title: x and y components of vectors with graph
+    description: Identifying the x and y components of vectors with the help of a graph
+    additionalparts:
+      - question: ''
+        answer:
+          type: number
+          label: What is the $y$ component of $\vec{v}$?
+          value: '{{y}}'
+          precision: '0'
+          decimals: '0'
+    question: >-
+      {{JSXGraph("
+
+      $board.setView([-6, 6, 6, -6]);
+
+
+      xaxis=axis([0.0,-1.0],[0.0,0.0]);
+
+      yaxis=axis([-1.0,0.0],[0.0,0.0]);
+
+
+      v=point(" + x + "," + y + ");
+
+      v.size=0;
+
+      va=line([0,0],v);
+
+      va.straightFirst=false;
+
+      va.straightLast=false;
+
+      va.lastArrow=true;
+
+
+      xline=segment([0,0],["+x+",0]);
+
+      xline.name='"+x+"';
+
+      xline.withLabel=true;
+
+      xline.labelColor='#f00';
+
+      xline.strokeColor = '#f00';
+
+      yline=segment(["+x+",0],["+x+","+y+"]);
+
+      yline.name='"+y+"';
+
+      yline.withLabel=true;
+
+      yline.labelColor='#f00';
+
+      yline.strokeColor = '#f00';
+
+      ")}}
+
+
+      $\vec{v}$ is a vector where $\vec{v}=\begin{bmatrix} {{x}} \\
+      {{y}}\end{bmatrix}$
+    answer:
+      type: number
+      label: What is the $x$ component of $\vec{v}$?
+      value: '{{x}}'
+      precision: '0'
+      decimals: '0'
+    parameters: {}
+    variables:
+      x:
+        type: number
+        min: '-5'
+        max: '5'
+        step: 1
+        example: 5
+      'y':
+        type: number
+        min: '-5'
+        max: '5'
+        step: 1
+        example: -4
+    showParts: true
+    showRepeats: true
+  linearalgebra_vectorcomponents:
+    title: x and y components of vector
+    description: Identifying the x and y components of a vector
+    additionalparts:
+      - question: ''
+        answer:
+          type: number
+          label: What is the $y$ component of $\vec{v}$?
+          value: '{{y}}'
+          precision: '0'
+          decimals: '0'
+    question: >-
+      $\vec{v}$ is a vector where $\vec{v}=\begin{bmatrix} {{x}} \\
+      {{y}}\end{bmatrix}$
+    answer:
+      type: number
+      label: What is the $x$ component of $\vec{v}$?
+      value: '{{x}}'
+      precision: '0'
+      decimals: '0'
+    parameters: {}
+    variables:
+      x:
+        type: number
+        min: '-9'
+        max: '9'
+        step: 1
+        example: 2
+      'y':
+        type: number
+        min: '-9'
+        max: '9'
+        step: 1
+        example: 5
+    showParts: true
+  linearalgebra_vectoradditiongraph:
+    title: Adding two vectors with graph
+    description: Adding two vectors together with the help of a graph
+    additionalparts: []
+    question: >-
+      {{JSXGraph("
+
+      $board.setView([-1, 10, 10, -1]);
+
+
+      xaxis=axis([0.0,-1.0],[0.0,0.0]);
+
+      yaxis=axis([-1.0,0.0],[0.0,0.0]);
+
+
+      v=point(" + vx + "," + vy + ");
+
+      v.size=0;
+
+      v.name='\\\\vec{v}';
+
+      va=line([0,0],v);
+
+      va.straightFirst=false;
+
+      va.straightLast=false;
+
+      va.lastArrow=true;
+
+      va.strokeColor='#ee0';
+
+
+
+      w=point(" + (vx + wx) + "," + (vy + wy) + ");
+
+      w.size=0;
+
+      w.name='\\\\vec{w}';
+
+      wa=line(v,w);
+
+      wa.straightFirst=false;
+
+      wa.straightLast=false;
+
+      wa.lastArrow=true;
+
+      wa.strokeColor='#DB7093';
+
+
+      vw=point(" + (vx + wx) + "," + (vy + wy) + ");
+
+      vw.size=0;
+
+      vw.name='';
+
+      vwa=segment([0,0],w);
+
+      vwa.lastArrow=true;
+
+      vwa.name='\\\\vec{v}+\\\\vec{w}';
+
+      vwa.withLabel=true;
+
+      vwa.strokeColor='#9400D3';
+
+
+      ")}}
+
+
+      $\vec{v}$ and $\vec{w}$ are vectors where $v=\begin{bmatrix} {{vx}} \\
+      {{vy}}\end{bmatrix}$ and $w=\begin{bmatrix} {{wx}} \\
+      {{wy}}\end{bmatrix}$. What is $\vec{v}+\vec{w}$?
+    answer:
+      type: fillins
+      label: ''
+      value: >-
+        $$
+
+        \begin{bmatrix} {{vx}} \\ {{vy}}\end{bmatrix}+\begin{bmatrix} {{wx}} \\
+        {{wy}}\end{bmatrix}=\begin{bmatrix} {{fillin(vx+wx)}} \\
+        {{fillin(vy+wy)}}\end{bmatrix}
+
+        $$
+    parameters: {}
+    variables:
+      vx:
+        type: number
+        min: '1'
+        max: '5'
+        step: 1
+        example: 2
+      vy:
+        type: number
+        min: '1'
+        max: '5'
+        step: 1
+        example: 5
+      wx:
+        type: number
+        min: '{{-1-vx}}'
+        max: '{{10-vx}}'
+        step: 1
+        example: 4
+      wy:
+        type: number
+        min: '{{-1-vy}}'
+        max: '{{10-vy}}'
+        step: 1
+        example: 4
+    showRepeats: true
+  linearalgebra_vectoraddition:
+    title: Adding two vectors
+    description: Adding two vectors together
+    additionalparts: []
+    question: ''
+    answer:
+      type: fillins
+      label: ''
+      value: >-
+        $$
+
+        \begin{bmatrix} {{vx}} \\ {{vy}}\end{bmatrix}+\begin{bmatrix} {{wx}} \\
+        {{wy}}\end{bmatrix}=\begin{bmatrix} {{fillin(vx+wx)}} \\
+        {{fillin(vy+wy)}}\end{bmatrix}
+
+        $$
+    parameters: {}
+    variables:
+      vx:
+        type: number
+        min: '-10'
+        max: 10
+        step: 1
+        example: 4
+      vy:
+        type: number
+        min: '-10'
+        max: 10
+        step: 1
+        example: 5
+      wx:
+        type: number
+        min: '-10'
+        max: 10
+        step: 1
+        example: 9
+      wy:
+        type: number
+        min: '-10'
+        max: 10
+        step: 1
+        example: 1
+    showParts: false
+    showRepeats: true
+  linearalgebra_vectorscalinggraph:
+    title: Scaling a vector with graph
+    description: Multiplying a scalar and a vector to get a scaled vector with the help of a graph
+    additionalparts: []
+    question: >-
+      {{JSXGraph("
+
+      $board.setView([-1, 10, 10, -1]);
+
+
+      xaxis=axis([0.0,-1.0],[0.0,0.0]);
+
+      yaxis=axis([-1.0,0.0],[0.0,0.0]);
+
+
+      v=point(" + vx + "," + vy + ");
+
+      v.size=0;
+
+      v.name='\\\\vec{v}';
+
+      va=line([0,0],v);
+
+      va.straightFirst=false;
+
+      va.straightLast=false;
+
+      va.lastArrow=true;
+
+      va.strokeColor='#ee0';
+
+
+
+      w=point(" + (vx * scalar) + "," + (vy * scalar) + ");
+
+      w.size=0;
+
+      w.name='\\\\vec{w}';
+
+      wa=line(v,w);
+
+      wa.straightFirst=false;
+
+      wa.straightLast=false;
+
+      wa.lastArrow=true;
+
+      wa.strokeColor='#DB7093';
+
+
+      ")}}
+
+
+      $\vec{v}$ is a vector where $v=\begin{bmatrix} {{vx}} \\
+      {{vy}}\end{bmatrix}$. What is ${{scalar}}.\vec{v}$?
+    answer:
+      type: fillins
+      label: ''
+      value: >-
+        $$
+
+        {{scalar}}.\begin{bmatrix} {{vx}} \\ {{vy}}\end{bmatrix}=\begin{bmatrix}
+        {{fillin(vx*scalar)}} \\ {{fillin(vy*scalar)}}\end{bmatrix}
+
+        $$
+    parameters: {}
+    variables:
+      vx:
+        type: number
+        min: '1'
+        max: '3'
+        step: 1
+        example: 2
+      vy:
+        type: number
+        min: '1'
+        max: '3'
+        step: 1
+        example: 2
+      scalar:
+        type: number
+        min: '1'
+        max: '{{min(10/vx,10/vy)}}'
+        step: 1
+        example: 3
+    showRepeats: false
+  linearalgebra_vectorscaling:
+    title: Scaling vector
+    description: ''
+    additionalparts: []
+    question: ''
+    answer:
+      type: fillins
+      label: ''
+      value: >-
+        $$
+
+        {{s}}.\begin{bmatrix} {{vx}} \\ {{vy}}\end{bmatrix}=\begin{bmatrix}
+        {{fillin(vx*scalar)}} \\ {{fillin(vy*scalar)}}\end{bmatrix}
+
+        $$
+    parameters: {}
+    variables:
+      vx:
+        type: number
+        min: '-10'
+        max: 10
+        step: 1
+        example: 1
+      vy:
+        type: number
+        min: '-10'
+        max: 10
+        step: 1
+        example: -8
+      s:
+        type: number
+        min: '-10'
+        max: '10'
+        step: 1
+        example: -3
+    showRepeats: true
+exercises:
+  3blue1brownvectors:
+    title: Vectors | Chapter 1
+    description: Vector introduction based on the first video of 3blue1brown
+    topic: ''
+    parameters: {}
+    stages:
+      - type: text
+        text: |-
+          This exercise is based off the first video of 3Blue1Brown's **Essence of linear algebra** playlist. Here we
+          will go through identifying the x and y components of vectors, vector addition, and vector scaling.
+
+          The video itself is available [here](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=1).
+      - type: problem
+        probid: linearalgebra_vectorcomponentsgraph
+        repeats: 2
+      - type: problem
+        probid: linearalgebra_vectorcomponents
+      - type: problem
+        probid: linearalgebra_vectoradditiongraph
+        repeats: 2
+      - type: problem
+        probid: linearalgebra_vectoraddition
+        repeats: 2
+      - type: problem
+        probid: linearalgebra_vectorscalinggraph
+      - type: problem
+        probid: linearalgebra_vectorscaling
+        repeats: 2
+    finish:
+      text: You've finished!

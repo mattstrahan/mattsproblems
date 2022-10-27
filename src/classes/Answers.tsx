@@ -129,7 +129,7 @@ class GetFillins {
 export function buildFillinsAnswer(fillinAnswerSpec: FillinsAnswerSpec, env: envtype): FillinsAnswer {
     let getfillins = new GetFillins();
     const answerfillins = nunjucks.renderString(fillinAnswerSpec.value, { ...env, fillin: (value: number, precision?: number) => { return getfillins.getfillin(value, precision)}});
-    const answertext = nunjucks.renderString(fillinAnswerSpec.value, { ...env, fillin: (value: number, precision?: number) => { return value.toString() } });
+    const answertext = nunjucks.renderString(fillinAnswerSpec.value, { ...env, fillin: (value: number, precision?: number) => { return value ? value.toString() : "0" } });
     const answerworksheet = nunjucks.renderString(fillinAnswerSpec.value, { ...env, fillin: (value: number, precision?: number) => { return "\\_\\_\\_" } });
     const label = typeof fillinAnswerSpec.label === "string"
         ? nunjucks.renderString(fillinAnswerSpec.label, env)
