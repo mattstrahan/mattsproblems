@@ -16,6 +16,9 @@ import katex from 'katex';
 import JXG from 'jsxgraph'
 import { JSGFigureStore } from '../classes/Problem';
 
+
+// The type for useKatex hasn't been implemented yet. I've asked typescript to ignore.
+// @ts-ignore
 JXG.Options.text.useKatex=true;
 
 interface reHypeFillinsOptions {
