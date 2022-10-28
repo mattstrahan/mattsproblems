@@ -12,10 +12,8 @@ import Input, { InputProps } from '@mui/material/Input';
 import { Typography } from '@mui/material';
 import { useEffect } from 'react';
 import React from 'react';
-import katex from 'katex';
-import JXG from 'jsxgraph'
+import JXG from 'jsxgraph';
 import { JSGFigureStore } from '../classes/Problem';
-
 
 // The type for useKatex hasn't been implemented yet. I've asked typescript to ignore.
 // @ts-ignore

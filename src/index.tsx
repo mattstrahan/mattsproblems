@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import katex from 'katex';
+
+// This is needed as JSXGraph calls katex straight up without any importing or dependencies.
+// That's a bit impolite, I think, but luckily this is a good workaround.
+window.katex = katex;
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
