@@ -85,11 +85,11 @@ export function CreateTextMarkdownField({ label, value, onChange, buttons }: Cre
             break;
         }
     }
-    
+
     return (
         <Grid container spacing={4} xs={12}>
             <Grid xs={12} sm={6}>
-                <CreateTextField nunjucks multiline label={label} env={env} value={value} handleChange={(e:string) => {onChange(e)}} sx={{width: "100%"}} />
+                <CreateTextField nunjucks multiline label={label} env={env} initial={value} handleChange={(e:string) => {onChange(e)}} sx={{width: "100%"}} />
             </Grid>
             <Grid xs={12} sm={6}>
                 <Paper>
