@@ -1,13 +1,14 @@
 import { envtype, getStrValue } from '../helpers/env';
 import { getParameters, ParameterSpec, processParameters } from './Parameters';
-import { Problem, ProblemRepository } from './Problem'
+import { JSGFigureStore, JSGFigureStoreAttributes, Problem, ProblemRepository } from './Problem'
+import { v4 as uuidv4 } from 'uuid';
 
 
 export interface TextStage {
     type: "text" | "finish";
     heading?: string;
     text: string;
-
+    jsgFigureStore?: {[key:string]:JSGFigureStore}
 }
 
 export type Stage = TextStage | Problem;
@@ -29,10 +30,21 @@ class TextStageSpec {
     }
 
     getStage?(problemrepository: ProblemRepository, parameters?: envtype, questionnumber: number = 0): Stage | undefined {
+        // Allow the generation of the jsgFigureStore
+        let jsgFigureStore:{[key:string]:JSGFigureStore} = {};
+        function setJSXGraphFigure(logic:string, attributes?:JSGFigureStoreAttributes) {
+            const uuid = uuidv4();
+            jsgFigureStore[uuid] = {logic:logic, attributes:attributes};
+            return `![${uuid}](jsxgraph_figurestore)`
+        }
+        const env:envtype = parameters !== undefined ? parameters : {};
+        env["JSXGraph"] = setJSXGraphFigure;
+        const text = getStrValue(this.text, env)
         return {
             type: this.type,
             heading: getStrValue(this.heading, parameters),
-            text: getStrValue(this.text, parameters)
+            text: text,
+            jsgFigureStore: jsgFigureStore
         };
     }
 }

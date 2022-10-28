@@ -5,12 +5,12 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { ProblemComponent } from './Problems'
 import { newExercise, nextProblem } from '../reducers/RepositoryReducer'
 import { useNavigate, useParams } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from "react";
 import { exportDOCX } from "./Export";
 import { AnswerKey } from "./Answers";
 import Grid from "@mui/material/Unstable_Grid2";
+import Markdown from "./Markdown";
 
 interface TextStageProps {
     stage: TextStage;
@@ -21,7 +21,7 @@ export function TextStageComponent({stage, answerKey}: TextStageProps) {
     const dispatch = useAppDispatch();
     return (<div>
         {stage.heading && <h1>stage</h1>}
-        <ReactMarkdown>{stage.text}</ReactMarkdown>
+        <Markdown jsgFigureStore={stage.jsgFigureStore}>{stage.text}</Markdown>
         <Button onClick={() => dispatch(nextProblem(answerKey))} >Go to the next problem</Button>
     </div>);
 }

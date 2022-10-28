@@ -80,49 +80,23 @@ export function MarkdownFillins(props: ReactMarkdownOptions & MarkdownFillinsAdd
     return <ReactMarkdown {...newProps} />;
 }
 
-// Process the supplied fillins
-export function FetchMarkdown(props: ReactMarkdownOptions) {
-    const [markdownText, setMarkdownText] = React.useState<string>("");
-    useEffect( () => {
-        fetch(props.children).then((response) => response.text()).then((text) => {
-            setMarkdownText(text)
-          })
-     });
-    const katexoptions: KatexOptions = { trust: (context) => context.command === '\\htmlId' }; // This is our secret fillin replacer
-    const rehypeplugins: PluggableList = [[rehypeKatex, katexoptions], rehypeFillins];
-    const remarkplugins: PluggableList = [remarkGfm, remarkMath];
-    const newProps:ReactMarkdownOptions = {
-        ...props,
-        remarkPlugins: remarkplugins,
-        rehypePlugins: rehypeplugins,
-        components: {
-            // MUI components
-            h1: ({ node, ...props }) => <Typography variant='h1' paragraph {...props} />,
-            h2: ({ node, ...props }) => <Typography variant='h2' paragraph {...props} />,
-            h3: ({ node, ...props }) => <Typography variant='h3' paragraph {...props} />,
-            h4: ({ node, ...props }) => <Typography variant='h4' paragraph {...props} />,
-            h5: ({ node, ...props }) => <Typography variant='h5' paragraph {...props} />,
-            h6: ({ node, ...props }) => <Typography variant='h6' paragraph {...props} />,
-            p: ({ node, ...props }) => <Typography variant='body1' paragraph {...props} />
-        }
-    };
-    return <ReactMarkdown {...newProps} children={markdownText} />;
-}
-
 export interface MarkdownFiguresAdditionalProps {
     jsgFigureStore?: { [key: string]: JSGFigureStore }
 }
 
-// Markdown parser that allows figures and a figure store.
-export function MarkdownFigures(props: ReactMarkdownOptions & MarkdownFiguresAdditionalProps) {
+// Our regular Markdown generator without Fillins. Here we turn on Katex and Github extensions.
+export default function Markdown(props: ReactMarkdownOptions & MarkdownFiguresAdditionalProps) {
     useEffect(() => {
         if(props.jsgFigureStore) {
             for (let bid in props.jsgFigureStore) {
                 try {
-                let board = JXG.JSXGraph.initBoard(bid, {showCopyright:false, showNavigation:false, registerEvents: false});
+                let board = JXG.JSXGraph.initBoard(bid, {showCopyright:false,
+                    showNavigation: props.jsgFigureStore[bid]?.attributes?.showNavigation ? true : false,
+                    registerEvents: props.jsgFigureStore[bid]?.attributes?.registerEvents ? true : false});
                 board.jc.parse(props.jsgFigureStore[bid].logic);
                 }
                 catch(exception){
+                    //TODO show exception
                 }
             }
         }
@@ -146,8 +120,8 @@ export function MarkdownFigures(props: ReactMarkdownOptions & MarkdownFiguresAdd
             img: ({ node, ...iprops }) => 
                 {
                     // Only change the fillins
-                    if(iprops.src === "jsxgraph_figurestore"
-                        && props.jsgFigureStore !== undefined
+                    if(props.jsgFigureStore !== undefined
+                        && iprops.src === "jsxgraph_figurestore"
                         && iprops.alt !== undefined
                         && iprops.alt in props.jsgFigureStore) {
                             return <div id={iprops.alt} style={{ width: "100%", height: 500 }}>Board</div>
@@ -159,24 +133,14 @@ export function MarkdownFigures(props: ReactMarkdownOptions & MarkdownFiguresAdd
     return <ReactMarkdown {...newProps} />;
 }
 
-// Our regular Markdown generator without Fillins. Here we turn on Katex and Github extensions.
-export default function Markdown(props: ReactMarkdownOptions) {
-    const rehypeplugins: PluggableList = [rehypeKatex];
-    const remarkplugins: PluggableList = [remarkGfm, remarkMath];
-    const newProps: ReactMarkdownOptions = {
-        ...props,
-        remarkPlugins: remarkplugins,
-        rehypePlugins: rehypeplugins,
-        components: {
-            // MUI components
-            h1: ({ node, ...props }) => <Typography variant='h1' paragraph {...props} />,
-            h2: ({ node, ...props }) => <Typography variant='h2' paragraph {...props} />,
-            h3: ({ node, ...props }) => <Typography variant='h3' paragraph {...props} />,
-            h4: ({ node, ...props }) => <Typography variant='h4' paragraph {...props} />,
-            h5: ({ node, ...props }) => <Typography variant='h5' paragraph {...props} />,
-            h6: ({ node, ...props }) => <Typography variant='h6' paragraph {...props} />,
-            p: ({ node, ...props }) => <Typography variant='body1' paragraph {...props} />
-        }
-    };
-    return <ReactMarkdown {...newProps} />;
+
+// Fetch a markdown file from the server then process it as markdown
+export function FetchMarkdown(props: ReactMarkdownOptions) {
+    const [markdownText, setMarkdownText] = React.useState<string>("");
+    useEffect( () => {
+        fetch(props.children).then((response) => response.text()).then((text) => {
+            setMarkdownText(text)
+          })
+     });
+    return <Markdown {...props} children={markdownText} />;
 }

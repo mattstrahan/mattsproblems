@@ -23,8 +23,14 @@ export interface ProblemSpec {
     variables: { [key: string]: Partial<VariableSpec> };
 }
 
+export interface JSGFigureStoreAttributes {
+    registerEvents?: boolean;
+    showNavigation?: boolean;
+}
+
 export interface JSGFigureStore {
     logic: string;
+    attributes?: JSGFigureStoreAttributes
 }
 
 export interface Part { question: string; answer: Answer, jsgFigureStore?: {[key:string]:JSGFigureStore} };
@@ -85,14 +91,10 @@ export class ProblemSpec implements ProblemSpec {
 
         // Allow the generation of the jsgFigureStore
         let jsgFigureStore:{[key:string]:JSGFigureStore} = {};
-        function setJSXGraphFigure(jessiecode?:string) {
-            if(!jessiecode)
-                return "";
-            
+        function setJSXGraphFigure(logic:string, attributes?:JSGFigureStoreAttributes) {
             const uuid = uuidv4();
-            jsgFigureStore[uuid] = {logic:jessiecode};
+            jsgFigureStore[uuid] = {logic:logic, attributes:attributes};
             return `![${uuid}](jsxgraph_figurestore)`
-    
         }
         const questionenv:envtype = Object.assign({}, env);
         questionenv["JSXGraph"] = setJSXGraphFigure;

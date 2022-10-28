@@ -2,7 +2,7 @@ import React from "react";
 import { FillinsAnswer, MultipleChoiceAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
 import { Problem } from "../classes/Problem";
 import { AnswerKey, FillinsAnswerComponent, MultipleChoiceAnswerComponent, NumberAnswerComponent, TextAnswerComponent } from "./Answers";
-import Markdown, { MarkdownFigures } from "./Markdown";
+import Markdown from "./Markdown";
 
 export interface ProblemComponentProps {
     number?: number;
@@ -34,7 +34,7 @@ export function ProblemComponent ({number, problem, answerKey} : ProblemComponen
         ret.push( (
             <div key={partnumber}>
                 <h3>Question {number && <span>number</span>}</h3>
-                <MarkdownFigures jsgFigureStore={part.jsgFigureStore}>{part.question}</MarkdownFigures>
+                <Markdown jsgFigureStore={part.jsgFigureStore}>{part.question}</Markdown>
                 { partanswer }
             </div>
             ) );

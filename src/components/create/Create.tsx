@@ -12,9 +12,12 @@ import { CreateNewExerciseComponent } from "./CreateNewExercise";
 import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
 import { CreateProblemComponent, CreateProblemRepeatComponent } from "./CreateProblem";
-import { ProblemSpec } from "../../classes/Problem";
+import { JSGFigureStore, JSGFigureStoreAttributes, ProblemSpec } from "../../classes/Problem";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import exerciseCreatorInfo from '../../pages/ExerciseCreatorInfo.md';
+import { defaultenv, envtype, getStrValue } from "../../helpers/env";
+import { v4 as uuidv4 } from 'uuid';
+import { CreateTextField } from "./CreateTextField";
 
 
 
@@ -54,15 +57,44 @@ interface CreateTextMarkdownFieldProps {
 }
 
 export function CreateTextMarkdownField({ label, value, onChange, buttons }: CreateTextMarkdownFieldProps) {
+    const [JSXFigureStore, setJSXFigureStore] = React.useState<{[key:string]:JSGFigureStore}>({});
+    // Allow the generation of the jsgFigureStore
+    let jsgFigureStore:{[key:string]:JSGFigureStore} = {};
+    function setJSXGraphFigure(logic:string, attributes?:JSGFigureStoreAttributes) {
+        let prevuuid = "";
+        for(let pu in JSXFigureStore) {
+            if(JSXFigureStore[pu].logic === logic) {
+                prevuuid = pu;
+                break;
+            }
+        }
+        const uuid = prevuuid !== "" ? prevuuid : uuidv4();
+        jsgFigureStore[uuid] = {logic:logic, attributes:attributes};
+        return `![${uuid}](jsxgraph_figurestore)`
+    }
+
+    let env:envtype = {...defaultenv};
+
+    env["JSXGraph"] = setJSXGraphFigure;
+    const text = getStrValue(value, env)
+    
+    // Set the new figure store if it's been updated
+    for(let bid in jsgFigureStore) {
+        if(!JSXFigureStore[bid]) {
+            setJSXFigureStore(jsgFigureStore);
+            break;
+        }
+    }
+    
     return (
         <Grid container spacing={4} xs={12}>
             <Grid xs={12} sm={6}>
-                <TextField multiline label={label} value={value} onChange={(e) => {onChange(e.target.value)}} sx={{width: "100%"}} />
+                <CreateTextField nunjucks multiline label={label} env={env} value={value} handleChange={(e:string) => {onChange(e)}} sx={{width: "100%"}} />
             </Grid>
             <Grid xs={12} sm={6}>
                 <Paper>
                     <Box padding={3}>
-                    <Markdown>{value}</Markdown>
+                    <Markdown jsgFigureStore={JSXFigureStore}>{text}</Markdown>
                     {buttons ? buttons.map((label, index) => <Button disabled key={index}>{label}</Button>) : ""}
                     </Box>
                 </Paper>

@@ -11,7 +11,7 @@ import { VariableSpec } from "../../classes/Variables";
 import { defaultenv, envtype, getStrValue } from "../../helpers/env";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { addNewPart, moveStage, removeStage, setProblemQuestion, setProblemStage, setProblemTitle, setShowParameters, setShowParts, setShowRepeats } from "../../reducers/CreateReducer";
-import { MarkdownFigures } from "../Markdown";
+import Markdown from "../Markdown";
 import MPPaper from "../MPPaper";
 import { CreateAnswerComponent, CreateShowAnswerComponent } from "./CreateAnswer";
 import { CreateParametersComponent } from "./CreateParameters";
@@ -35,7 +35,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { AnswerSpec } from "../../classes/Answers";
 import Tooltip from "@mui/material/Tooltip";
 import { v4 as uuidv4 } from 'uuid';
-import { JSGFigureStore } from "../../classes/Problem";
+import { JSGFigureStore, JSGFigureStoreAttributes } from "../../classes/Problem";
 
 export function getCreateEnv(parameters?: { [key: string]: ParameterSpec }, variables?: { [key: string]: Partial<VariableSpec> }, stopParametersAt:string="", stopVariablesAt:string="") {
     // Go through and get the env from the variables. We only need to loop until we see our own varname.
@@ -256,7 +256,7 @@ export function CreatePartComponent({ probid, partindex }: CreatePartComponentPr
     if(question === undefined)
         return <div>Part not found</div>
 
-    function setJSXGraphFigure(jessiecode?:string) {
+    function setJSXGraphFigure(logic:string, attributes?:JSGFigureStoreAttributes) {
         return "figure";
     }
 
@@ -298,20 +298,17 @@ export function CreateShowPartComponent({ probid, partindex }: CreateShowPartCom
     if(answer === undefined)
         return <div>Part not found</div>
 
-    function setJSXGraphFigure(jessiecode?:string) {
-        if(!jessiecode)
-            return "";
+    function setJSXGraphFigure(logic:string, attributes?:JSGFigureStoreAttributes) {
         let prevuuid = "";
         for(let pu in JSXFigureStore) {
-            if(JSXFigureStore[pu].logic === jessiecode) {
+            if(JSXFigureStore[pu].logic === logic) {
                 prevuuid = pu;
                 break;
             }
         }
         const uuid = prevuuid !== "" ? prevuuid : uuidv4();
-        jsgFigureStore[uuid] = {logic:jessiecode};
+        jsgFigureStore[uuid] = {logic:logic, attributes:attributes};
         return `![${uuid}](jsxgraph_figurestore)`
-
     }
 
     let env = getCreateEnv(parameters, variables);
@@ -329,7 +326,7 @@ export function CreateShowPartComponent({ probid, partindex }: CreateShowPartCom
 
     return (
         <Box>
-            <MarkdownFigures jsgFigureStore={jsgFigureStore}>{parsedQuestion}</MarkdownFigures>
+            <Markdown jsgFigureStore={jsgFigureStore}>{parsedQuestion}</Markdown>
             <CreateShowAnswerComponent answer={answer} env={env} />
         </Box>
     )
