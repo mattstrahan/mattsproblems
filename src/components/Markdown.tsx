@@ -96,11 +96,18 @@ export default function Markdown(props: ReactMarkdownOptions & MarkdownFiguresAd
                 board.jc.parse(props.jsgFigureStore[bid].logic);
                 }
                 catch(exception){
-                    //TODO show exception
+                    const boarddiv = document.getElementById(bid);
+                    if(boarddiv !== null) {
+                        boarddiv.innerHTML = `<span style="color: red"><pre>Error: ${exception}</pre></span>`
+                    } else {
+                        console.log(`${boarddiv}: ${exception}`);
+                    }
                 }
             }
         }
     })
+
+    const youtubeRegExp = new RegExp('^[a-zA-Z0-9_-]{11}$');
 
     const rehypeplugins: PluggableList = [rehypeKatex];
     const remarkplugins: PluggableList = [remarkGfm, remarkMath];
@@ -125,6 +132,15 @@ export default function Markdown(props: ReactMarkdownOptions & MarkdownFiguresAd
                         && iprops.alt !== undefined
                         && iprops.alt in props.jsgFigureStore) {
                             return <div id={iprops.alt} style={{ width: "100%", height: 500 }}>Board</div>
+                    } else if (iprops.src === "youtube" && iprops.alt && youtubeRegExp.test(iprops.alt)) {
+                        return <iframe
+                            width="560"
+                            height="315"
+                            src={`https://www.youtube.com/embed/${iprops.alt}`}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen></iframe>
                     } else
                         return <img {...iprops} />
                 }

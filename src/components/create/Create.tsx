@@ -2,7 +2,7 @@ import { Autocomplete, Box, Button, IconButton, Paper, TextField, Typography } f
 import Grid from "@mui/material/Unstable_Grid2";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { addNewProblem, addProblem, addRepeatProblem, addTextStage, setExerciseFinish, setExerciseTitle,  setTextStageLabel } from "../../reducers/CreateReducer";
+import { addNewProblem, addProblem, addRepeatProblem, addTextStage, setExerciseFinish, setExerciseTitle,  setTextStageText } from "../../reducers/CreateReducer";
 import Markdown, { FetchMarkdown } from "../Markdown";
 import { addExercise } from "../../reducers/RepositoryReducer";
 import { useNavigate } from "react-router-dom";
@@ -23,16 +23,15 @@ import { CreateTextField } from "./CreateTextField";
 
 interface CreateTextStageComponentProps {
     id: number;
+    textStageID?: string;
+    textStageText: string;
 }
 
-export function CreateTextStageComponent({ id }: CreateTextStageComponentProps) {
-    const stage = useAppSelector(state => state.create.exercise?.stages?.[id]); // Get the main exercise simply to see if it's there
+export function CreateTextStageComponent({ id, textStageID, textStageText }: CreateTextStageComponentProps) {
+    const textStage = useAppSelector(state => state.create.textstages?.[textStageID !== undefined ? textStageID : '']); // Get the main exercise simply to see if it's there
     const dispatch = useAppDispatch();
-    if(!stage)
-        return <div>Stage not found</div>
     
-    if(!(stage.type === "text"))
-        return <div>Stage not found</div>
+    const text = textStage !== undefined ? textStage : textStageText;
 
     return (
         <Box paddingY={3} >
@@ -40,8 +39,8 @@ export function CreateTextStageComponent({ id }: CreateTextStageComponentProps) 
             <Typography paragraph variant="h4">Information screen</Typography>
             <CreateTextMarkdownField
                 label="Information screen markdown"
-                value={stage.text ? stage.text : ""}
-                onChange={(e) => dispatch(setTextStageLabel({id:id, text:e}))}
+                value={text}
+                onChange={(e) => dispatch(setTextStageText({id:id, textStageID: textStageID, text:e}))}
                 buttons={["Continue"]}
                 />
             </MPPaper>
@@ -106,6 +105,7 @@ export function CreateTextMarkdownField({ label, value, onChange, buttons }: Cre
 export function CreateExerciseButtons() {
     const exercise = useAppSelector(state => state.create.exercise);
     const problems = useAppSelector(state => state.create.problems);
+    const textstages = useAppSelector(state => state.create.textstages);
     const dispatch = useAppDispatch();
     let navigate = useNavigate();
 
@@ -119,7 +119,7 @@ export function CreateExerciseButtons() {
                         navigate("/exercises/run/");
                 }} >Run Exercise</Button>
             <Button onClick={() => {
-                        ExportYAML(problems, exercise);
+                        ExportYAML(problems, exercise, textstages);
                 }} >Download Exercise Spec</Button>
         </Box>
     )
@@ -252,9 +252,13 @@ export function CreateExerciseComponent({onCreateExercise} : CreateExerciseCompo
 
             {stages ? 
                 stages.map((stage, index) => {
-                    if(stage.type === "text")
-                        return <CreateTextStageComponent key={index} id={index} />
-                    else if("probid" in stage) { // This is redundent but it stops typescript from complaining.
+                    if(stage.type === "text") {
+                        return <CreateTextStageComponent
+                            key={stage.textstageid !== undefined ? stage.textstageid : index}
+                            textStageID={stage.textstageid}
+                            id={index}
+                            textStageText={stage.text} />
+                    } else if("probid" in stage) { // This is redundent but it stops typescript from complaining.
                         if(stage?.["probid"] && seenproblems.includes(stage?.["probid"])) {
                             return <CreateProblemRepeatComponent key={index} probid={stage?.probid ? stage.probid : ""} stageindex={index} />
                         }

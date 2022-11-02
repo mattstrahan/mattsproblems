@@ -13,12 +13,13 @@ export interface TextStage {
 
 export type Stage = TextStage | Problem;
 
-type StageSpec = TextStageSpec | ProblemStageSpec;
+export type StageSpec = TextStageSpec | ProblemStageSpec;
 
 interface TextStageSpec {
     type: "text" | "finish";
     heading?: string;
     text: string;
+    textstageid?: string; // This is used for the Exercise Creator to reduce renderings. text is ignored.
     parameters?: { [key: string]: string | number };
 }
 

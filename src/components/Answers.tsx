@@ -12,7 +12,6 @@ import Markdown, { MarkdownFillins } from "./Markdown";
 import Grid from "@mui/material/Unstable_Grid2";
 import ListItemButton from "@mui/material/ListItemButton";
 import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
 
 export interface AnswerKey {
     exerciseSpecId: string;

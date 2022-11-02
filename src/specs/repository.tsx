@@ -239,7 +239,7 @@ const repository : RepositorySpec = {
             "stages": [
                 {
                     "type": "text",
-                    "text": "This exercise is based off the first video of 3Blue1Brown's **Essence of linear algebra** playlist. Here we\nwill go through identifying the x and y components of vectors, vector addition, and vector scaling.\n\nThe video itself is available [here](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=1)."
+                    "text": "This exercise is based off the first video of 3Blue1Brown's **Essence of linear algebra** playlist. Here we\nwill go through identifying the x and y components of vectors, vector addition, and vector scaling.\n\n\nThe video itself is available below:\n\n![fNk_zzaMoSs](youtube)."
                 },
                 {
                     "type": "problem",

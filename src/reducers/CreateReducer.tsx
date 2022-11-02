@@ -15,13 +15,25 @@ interface CreateProblemAdditionalProps {
 export type exerciseCreatorStateType = {
     exercise: Partial<ExerciseSpec> | undefined;
     problems: { [key: string]: Partial<ProblemSpec> & CreateProblemAdditionalProps };
+    textstages: { [key: string]: string };
 }
 
 const initialExerciseCreatorState: exerciseCreatorStateType = {
     "exercise": undefined,
-    problems: {}
+    problems: {},
+    textstages: {}
 }
 
+function getNewKeyValue (curKeys: { [key: string]: any }) {
+    const keys = Object.keys(curKeys);
+    var newID = keys.length.toString();
+    if(newID === "0"){ // Noone likes a Problem 0, sorry computer people
+        newID = "1";
+    }
+    while(keys.includes(newID))
+        newID = (parseInt(newID) + 1).toString(); // This is necessary in the rare case that someone's uploaded a problem with custom IDs.
+    return newID;
+}
 
 const exerciseCreatorSlice = createSlice({
     name: 'exercisecreator',
@@ -67,24 +79,20 @@ const exerciseCreatorSlice = createSlice({
                 state.exercise.finish = {text: action.payload};
         },
         addTextStage: (state, action:PayloadAction<string>) => {
-            if(state.exercise)
-                state?.exercise?.stages?.push({type: "text", text: ""});
+            if(state.exercise) {
+                var newTextStageID = getNewKeyValue(state.textstages);
+                state.textstages[newTextStageID] = action.payload;
+                state?.exercise?.stages?.push({type: "text", text: "", textstageid:newTextStageID});
+            }
         },
         addProblem: (state, action:PayloadAction<Partial<ProblemSpec>>) => {
-            const keys = Object.keys(state.problems);
-            var newProblemID = keys.length.toString();
-            if(newProblemID === "0"){ // Noone likes a Problem 0, sorry computer people
-                newProblemID = "1";
-            }
-            while(keys.includes(newProblemID))
-                newProblemID = (parseInt(newProblemID) + 1).toString(); // This is necessary in the rare case that someone's uploaded a problem with custom IDs.
+            const newProblemID = getNewKeyValue(state.problems);
             state.problems[newProblemID] = action.payload;
             if(state.exercise)
                 state?.exercise?.stages?.push({type: "problem", probid:newProblemID});
         },
         moveStage: (state, action:PayloadAction<{stageindex:number, direction:"up"|"down"}>) => {
-            const stageindex = action.payload.stageindex;
-            const direction = action.payload.direction;
+            const { stageindex, direction } = action.payload;
             if(!state?.exercise?.stages)
                 return;
             if(stageindex >= state.exercise.stages.length || stageindex < 0)
@@ -108,13 +116,7 @@ const exerciseCreatorSlice = createSlice({
             state.exercise.stages.splice(stageindex)
         },
         addNewProblem: (state, action:PayloadAction<string>) => {
-            const keys = Object.keys(state.problems);
-            var newProblemID = keys.length.toString();
-            if(newProblemID === "0"){ // Noone likes a Problem 0, sorry computer people
-                newProblemID = "1";
-            }
-            while(keys.includes(newProblemID))
-                newProblemID = (parseInt(newProblemID) + 1).toString(); // This is necessary in the rare case that someone's uploaded a problem with custom IDs.
+            const newProblemID = getNewKeyValue(state.problems);
             state.problems[newProblemID] = {
                 title: `Problem ${newProblemID}`,
                 description: "",
@@ -153,37 +155,41 @@ const exerciseCreatorSlice = createSlice({
             }
 
         },
-        setTextStageLabel: (state, action:PayloadAction<{id: number, text: string}>) => {
-            const id = action.payload.id;
-            const text = action.payload.text;
-            if(state?.exercise?.stages && id in state.exercise.stages && state.exercise.stages[id].type === "text") {
-                state.exercise.stages[id] = {type: "text", text: text};
+        setTextStageText: (state, action:PayloadAction<{id: number, textStageID: string | undefined, text: string}>) => {
+            const { id, textStageID, text } = action.payload;
+            if(textStageID === undefined) {
+                if(state?.exercise?.stages && id in state.exercise.stages && state.exercise.stages[id].type === "text") {
+                    var newTextStageID = getNewKeyValue(state.textstages);
+                    state.textstages[newTextStageID] = text;
+                    state.exercise.stages[id] = {type: "text", text: "", textstageid: newTextStageID};
+                }
+            } else {
+                state.textstages[textStageID] = text;
             }
+            
         },
         setProblemStage: (state, action:PayloadAction<{stageindex: number, problemstage: ProblemStageSpec}>) => {
-            const stageindex = action.payload.stageindex;
-            const problemstage = action.payload.problemstage;
+            const { stageindex, problemstage } = action.payload;
             if(state?.exercise?.stages && stageindex in state.exercise.stages && state.exercise.stages[stageindex].type === "problem") {
                 state.exercise.stages[stageindex] = problemstage;
             }
         },
         setProblemTitle: (state, action:PayloadAction<{probid: string, title: string}>) => {
-            const probid = action.payload.probid;
+            const { probid, title } = action.payload;
             if(state.problems[probid]) {
-                state.problems[probid].title = action.payload.title;
+                state.problems[probid].title = title;
             }
         },
         setProblemQuestion: (state, action:PayloadAction<{probid: string, text: string, partindex?: number}>) => {
-            const probid = action.payload.probid;
-            const partindex = action.payload.partindex;
+            const {probid, partindex, text} = action.payload;
             if(state.problems[probid]) {
                 if(partindex === undefined) {
-                    state.problems[probid].question = action.payload.text;
+                    state.problems[probid].question = text;
                 }
                 else {
                     const problem = state.problems[probid];
                     if(problem.additionalparts !== undefined && problem.additionalparts[partindex] !== undefined) {
-                        problem.additionalparts[partindex].question = action.payload.text
+                        problem.additionalparts[partindex].question = text;
                     }
                 }
             }
@@ -330,7 +336,7 @@ export const {
     addNewProblem,
     addRepeatProblem,
     addNewPart,
-    setTextStageLabel,
+    setTextStageText,
     setProblemTitle,
     setProblemQuestion,
     setProblemStage,
