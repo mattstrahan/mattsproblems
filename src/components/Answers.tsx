@@ -101,7 +101,6 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
 
     // This is used to hold the initial answers for each fillin - a whole bunch of blanks
     const initea: string[] = Array(fillinAnswer.fillins.length).fill('');
-    console.log("Fillins: " + JSON.stringify(fillinAnswer.fillins))
 
     // A hook for the values of entered fillins
     const [enteredanswer, setEnteredAnswer] = React.useState(initea);
@@ -120,21 +119,28 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
 
     const handleSubmit = (event: React.SyntheticEvent, reason?: string) => {
         event.preventDefault();
+        let wronganswer = false;
         for (let i = 0; i < enteredanswer.length; i += 1) {
-            if (!enteredanswer[i]) return;
+            if (enteredanswer[i] === "") {
+                let fillinelement = document.getElementById(`fillin_${i.toString()}`);
+                if (fillinelement !== null)
+                    fillinelement.focus();
+                return;
+            }
+
             const variance =
                 parseFloat(enteredanswer[i]) - fillinAnswer.fillins[i].value;
 
-            console.log(
-                `Variance: ${variance}, precision: ${fillinAnswer.fillins[i].precision}`
-            );
             if (
                 variance > fillinAnswer.fillins[i].precision ||
                 variance < -1 * fillinAnswer.fillins[i].precision
             ) {
-                setOpenTryAgain(true);
-                return;
+                wronganswer = true;
             }
+        }
+        if(wronganswer) {
+            setOpenTryAgain(true);
+            return;
         }
         setIsCorrect(true);
         dispatch(answerIsCorrect(answerKey));
@@ -156,7 +162,7 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
         <div>
             <form onSubmit={handleSubmit}>
                 <Markdown>{fillinAnswer.label ? fillinAnswer.label : "Answer: "}</Markdown>
-                <MarkdownFillins autoFocus onFillinChange={onFillinChange}>{fillinAnswer.answerfillins}</MarkdownFillins>
+                <MarkdownFillins autoFocus onFillinChange={onFillinChange} fillinValues={enteredanswer}>{fillinAnswer.answerfillins}</MarkdownFillins>
                 <Button type="submit">Submit answer</Button>
                 <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
             </form>

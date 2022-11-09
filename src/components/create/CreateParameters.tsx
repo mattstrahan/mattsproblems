@@ -1,4 +1,4 @@
-import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Filter1Icon from '@mui/icons-material/Filter1';
@@ -40,7 +40,8 @@ function CreateParameterComponent({ probid, parname, isRepeat, stageindex }: Cre
             }
         }
     }
-    function onParameterTypeChange(newtype: string) {
+    
+    function onParameterTypeChange(newtype: string | null) {
         if(newtype === "number") {
             let curdefault = parameter?.default;
             if(curdefault === undefined)
@@ -61,11 +62,14 @@ function CreateParameterComponent({ probid, parname, isRepeat, stageindex }: Cre
 
     return (
         <Grid container xs={12}>
-                <Grid xs={12} sm>
+                <Grid xs={2} sm="auto">
+                    <Box padding={2}>
+                    {parameter.type === "number" ? <Filter1Icon /> : <AbcIcon /> }
+                    </Box>
+                </Grid>
+                <Grid xs={10} sm={3}>
                 <Box padding={2}>
-                    <Typography><IconButton onClick={() => dispatch(removeParameter({probid: probid, parname: parname}))} >
-                        <DeleteIcon />
-                    </IconButton> Name: {parname}</Typography></Box>
+                    <Typography>Name: {parname}</Typography></Box>
                 </Grid>
                 <Grid xs={12} sm>
                 <Box padding={1}>
@@ -82,10 +86,11 @@ function CreateParameterComponent({ probid, parname, isRepeat, stageindex }: Cre
                 
                 {!isRepeat ? 
                 <Grid xs="auto">
-                <Box padding={1}>
-                    <IconButton onClick={() => onParameterTypeChange("number")} disabled={parameter.type === "number"}><Filter1Icon /></IconButton>
-                    <IconButton onClick={() => onParameterTypeChange("string")} disabled={parameter.type === "string"}><AbcIcon /></IconButton>
-                </Box>
+                <Box padding={2}>
+                    <IconButton onClick={() => dispatch(removeParameter({probid: probid, parname: parname}))} >
+                        <DeleteIcon />
+                    </IconButton>
+                    </Box>
                 </Grid>
                 : (null) }
         </Grid>
@@ -130,7 +135,18 @@ interface CreateParametersExpandedComponentProps {
 export function CreateParametersExpandedComponent({ probid, isRepeat, stageindex }: CreateParametersExpandedComponentProps) {
     const parameters = useAppSelector(state => state.create.problems[probid].parameters);
     const [newparname, setNewParName] = React.useState<string>("");
+    const [type, setType] = React.useState<string | null>('number');
     const dispatch = useAppDispatch();
+
+    function handleNewParameter() {
+        setNewParName("")
+        if(type === "number") {
+            dispatch(addNewParameter({probid: probid, parname: newparname, type:"number"}));
+        }
+        if(type === "letter") {
+            dispatch(addNewParameter({probid: probid, parname: newparname, type:"string"}));
+        }
+    }
 
     // If it's a repeat problem and there's no parameters don't show them
     if(isRepeat && (!parameters || Object.keys(parameters).length === 0))
@@ -148,17 +164,46 @@ export function CreateParametersExpandedComponent({ probid, isRepeat, stageindex
         }
         {!isRepeat ? 
         
-        <Grid container spacing={1} >
-        <Grid xs={8} sm={4} >
-        <TextField label="Add new Parameter" value={newparname} onChange={(e) => setNewParName(e.target.value)} sx={{width:"100%"}} />
-        </Grid>
-        <Grid xs={4} sm={2} >
-        <Box padding={1}>
-        <IconButton onClick={() => {dispatch(addNewParameter({probid: probid, parname: newparname, type:"number"}));setNewParName("")}}><Filter1Icon /></IconButton>
-        <IconButton onClick={() => {dispatch(addNewParameter({probid: probid, parname: newparname, type:"string"}));setNewParName("")}}><AbcIcon /></IconButton>
-        </Box>
-        </Grid>
-        </Grid>
+            <Grid container spacing={4}>
+            <Grid xs >
+                <Tooltip title="The parameter name" arrow >
+            <TextField label="Add new parameter" value={newparname} onChange={(e) => setNewParName(e.target.value)} sx={{width:"100%"}} />
+                </Tooltip>
+            </Grid>
+            <Grid xs="auto" >
+            <Box padding={1}>
+
+            <ToggleButtonGroup
+            value={type}
+            exclusive
+            onChange={(e, newType:string | null) => setType(newType)}
+            aria-label="text alignment"
+            >
+            <ToggleButton value="number">
+                <Tooltip title="Add a number parameter" arrow >
+                <Filter1Icon />
+                </Tooltip>
+            </ToggleButton>
+            <ToggleButton value="letter">
+                <Tooltip title="Add a string parameter" arrow >
+                <AbcIcon />
+                </Tooltip>
+            </ToggleButton>
+            </ToggleButtonGroup>
+            </Box>
+            </Grid>
+            <Grid xs="auto" >
+            <Box padding={1}>
+                <Tooltip title={ newparname === "" ? "Parameter needs a name" : (parameters && newparname in parameters) ? "Parameter name already used" : null} arrow >
+                    <span><Button
+                        disabled={ newparname === "" || (parameters && newparname in parameters) ? true : false}
+                        onClick={() => handleNewParameter()}>
+                            Add new parameter
+                    </Button></span>
+                </Tooltip>
+            </Box>
+            </Grid>
+            </Grid>
         : (null) }
         </Box>
     )

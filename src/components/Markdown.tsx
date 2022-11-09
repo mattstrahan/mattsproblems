@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import React from 'react';
 import JXG from 'jsxgraph';
 import { JSGFigureStore } from '../classes/Problem';
+import { createImportSpecifier } from 'typescript';
 
 // The type for useKatex hasn't been implemented yet. I've asked typescript to ignore.
 // @ts-ignore
@@ -37,6 +38,7 @@ function rehypeFillins(options: reHypeFillinsOptions){
 
 export interface MarkdownFillinsAdditionalProps {
     onFillinChange?: Function;
+    fillinValues?: string[];
     additionalInputProps?: InputProps;
     autoFocus?: boolean;
 }
@@ -65,10 +67,12 @@ export function MarkdownFillins(props: ReactMarkdownOptions & MarkdownFillinsAdd
                 {
                     // Only change the fillins
                     if(inputprops.id && inputprops.id.startsWith("fillin_")) {
+                        let fillinid = parseInt(inputprops.id.substring(7));
                         return <Input
                             autoFocus={props.autoFocus && !firstAutoFocus ? firstAutoFocus=true : false}
                             id={inputprops.id}
                             size="small"
+                            defaultValue={props.fillinValues && props.fillinValues[fillinid] !== undefined ? props.fillinValues[fillinid] : ""}
                             onChange={value => {if(props.onFillinChange !== undefined) props.onFillinChange(inputprops.id, value) }}
                             style={{ height: "1.2em", fontSize:'1em', width: '1.5em', padding: "3px 3px", backgroundColor: "#eee", alignContent: 'center' }}
                             {...props.additionalInputProps} />

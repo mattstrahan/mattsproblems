@@ -440,6 +440,7 @@ exercises:
           v.name='\\\\vec{v}';
 
           v.snapToGrid=true;
+          v.snapWidth=0.25;
 
           va=line([0,0],v);
 
@@ -460,6 +461,7 @@ exercises:
           w.name='\\\\vec{w}';
 
           w.snapToGrid=true;
+          w.snapWidth=0.25;
 
 
           vpw = point(function () { return v.X() + w.X(); },function () { return

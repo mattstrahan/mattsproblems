@@ -199,7 +199,7 @@ export function CreateVariablesExpandedComponent({ probid }: CreateVariablesExpa
     const [type, setType] = React.useState<string | null>('number');
     const dispatch = useAppDispatch();
 
-    function addNewParameter() {
+    function addNewVariable() {
         setNewVarName("")
         if(type === "number") {
             dispatch(addNewNumberVariable({probid: probid, varname: newvarname}));
@@ -256,7 +256,13 @@ export function CreateVariablesExpandedComponent({ probid }: CreateVariablesExpa
             </Grid>
             <Grid xs="auto" >
             <Box padding={1}>
-            <Button onClick={() => addNewParameter()}>Add new variable</Button>
+                <Tooltip title={ newvarname === "" ? "Variable needs a name" : (variables && newvarname in variables) ? "Variable name already used" : null} arrow >
+                    <span><Button
+                        disabled={ newvarname === "" || (variables && newvarname in variables) ? true : false}
+                        onClick={() => addNewVariable()}>
+                            Add new variable
+                    </Button></span>
+                </Tooltip>
             </Box>
             </Grid>
             </Grid>
