@@ -1,46 +1,50 @@
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 import React from "react";
-import { FillinsAnswer, MultipleChoiceAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
 import { Problem } from "../classes/Problem";
-import { AnswerKey, FillinsAnswerComponent, MultipleChoiceAnswerComponent, NumberAnswerComponent, TextAnswerComponent } from "./Answers";
+import { useAppDispatch } from "../hooks/hooks";
+import randomCorrectMessage from "../lists/correct";
+import { nextProblem } from "../reducers/RepositoryReducer";
+import { AnswerComponent, AnswerKey } from "./Answers";
 import Markdown from "./Markdown";
 
 export interface ProblemComponentProps {
     number?: number;
     problem: Problem;
     answerKey: Partial<AnswerKey>;
+    hidden?: boolean;
 }
 
-export function ProblemComponent ({number, problem, answerKey} : ProblemComponentProps) {
+export function ProblemComponent ({number, problem, answerKey, hidden} : ProblemComponentProps) {
     let isDone = false;
     let ret:JSX.Element[] = [];
     let partnumber = 1;
+    const nparts = problem.parts.length;
+    const dispatch = useAppDispatch();
+
+    if(hidden)
+        return (null);
     
     problem.parts.forEach((part, partindex) => {
-        if(isDone)
-            return;
-        let partanswer;
         if(answerKey.exercise === undefined || answerKey.exerciseSpecId === undefined || answerKey.stage === undefined)
             return
-        const newAnswerKey:AnswerKey = {exercise: answerKey.exercise, exerciseSpecId: answerKey.exerciseSpecId, stage: answerKey.stage, part:0};
-        if (part.answer.type === 'text') {
-            partanswer = <TextAnswerComponent answer={part.answer as TextAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
-        } else if (part.answer.type === 'number') {
-            partanswer = <NumberAnswerComponent answer={part.answer as NumberAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
-        } else if (part.answer.type === 'fillins') {
-            partanswer = <FillinsAnswerComponent answer={part.answer as FillinsAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
-        } else if (part.answer.type === 'multiplechoice') {
-            partanswer = <MultipleChoiceAnswerComponent answer={part.answer as MultipleChoiceAnswer} answerKey={{...newAnswerKey, part: partindex}} />;
-        }
+        const newAnswerKey:AnswerKey = {exercise: answerKey.exercise, exerciseSpecId: answerKey.exerciseSpecId, stage: answerKey.stage, part:partindex};
+
         ret.push( (
             <div key={partnumber}>
                 <h3>Question {number && <span>number</span>}</h3>
                 <Markdown jsgFigureStore={part.jsgFigureStore}>{part.question}</Markdown>
-                { partanswer }
+                <AnswerComponent hidden={isDone} answer={part.answer} answerKey={newAnswerKey} />
+                {!part.answer.isCorrect ? 
+            <Button onClick={() => dispatch(nextProblem(newAnswerKey))} >Skip</Button>
+            : partindex + 1 === nparts
+            ? <div><Alert>{randomCorrectMessage()}</Alert>
+              <Button onClick={() => dispatch(nextProblem(newAnswerKey))} >Continue</Button></div>
+            : (null)}
             </div>
             ) );
         if (!part.answer.isCorrect) {
             isDone = true;
-            return;
         }
         partnumber += 1;
     });

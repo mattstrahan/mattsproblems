@@ -3,7 +3,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Box from "@mui/system/Box";
 import React from "react";
-import { FillinsAnswer, MultipleChoiceAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
+import { Answer, FillinsAnswer, MultipleChoiceAnswer, NumberAnswer, TextAnswer } from "../classes/Answers";
 import { useAppDispatch } from "../hooks/hooks";
 import randomCorrectMessage from "../lists/correct";
 import randomTryAgainMessage from "../lists/tryagain";
@@ -20,12 +20,13 @@ export interface AnswerKey {
     part: number;
 }
 
-export interface NumberAnswerComponentProps {
+interface NumberAnswerComponentProps {
     answer: NumberAnswer;
     answerKey: AnswerKey;
+    current?: boolean;
 }
 
-export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerComponentProps) {
+function NumberAnswerComponent({ answer, answerKey }: NumberAnswerComponentProps) {
     const numberAnswer = answer;
     const precision = numberAnswer.precision ? numberAnswer.precision : 0;
     const [enteredanswer, setEnteredAnswer] = React.useState('');
@@ -59,11 +60,9 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
                             className="correct-answer"
                             value={enteredanswer}
                         />
-                    <Alert onClose={() => {}}>{randomCorrectMessage()}</Alert>
                 </Grid>
             </Grid>
             <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
-                <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
         </div>
         );
     }
@@ -86,17 +85,17 @@ export function NumberAnswerComponent({ answer, answerKey }: NumberAnswerCompone
                 <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
                 </Grid>
             </Grid>
-            <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
     );
 }
 
-export interface FillinsAnswerComponentProps {
+interface FillinsAnswerComponentProps {
     answer: FillinsAnswer;
     answerKey: AnswerKey;
+    current?: boolean;
 }
 
-export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerComponentProps) {
+function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerComponentProps) {
     const fillinAnswer = answer;
 
     // This is used to hold the initial answers for each fillin - a whole bunch of blanks
@@ -152,9 +151,7 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
                 <div>
                     <Markdown>{fillinAnswer.label ? fillinAnswer.label : "Answer: "}</Markdown>
                     <Markdown>{fillinAnswer.answertext}</Markdown>
-                    <Alert onClose={() => {}}>{randomCorrectMessage()}</Alert>
                 </div>
-                <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
             </div>
         );
     }
@@ -166,27 +163,28 @@ export function FillinsAnswerComponent({ answer, answerKey }: FillinsAnswerCompo
                 <Button type="submit">Submit answer</Button>
                 <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
             </form>
-            <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
     );
 }
 
-export interface TextAnswerComponentProps {
+interface TextAnswerComponentProps {
     answer: TextAnswer;
     answerKey: AnswerKey;
+    current?: boolean;
 }
 
-export function TextAnswerComponent({ answer, answerKey }: TextAnswerComponentProps) {
+function TextAnswerComponent({ answer, answerKey }: TextAnswerComponentProps) {
     const textAnswer = answer as TextAnswer;
     return (<p>{textAnswer.text}</p>);
 }
 
-export interface MultipleChoiceComponentProps {
+interface MultipleChoiceComponentProps {
     answer: MultipleChoiceAnswer;
     answerKey: AnswerKey;
+    current?: boolean;
 }
 
-export function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleChoiceComponentProps) {
+function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleChoiceComponentProps) {
     const [opentryagain, setOpenTryAgain] = React.useState(false);
     const [isCorrect, setIsCorrect] = React.useState(false);
     const dispatch = useAppDispatch();
@@ -202,7 +200,6 @@ export function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleCho
 
     if (isCorrect) {
         return (
-            <div>
             <Grid container>
             <Grid xs="auto">
                 <Box paddingY={4}><Markdown>{answer.label ? answer.label : "Answer: "}</Markdown></Box>
@@ -219,9 +216,6 @@ export function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleCho
                 </List>
                 </Grid>
             </Grid>
-                <Alert onClose={() => {}}>{randomCorrectMessage()}</Alert>
-                <Button onClick={() => dispatch(nextProblem(answerKey))} >Continue</Button>
-            </div>
         );
     }
     return (
@@ -247,7 +241,29 @@ export function MultipleChoiceAnswerComponent({ answer, answerKey }: MultipleCho
                 </Grid>
             </Grid>
             <Box paddingY={2}>{opentryagain ? <Alert onClose={() => {}} severity="error">{randomTryAgainMessage()}</Alert> : (null)}</Box>
-            <Button onClick={() => dispatch(nextProblem(answerKey))} >Skip</Button>
         </div>
     );
+}
+
+export interface AnswerComponentProps {
+    answer: Answer;
+    answerKey: AnswerKey;
+    hidden?: boolean;
+    current?: boolean;
+}
+
+export function AnswerComponent({ answer, answerKey, hidden, current }: AnswerComponentProps) {
+    if(hidden)
+        return (null);
+    
+    if (answer.type === 'text') {
+        return <TextAnswerComponent answer={answer as TextAnswer} answerKey={answerKey} />;
+    } else if (answer.type === 'number') {
+        return <NumberAnswerComponent answer={answer as NumberAnswer} answerKey={answerKey} />;
+    } else if (answer.type === 'fillins') {
+        return <FillinsAnswerComponent answer={answer as FillinsAnswer} answerKey={answerKey} />;
+    } else if (answer.type === 'multiplechoice') {
+        return <MultipleChoiceAnswerComponent answer={answer as MultipleChoiceAnswer} answerKey={answerKey} />;
+    }
+    return (null);
 }
